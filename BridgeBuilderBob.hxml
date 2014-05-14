@@ -1,0 +1,15 @@
+-main ApplicationMain 
+-lib openfl
+-lib actuate
+-lib nape
+-cp src
+-D tools=1.4.0
+-D display
+-D web
+--no-output
+-swf-version 11.2
+-swf bin/flash/bin/BridgeBuilderBob.swf
+-swf-header 800:600:60:000000
+-cp bin/flash/haxe
+#--remap nme:flash
+
