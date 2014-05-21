@@ -19,6 +19,9 @@
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
 	<haxelib name="nape" />
+	<haxelib name="polygonal-ds" />
+    <haxelib name="hxsort" />
+    <haxelib name="goodies" />
     
 	
 	<!-- assets -->

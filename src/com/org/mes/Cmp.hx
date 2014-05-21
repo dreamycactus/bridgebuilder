@@ -7,5 +7,5 @@ package com.org.mes;
 interface Cmp 
 {
     public var entity : Entity;
-    public function update();
+    public function update() : Void;
 }

@@ -6,10 +6,11 @@ package com.org.mes;
  */
 class Top
 {
-    var ents : List<Entity>();
-    var sys : List<System>();
+    var ents : List<Entity>;
+    var sys : List<System>;
     var entIndex : Int;
     
+    public var prevTime : Int;
     public var dt : Float;
     
     public function new() 
@@ -41,6 +42,15 @@ class Top
     {
         for (s in sys) {
             s.onEntChanged(e);
+        }
+    }
+    
+    public function insertSystem(s : System)
+    {
+        if ( sys != null ) {
+            sys.add(s);
+        } else {
+            trace("Null system cannot be added to top");
         }
     }
     

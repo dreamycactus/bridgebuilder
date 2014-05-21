@@ -6,19 +6,24 @@ package com.org.mes;
  */
 class System
 {
-    public function new() 
+    public var top : Top;
+    
+    public function new(top : Top) 
     {
+        this.top = top;
         ents = new List();
     }
     
-    public function update(dt : Float)
+    public function update()
     {
         
     }
     
     public function onEntChanged(e : Entity)
     {
-        
+        if (isValidEnt(e) ) {
+            ents.add(e);
+        }
     }
     
     public function isValidEnt(e : Entity) : Bool

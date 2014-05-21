@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
+import com.org.mes.Entity;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
@@ -12,10 +13,11 @@ import nape.phys.Body;
  */
 class CmpMultiJoint implements Cmp
 {   
+    public var entity : Entity;
+    
     public function new(startingJoints : Array<Constraint> = null) 
     {
-        super();
-        this.joints = startingJoints;
+        this.joints = startingJoints == null ? new Array() : startingJoints;
     }
     
     public function breakAll()
@@ -55,6 +57,15 @@ class CmpMultiJoint implements Cmp
             joints.remove(j);
         }
                   
+    }
+    
+    public function getJointsByBody(b : Body) {
+        
+    }
+    
+    public function update()
+    {
+        
     }
     
     var joints(default,default) : Array<Constraint>;

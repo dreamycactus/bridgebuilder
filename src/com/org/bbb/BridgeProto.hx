@@ -23,6 +23,8 @@ class BridgeProto extends Template
 {
     var joint : Constraint;
     var top : Top;
+    var entfactory : EntFactory;
+    
     public function new() 
     {
         super( {
@@ -31,29 +33,31 @@ class BridgeProto extends Template
             noReset: true
         });
         top = new Top();
-        
+        entfactory = new EntFactory(top);
     }
         var prev : Body = null;
     
+        var found : PivotJoint;
+        var found1 : PivotJoint;
     override function init() 
     {
         var w = 800;
         var h = 600;
         super.init();
+        top.insertSystem(new SysPhysics(top, this.space) );
+        top.insertSystem(new SysRender(top, this.space) );
         
-        var e1 = top.createEnt("outerJoint1");
-        var e2 = top.createEnt("outerJoint2");
         
-        var joint : PivotJoint = new PivotJoint(space.world, null, Vec2.get(), Vec2.get() );
+        var joint : PivotJoint = new PivotJoint(space.world, null, Vec2.get(), Vec2.get());
         joint.breakUnderForce = true;
         joint.maxForce = 2e5;
         joint.frequency = 20;
         joint.stiff = false;
         joint.damping = 0.4;
         joint.active = false;
+        
         var len = 3; 
         var first : Body = null;
-        var e = new Entity();
         
         for (i in 0...len) {
             var x = 50.0 + i * 200.0;
@@ -62,6 +66,8 @@ class BridgeProto extends Template
             box.shapes.add(new Polygon(Polygon.box(200, 20)));
             box.position.setxy(x, y);
             box.space = space;
+            var ebeam = entfactory.createBeamEnt(null, box);
+            top.insertEnt(ebeam);
             
             if ( first == null ) {
                 first = box;
@@ -74,28 +80,33 @@ class BridgeProto extends Template
                 j.anchor2 = box.worldPointToLocal(Vec2.weak(x-75, y), true);
                 j.active = true;
                 j.space = space;
+                var ejoint = entfactory.createJointEnt(Vec2.get(), [ j ] );
+                top.insertEnt(ejoint);
             }
             prev = box;
         }
         
-        var found : PivotJoint = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(0.0,0.0) ), Vec2.get(0.0,0.0) );
-        found.breakUnderForce = true;
+        found1 = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(40.0,0.0) ), Vec2.get(40.0,0.0) );
+        found1.breakUnderForce = true;
+        found1.maxForce = 4e5;
+        //found1.frequency = 10;
+        found1.stiff = false;
+        //found1.damping = 0.4;
+        //found1.active = false;
+        found1.space = space;
+        var ejoint1 = entfactory.createJointEnt(prev.position.add( Vec2.get(40.0,0.0) ), [ found1 ] );
+        top.insertEnt(ejoint1);
+        
+        found  = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(90.0,0.0) ), Vec2.get(90.0,0.0) );
+        found.breakUnderForce = false;
         found.maxForce = 4e5;
         //found.frequency = 10;
         found.stiff = false;
         //found.damping = 0.4;
         //found.active = false;
         found.space = space;
-        
-        var found1 : PivotJoint = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(90.0,0.0) ), Vec2.get(90.0,0.0) );
-        found1.breakUnderForce = false;
-        found1.maxForce = 4e5;
-        //found1.frequency = 10;
-        found1.stiff = false;
-        //found1.damping = 0.4;
-        //found.active = false;
-        found1.space = space;
-        
+        var ejoint = entfactory.createJointEnt(prev.position.add( Vec2.get(90.0,0.0) ), [ found ] );
+        top.insertEnt(ejoint);
         
         
         var floor = new Body(BodyType.STATIC);
@@ -110,13 +121,24 @@ class BridgeProto extends Template
     }
     
     override function enterFrame(_) {
+        var curTime = Lib.getTimer();
+        var deltaTime:Float = (curTime - prevTime);
+        trace(deltaTime);
+        
         super.enterFrame(_);
+        //prevTime = curTime;
+        top.update(deltaTime);
+        
         var bodies = space.bodies;
         
         //for ( b in bodies ) {
             //trace( "force: " + b.totalImpulse() );
         //}
-        textField.text = prev.totalContactsImpulse().Vec3ToIntString() + ",\n" + prev.totalImpulse().Vec3ToIntString() + "\n" + prev.tangentImpulse().Vec3ToIntString() + "\n" + prev.constraintsImpulse().Vec3ToIntString();
+        textField.text = "total contacts: " + prev.totalContactsImpulse().Vec3ToIntString() + ",\n" 
+                       + "total impulse: " + prev.totalImpulse().Vec3ToIntString() + "\n" 
+                       + "total constraint: " + prev.constraintsImpulse().Vec3ToIntString() + "\n"
+                       + "joint 40 :" + found.bodyImpulse(prev).Vec3ToIntString() + ", " + found.impulse() + "\n"
+                       + "joint 90 :" + found1.bodyImpulse(prev).Vec3ToIntString() + ", " + found1.impulse() + "\n";
     }
     
     function generateObject(pos:Vec2) {

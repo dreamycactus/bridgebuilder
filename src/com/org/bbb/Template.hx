@@ -237,52 +237,44 @@ class Template extends Sprite {
 
         var noStepsNeeded = false;
 
-        if (variableStep) {
-            if (deltaTime > (1000 / 30)) {
-                deltaTime = (1000 / 30);
-            }
-
-            debug.clear();
-
-            preStep(deltaTime * 0.001);
-            if (space != null) {
-                space.step(deltaTime * 0.001, velIterations, posIterations);
-            }
-            prevTime = curTime;
-        }
-        else {
-            var stepSize = (1000 / stage.frameRate);
-            stepSize = 1000/60;
-            var steps = Math.round(deltaTime / stepSize);
-
-            var delta = Math.round(deltaTime - (steps * stepSize));
-            prevTime = (curTime - delta);
-            if (steps > 4) {
-                steps = 4;
-            }
-            deltaTime = stepSize * steps;
-
-            if (steps == 0) {
-                noStepsNeeded = true;
-            }
-            else {
-                debug.clear();
-            }
-
-            while (steps-- > 0) {
-                preStep(stepSize * 0.001);
-                if (space != null) {
-                    space.step(stepSize * 0.001, velIterations, posIterations);
-                }
-            }
-        }
-
-        if (space != null && !customDraw && !noStepsNeeded) {
-            debug.draw(space);
-        }
-        if (!noStepsNeeded) {
-            postUpdate(deltaTime * 0.001);
-            debug.flush();
-        }
+        //if (variableStep) {
+            //if (deltaTime > (1000 / 60)) {
+                //deltaTime = (1000 / 60);
+            //}
+//
+            //debug.clear();
+//
+            //preStep(deltaTime * 0.001);
+            //if (space != null) {
+                //space.step(deltaTime * 0.001, velIterations, posIterations);
+            //}
+            //prevTime = curTime;
+        //}
+        //else {
+            //var stepSize = (1000 / stage.frameRate);
+            //stepSize = 1000/60;
+            //var steps = Math.round(deltaTime / stepSize);
+//
+            //var delta = Math.round(deltaTime - (steps * stepSize));
+            //prevTime = (curTime - delta);
+            //if (steps > 4) {
+                //steps = 4;
+            //}
+            //deltaTime = stepSize * steps;
+//
+            //if (steps == 0) {
+                //noStepsNeeded = true;
+            //}
+            //else {
+                //debug.clear();
+            //}
+//
+            //while (steps-- > 0) {
+                //preStep(stepSize * 0.001);
+                //if (space != null) {
+                    //space.step(stepSize * 0.001, velIterations, posIterations);
+                //}
+            //}
+        //}
     }
 }
