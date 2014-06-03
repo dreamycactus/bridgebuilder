@@ -1,5 +1,5 @@
 package com.org.mes;
-
+using Lambda;
 /**
  * ...
  * @author 
@@ -14,15 +14,24 @@ class System
         ents = new List();
     }
     
-    public function update()
+    public function init() : Void
     {
         
+    }
+    
+    public function update()
+    {
+        for (e in ents) {
+            e.update();
+        }
     }
     
     public function onEntChanged(e : Entity)
     {
         if (isValidEnt(e) ) {
             ents.add(e);
+        } else if (ents.has(e) ) {
+            ents.remove(e);
         }
     }
     

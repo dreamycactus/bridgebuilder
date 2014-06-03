@@ -20,9 +20,16 @@ class Top
         entIndex = 0;
     }
     
+    public function init()
+    {
+        for (s in sys) {
+            s.init();
+        }
+    }
+    
     public function createEnt(name : String = "") : Entity
     {
-        var e = new Entity();
+        var e = new Entity(this);
         e.id = entIndex++;
         e.name = name;
         return e;
@@ -31,6 +38,9 @@ class Top
     public function insertEnt(e : Entity)
     {
         ents.add(e);
+        for (s in sys) {
+            s.onEntChanged(e);
+        }
     }
     
     public function deleteEnt(e : Entity)
@@ -52,6 +62,17 @@ class Top
         } else {
             trace("Null system cannot be added to top");
         }
+    }
+    
+    public function getSystem<T>(t:Class<T>) : T
+    {
+        for (s in sys) {
+            if (Type.getClassName(Type.getClass(s) ) == Type.getClassName(t) ) {
+                return cast(s);
+                break;
+            }
+        }
+        return null;
     }
     
     public function update(dt : Float)

@@ -21,7 +21,7 @@
   <!-- Build options -->
   <build>
     <option directives="tools=1.4.0&#xA;display&#xA;web" />
-    <option flashStrict="False" />
+    <option flashStrict="True" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
@@ -32,6 +32,8 @@
     <library name="openfl" />
     <library name="actuate" />
     <library name="nape" />
+    <library name="polygonal-ds" />
+    <library name="hxsort" />
     <library name="goodies" />
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->

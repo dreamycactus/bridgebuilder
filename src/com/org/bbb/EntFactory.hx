@@ -5,6 +5,7 @@ import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
+import nape.phys.Compound;
 
 /**
  * ...
@@ -12,12 +13,18 @@ import nape.phys.Body;
  */
 class EntFactory
 {
+    public static var inst : EntFactory; // Forgive me..
+    
     public function new(top : Top) 
     {
+        if (inst != null) {
+            throw "Only one...... QQ";
+        }
+        inst = this;
         this.top = top;
     }
     
-    public function createJointEnt(pos : Vec2, joints : Array<Constraint>, name : String = "") : Entity
+    public function createJointEnt(pos : Vec2, body1 : Body, body2 : Body, name : String = "") : Entity
     {
         var e = top.createEnt(name);
         var cmpmj = new CmpMultiJoint(joints);
@@ -35,8 +42,36 @@ class EntFactory
         var cmpbeam = new CmpBeam(body);
         var cmptrans = new CmpTransform(pos);
         
+        if (pos != null) {
+            body.position = pos;
+        }
+        
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
+        
+        return e;
+    }
+    
+    public function createMultiBeamEnt(pos : Vec2, compound : Compound, name : String = "") : Entity
+    {
+        var e = top.createEnt(name);
+        var cmpbeam = new CmpMultiBeam(compound);
+        var cmptrans = new CmpTransform(pos);
+        
+        e.attachCmp(cmpbeam);
+        e.attachCmp(cmptrans);
+        
+        return e;
+    }
+    
+    public function createGridEnt(cellsz : Int, cellCount : Array<Int>) : Entity
+    {
+        var e = top.createEnt("grid");
+        var cmpGrid = new CmpGrid(cellsz, cellCount);
+        var cmpRenderGrid = new CmpRenderGrid(cmpGrid);
+        
+        e.attachCmp(cmpGrid);
+        e.attachCmp(cmpRenderGrid);
         
         return e;
     }

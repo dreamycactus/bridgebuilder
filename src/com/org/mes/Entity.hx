@@ -12,15 +12,17 @@ class Entity
         
     public var id : Int;
     public var name : String;
+    public var top : Top;
     //public var cmpSig : de.polygonal.ds.BitVector;
     
-    public function new() 
+    public function new(top : Top) 
     {
-        cmps = new StringMap<Cmp>();
+        this.cmps = new StringMap<Cmp>();
+        this.top = top;
         //cmpSig = BitFields.zero;
     }
     
-    @:generic public function getCmp<T:Cmp>(t:Class<T>) : T
+    public function getCmp<T:Cmp>(t:Class<T>) : T
     {
         return cast( cmps.get( Type.getClassName( t ) ) );
     }
