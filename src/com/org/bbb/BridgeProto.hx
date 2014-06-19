@@ -1,13 +1,21 @@
 package com.org.bbb;
 
+import com.org.bbb.CmpMultiBeam.SplitType;
+import com.org.bbb.Config.BuildMat;
+import com.org.bbb.Config.CableMat;
+import com.org.bbb.Config.JointType;
 import com.org.bbb.Template.TemplateParams;
+import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.Top;
-import flash.display.Sprite;
-import flash.events.KeyboardEvent;
-import flash.events.MouseEvent;
-import flash.Lib;
-import flash.ui.Keyboard;
+import nape.dynamics.InteractionFilter;
+//import com.org.mes.Entity;
+//import com.org.mes.Top;
+import openfl.display.Sprite;
+import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
+import openfl.Lib;
+import openfl.ui.Keyboard;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
@@ -33,6 +41,7 @@ class BridgeProto extends Template
     var grid : Entity;
     var cmpGrid : CmpGrid;
     var uiSprite : Sprite;
+    var material : BuildMat = BuildMat.STEELBEAM;
     
     public function new() 
     {
@@ -51,79 +60,25 @@ class BridgeProto extends Template
     
         var found : PivotJoint;
         var found1 : PivotJoint;
+        
     override function init() 
     {
-        var w = 800;
-        var h = 600;
+        var w = Lib.current.stage.stageWidth;
+        var h = Lib.current.stage.stageHeight;
         super.init();
         top.insertSystem(new SysPhysics(top, this.space) );
         top.insertSystem(new SysRender(top, this.space, Lib.current.stage) );
+       
+        top.init();
+        
+        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid]);
+        Cmp.cmpManager.registerCmp(CmpPhys);
+        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam,CmpJoint,CmpMultiBeam, CmpSharedJoint, CmpCable]);
+        trace(Cmp.cmpManager.printAll() );
         
         top.insertEnt(grid);
         
-        top.init();
-        
-        Lib.current.stage.addChild(uiSprite);
-        
-        var joint : PivotJoint = new PivotJoint(space.world, null, Vec2.get(), Vec2.get());
-        joint.breakUnderForce = true;
-        joint.maxForce = 2e5;
-        joint.frequency = 20;
-        joint.stiff = false;
-        joint.damping = 0.4;
-        joint.active = false;
-        
-        var len = 4; 
-        var first : Body = null;
-        var segLen = 100.0;
-        
-        //for (i in 0...len) {
-            //var x = 210.0 + i * segLen;
-            //var y = 210.0;
-            //var box = new Body(BodyType.DYNAMIC);
-            //box.shapes.add(new Polygon(Polygon.box(segLen, 10)));
-            //box.space = space;
-            //var ebeam = entfactory.createBeamEnt(Vec2.get(x,y), box);
-            //top.insertEnt(ebeam);
-            //trace(box.position);
-            //
-            //if ( first == null ) {
-                //first = box;
-            //}
-            //if ( prev != null ) { 
-                //var j = new WeldJoint(box, prev, Vec2.weak(-segLen * 0.5, 0), Vec2.weak(segLen * 0.5, 0) );
-                ////j.frequency = 10000;
-                //j.space = space;
-                //j.breakUnderForce = true;
-                //j.maxForce = 5e6;
-                //var ejoint = entfactory.createJointEnt(Vec2.get(), [ j ] );
-                //top.insertEnt(ejoint);
-            //}
-            //prev = box;
-        //}
-        
-        //
-        //found1 = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(40.0,0.0) ), Vec2.get(40.0,0.0) );
-        //found1.breakUnderForce = true;
-        //found1.maxForce = 4e5;
-        ////found1.frequency = 10;
-        //found1.stiff = false;
-        ////found1.damping = 0.4;
-        ////found1.active = false;
-        //found1.space = space;
-        //var ejoint1 = entfactory.createJointEnt(prev.position.add( Vec2.get(40.0,0.0) ), [ found1 ] );
-        //top.insertEnt(ejoint1);
-        //
-        //found  = new PivotJoint(space.world, prev, prev.position.add( Vec2.get(90.0,0.0) ), Vec2.get(90.0,0.0) );
-        //found.breakUnderForce = false;
-        //found.maxForce = 4e5;
-        ////found.frequency = 10;
-        //found.stiff = false;
-        ////found.damping = 0.4;
-        ////found.active = false;
-        //found.space = space;
-        //var ejoint = entfactory.createJointEnt(prev.position.add( Vec2.get(90.0,0.0) ), [ found ] );
-        //top.insertEnt(ejoint);
+        Lib.current.addChild(uiSprite);
         
         
         var floor = new Body(BodyType.STATIC);
@@ -131,28 +86,18 @@ class BridgeProto extends Template
         floor.space = space;
         
         var floor1 = new Body(BodyType.STATIC);
-        floor1.shapes.add(new Polygon(Polygon.box(100, 100)));
-        floor1.position.setxy(150, 150);
-        floor1.shapes.at(0).filter.collisionMask = 0;
+        floor1.shapes.add(new Polygon(Polygon.box(100, 500)));
+        floor1.position.setxy(150, 350);
+        floor1.shapes.at(0).filter.collisionGroup = Config.cgAnchor;
+        floor1.shapes.at(0).filter.collisionMask = ~(Config.cgBeam|Config.cgBeamSplit|Config.cgDeck);
         floor1.space = space;
         
-        var comp = CmpBeam.splitBeam(floor1);
-        //comp.translate(Vec2.get(100, 200 ) );
-        comp.space = space;
-        
         var floor2 = new Body(BodyType.STATIC);
-        floor2.shapes.add(  new Polygon( Polygon.box(100, 100) )  );
-        floor2.position.setxy(650, 150);
-        floor2.shapes.at(0).filter.collisionMask = 0;
+        floor2.shapes.add(  new Polygon( Polygon.box(100, 500) )  );
+        floor2.position.setxy(1000, 350);
+        floor2.shapes.at(0).filter.collisionGroup = Config.cgAnchor;
+        floor2.shapes.at(0).filter.collisionMask = ~(Config.cgBeam|Config.cgBeamSplit|Config.cgDeck);
         floor2.space = space;
-        
-        var wpoint = Vec2.get(50, h - 50);
-        
-        //var j1 = new PivotJoint(first, floor1, Vec2.weak( -segLen * 0.5, 0), Vec2.weak(50, 0) );
-        //var j2 = new PivotJoint(prev, floor2, Vec2.weak( segLen * 0.5, 0), Vec2.weak( -50, 0) );
-        //j1.space = space;
-        //j2.space = space;
-
         
         stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, rightmouseDown);
         stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, rightmouseUp);
@@ -166,9 +111,8 @@ class BridgeProto extends Template
         prevTime = curTime;
         
         super.enterFrame(_);
-        //prevTime = curTime;
         top.update(deltaTime);
-        
+        hand.anchor1.setxy(mouseX, mouseY);
         var bodies = space.bodies;
         
         var mp = Vec2.get(mouseX, mouseY);
@@ -177,7 +121,7 @@ class BridgeProto extends Template
         if (bb != null && bb.length > 0) {
             textField.text = printBodyForces(bb.at(0) );
         } else {
-            //textField.text = "";
+            textField.text = "";
         }
         
         if (spawn1 != null) {
@@ -192,11 +136,8 @@ class BridgeProto extends Template
             g.endFill();
         }
         var cp = cmpGrid.getClosestCell(mp);
-        textField.text += "\n" + cp +"\n" + mp;
+        textField.text += "\n" + cp +"\n" + mp +"\n" + material;
         
-        //for ( b in bodies ) {
-            //trace( "force: " + b.totalImpulse() );
-        //}
     }
     
     function printBodyForces(body : Body)
@@ -204,7 +145,8 @@ class BridgeProto extends Template
         var str =        "body id: " + body.id + "\n"
                        + "total contacts: " + body.totalContactsImpulse().Vec3ToIntString() + ",\n" 
                        + "total impulse: " + body.totalImpulse().Vec3ToIntString() + "\n" 
-                       + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n";
+                       + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n"
+                       + "total stress: " + body.calculateBeamStress().xy(true) + "\n";
                        
         for (c in body.constraints) {
             str += "constraint impulse: " + c.bodyImpulse(body).Vec3ToIntString() +"\n";
@@ -216,29 +158,21 @@ class BridgeProto extends Template
         var body = new Body();
         body.position = pos;
  
-        // Add random one of either a Circle, Box or Pentagon.
-        if (Math.random() < 0) {
-            body.shapes.add(new Circle(10));
-        }
-        else if (Math.random() < 2.5) {
-            body.shapes.add(new Polygon(Polygon.box(20, 20)));
-            body.shapes.at(0).filter.collisionGroup = 2;
-            body.mass = 10;
-        }
-        else {
-            body.shapes.add(new Polygon(Polygon.regular(10, 10, 5)));
-        }
- 
+        body.shapes.add(new Polygon(Polygon.box(20, 20)));
+        body.shapes.at(0).filter.collisionGroup = Config.cgLoad;
+            
+        body.mass = 50;
         body.space = space;
     }
     
     override function mouseDown(_) {
         var mp = Vec2.get(mouseX, mouseY);
         var cp = cmpGrid.getClosestCell(mp);
+        super.mouseDown(_);
         if (useHand) {
             // re-use the same list each time.
-            bodyList = space.bodiesUnderPoint(mp, null, bodyList);
-
+            bodyList = space.bodiesUnderPoint(mp, new InteractionFilter(Config.cgSensor), bodyList);
+            trace(bodyList.length);
             for (body in bodyList) {
                 if (body.isDynamic()) {
                     hand.body2 = body;
@@ -267,7 +201,6 @@ class BridgeProto extends Template
                 params.generator(mp);
             }
         }
-        mp.dispose();
     }
 
     override function handMouseUp(_) {
@@ -282,11 +215,20 @@ class BridgeProto extends Template
         var mp = Vec2.get(mouseX, mouseY);
         var cp = cmpGrid.getClosestCell(mp);
         spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
-        var bb : BodyList = space.bodiesUnderPoint(spawn1, null, null);
+        var bb : BodyList = space.bodiesUnderPoint(spawn1, new InteractionFilter(Config.cgSensor) ) ;
         
-        if (bb != null && bb.length > 0) {
-            startBody = bb.at(0);
-            trace(startBody);
+        var otherBody : Body = null;
+        startBody = null;
+        /* Prefer to join to shared joint if possible */
+        for (b in bb) {
+            if (b.shapes.at(0).filter.collisionGroup&(Config.cgSharedJoint|Config.cgAnchor) != 0) {
+                startBody = b;
+            } else {
+                otherBody = b;
+            }
+        }
+        if (startBody == null) {
+            startBody = otherBody;
         }
     }
     var deck : Body = null;
@@ -300,50 +242,58 @@ class BridgeProto extends Template
             return;
         }
         
-        var body : Body = new Body();
-        var center = spawn1.add(spawn2).mul(0.5);
-        var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length, 7.0) );
-        
-        beamshape.filter.collisionGroup = 1;
-            beamshape.filter.collisionMask = ~1;
-
-        body.shapes.add(beamshape);
-        body.rotation = spawn2.sub(spawn1).angle;
-        body.space = space;
-        top.insertEnt(entfactory.createBeamEnt(center, body, "bob") );
-
-        var j : PivotJoint = new PivotJoint(startBody, body, startBody.worldPointToLocal(spawn1), body.worldPointToLocal(spawn1) );
-        j.stiff = true;
-        j.space = space;
-        var ejoint = entfactory.createJointEnt(Vec2.get(), [ j ] );
-        top.insertEnt(ejoint);
-        
-        var bb : BodyList = space.bodiesUnderPoint(spawn2, null, null);
+        var bb : BodyList = space.bodiesUnderPoint(spawn2);
         var endBody : Body = null;
+        var otherBody : Body = null;
         
-        bb.foreach(function(b) {
-            if (b != startBody && b != body) {
+        for (b in bb) {
+            if ((b.shapes.at(0).filter.collisionGroup&Config.cgSharedJoint) != 0) {
                 endBody = b;
-                return;
+            } else {
+                otherBody = b;
             }
-        });
-         
-        if (endBody != null) {
-            var j : PivotJoint = new PivotJoint(endBody, body, endBody.worldPointToLocal(spawn2), body.worldPointToLocal(spawn2) );
-            j.stiff = true;
-            j.space = space;
-            var ejoint = entfactory.createJointEnt(Vec2.get(), [ j ] );
-            top.insertEnt(ejoint);
         }
         
-        if (deck == null) {
-            deck = body;
-        }
-        //
-        //var c = CmpBeam.splitBeam(body);
-        //c.space = space;
-        //body.space = null;
-        
+        var lastBody : Body = null;
+        switch(material) {
+        case BuildMat.STEELBEAM:
+            var body : Body = new Body();
+            var center = spawn1.add(spawn2).mul(0.5);
+            var mat = Config.matIron;
+            var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, mat.height) );
+            
+            beamshape.filter.collisionGroup = Config.cgBeam;
+            beamshape.filter.collisionMask = Config.cmBeam;
+
+            body.shapes.add(beamshape);
+            body.rotation = spawn2.sub(spawn1).angle;
+            body.mass = 1;
+            body.space = space;
+            top.insertEnt(entfactory.createBeamEnt(center, body, "bob") );
+            
+            var ejoint = entfactory.createJointEnt(spawn1, startBody, body, JointType.ANCHOR);
+            top.insertEnt(ejoint);        
+            lastBody = body;
+            if (endBody == null) {
+                var e = entfactory.createSharedJoint(spawn2, [lastBody, otherBody]);
+                top.insertEnt(e);
+                endBody = e.getCmp(CmpSharedJoint).body;
+            } else {
+                if (endBody.userData.sharedJoint != null) {
+                    endBody.userData.sharedJoint.addBody(body);
+                }
+            }
+        case BuildMat.CABLE:
+            var cableMat : CableMat = { segWidth : 30, segHeight : 15, maxTension : 1e8 };
+            var cab = top.createEnt();
+            var end = endBody == null ? otherBody : endBody;
+            var cmp = new CmpCable(startBody, end, spawn1, spawn2, cableMat);
+            cab.attachCmp(cmp);
+            top.insertEnt(cab);
+            lastBody = cmp.compound.bodies.at(0);
+        default:
+        } 
+
         spawn1 = null;
         spawn2 = null;
         startBody = null;
@@ -356,11 +306,25 @@ class BridgeProto extends Template
            var sys = top.getSystem(SysPhysics);
            sys.paused = !sys.paused;
         } else if (ev.keyCode == Keyboard.C && deck != null) {
-            ca = CmpBeam.splitBeam(deck);
+            ca = CmpMultiBeam.createFromBeam(deck, SplitType.MOMENT, cast(deck.constraints.at(0) ) );
             ca.space = space;
-            deck.space = null;
+            //deck.space = null;
         } else if (ev.keyCode == Keyboard.RIGHT) {
             //ca.rotate(Vec2.get(), 0.01);
+        } else if (ev.keyCode == Keyboard.D) {
+            var bbb = space.bodiesUnderPoint(Vec2.weak(mouseX, mouseY), new InteractionFilter(Config.cgSensor) );
+            trace("t" + bbb.length);
+            bbb.foreach(function(b) {
+                trace(b.constraints.length);
+                for (i in 0...b.constraints.length) {
+                    b.constraints.at(i).space = null;
+                }
+                b.space = null;
+            });
+        } else if (ev.keyCode == Keyboard.NUMBER_1) {
+            material = BuildMat.STEELBEAM;
+        } else if (ev.keyCode == Keyboard.NUMBER_2) {
+            material = BuildMat.CABLE;
         }
     }
 }

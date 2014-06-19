@@ -26,13 +26,27 @@ class System
         }
     }
     
-    public function onEntChanged(e : Entity)
+    public function inserted(e : Entity) : Void { }
+    public function removed(e : Entity) : Void { }
+
+    
+    public function onInserted(e : Entity)
     {
         if (isValidEnt(e) ) {
+            inserted(e);
             ents.add(e);
-        } else if (ents.has(e) ) {
-            ents.remove(e);
         }
+    }
+    
+    
+    public function onRemoved(e : Entity)
+    {
+        removed(e);
+    }
+    
+    public function onEntChanged(e : Entity)
+    {
+        
     }
     
     public function isValidEnt(e : Entity) : Bool

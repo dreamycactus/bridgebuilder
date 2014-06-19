@@ -40,9 +40,25 @@ class Entity
         cmps.remove(key);
     }
     
-    @:generic public function hasCmp<T:Cmp>(t:Class<T>) : Bool
+    public function hasCmp<T:Cmp>(t:Class<T>) : Bool
     {
         return cmps.exists( Type.getClassName(t) );
+    }
+    
+    @:generic public function getCmpsHavingAncestor<T:Cmp>(ancestor:Class<T>) : Array<T>
+    {
+        var at = Cmp.cmpManager.getCmp(cast(ancestor));
+        if (at == null) {
+            trace("No such cmp ancestor " + ancestor);
+            return null;
+        }
+        var res = new Array<T>();
+        for (c in cmps) {
+            if (Cmp.cmpManager.getCmp( Type.getClass(c) ).isDecendantOf(at) ) {
+                res.push(cast(c));
+            }
+        }
+        return res;
     }
     
     public function update() 

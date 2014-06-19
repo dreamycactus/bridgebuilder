@@ -3,8 +3,9 @@ import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import haxe.ds.IntMap;
 import nape.geom.Vec2;
+import openfl.Lib;
 
-class CmpGrid implements Cmp
+class CmpGrid extends Cmp
 {
     public var cellSize : Int;
     public var cellCounts : Array<Int>;
@@ -12,18 +13,17 @@ class CmpGrid implements Cmp
     
     public var columns = 30;
     public var rows = 20;
-    public var entity : Entity;
     
     public function new(cellSize : Int, cellCounts : Array<Int>=null ) 
     {
+        super();
         this.cellSize = cellSize;
         this.cellCounts = cellCounts;
         this.ents = new IntMap();
-    }
-    
-    public function update() : Void 
-    {
         
+        columns = Std.int(Lib.current.stage.stageWidth / cellSize) + 1;
+        rows = Std.int(Lib.current.stage.stageHeight / cellSize) + 1;
+        trace("hel" + columns + rows);
     }
     
     public function insertAt(x : Int, y : Int, e : Entity)

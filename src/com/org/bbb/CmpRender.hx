@@ -6,7 +6,14 @@ package com.org.bbb;
  */
 import com.org.mes.Cmp;
 
-interface CmpRender
+class CmpRender extends Cmp
 {
-    public function render(dt : Float) : Void;
+    public function new()
+    {
+        super();
+    }
+    public function render(dt : Float) : Void
+    {
+        
+    }
 }

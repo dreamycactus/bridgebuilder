@@ -4,8 +4,19 @@ package com.org.mes;
  * @author 
  */
 
-interface Cmp 
+class Cmp
 {
+    public static var cmpManager : CmpManager;
     public var entity : Entity;
-    public function update() : Void;
+    public var type : CmpType;
+    
+    public function new()
+    {
+        type = cmpManager.registerCmp(Type.getClass(this) );
+    }
+    
+    public function update() : Void
+    {
+        
+    }
 }

@@ -2,7 +2,7 @@ package com.org.bbb;
 import com.org.mes.Entity;
 import com.org.mes.System;
 import com.org.mes.Top;
-import flash.Lib;
+import openfl.Lib;
 import nape.geom.Vec2;
 import nape.space.Broadphase;
 import nape.space.Space;
@@ -49,9 +49,25 @@ class SysPhysics extends System
         }
     }
     
+    override public function inserted(e : Entity)
+    {
+        var res = e.getCmpsHavingAncestor(CmpPhys);
+        for (c in res) {
+            c.space = space;
+        }
+    }
+    
+    override public function removed(e : Entity)
+    {
+        var res = e.getCmpsHavingAncestor(CmpPhys);
+        for (c in res) {
+            c.space = null;
+        }
+    }
+    
     override public function isValidEnt(e : Entity) : Bool
     {
-        if (e.hasCmp(CmpBeam) ) {
+        if (e.getCmpsHavingAncestor(CmpPhys).length > 0 ) {
             return true;
         }
         return false;

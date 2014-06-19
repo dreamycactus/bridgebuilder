@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.Config.JointType;
 import com.org.mes.Entity;
 import com.org.mes.Top;
 import nape.constraint.Constraint;
@@ -14,6 +15,8 @@ import nape.phys.Compound;
 class EntFactory
 {
     public static var inst : EntFactory; // Forgive me..
+    public var top : Top;
+
     
     public function new(top : Top) 
     {
@@ -24,10 +27,18 @@ class EntFactory
         this.top = top;
     }
     
-    public function createJointEnt(pos : Vec2, body1 : Body, body2 : Body, name : String = "") : Entity
+    public function createJointEnt(pos : Vec2, body1 : Body, body2 : Body, type : JointType
+                                 , compound : Compound = null, name : String = "") : Entity
     {
         var e = top.createEnt(name);
-        var cmpmj = new CmpMultiJoint(joints);
+        var joint : PivotJoint = Config.pivotJoint(type);
+        joint.body1 = body1;
+        joint.body2 = body2;
+        joint.anchor1 = body1.worldPointToLocal(pos);
+        joint.anchor2 = body2.worldPointToLocal(pos);
+        joint.compound = compound;
+        
+        var cmpmj = new CmpJoint(joint, type);
         var cmptrans = new CmpTransform(pos);
         
         e.attachCmp(cmpmj);
@@ -50,13 +61,48 @@ class EntFactory
         e.attachCmp(cmptrans);
         
         return e;
-    }
+    }    
     
     public function createMultiBeamEnt(pos : Vec2, compound : Compound, name : String = "") : Entity
     {
         var e = top.createEnt(name);
         var cmpbeam = new CmpMultiBeam(compound);
-        var cmptrans = new CmpTransform(pos);
+        
+        e.attachCmp(cmpbeam);
+        
+        return e;
+    }
+    
+    public function createSharedJoint(pos : Vec2, bodies : Array<Body>, name : String = "") : Entity
+    {
+        var e = top.createEnt(name);
+        var sj = new CmpSharedJoint(pos, bodies);
+        
+        e.attachCmp(sj);
+        
+        return e;
+    }
+    
+    public function createDoubleJoint(pos1 : Vec2, pos2 : Vec2, body1 : Body, body2 : Body,
+                                      compound : Compound, name : String = "") : Entity
+    {
+        var e = top.createEnt(name);
+        var joint : PivotJoint = Config.pivotJoint(JointType.MULTISTIFF);
+        joint.body1 = body1;
+        joint.body2 = body2;
+        joint.anchor1 = body1.worldPointToLocal(pos1);
+        joint.anchor2 = body2.worldPointToLocal(pos1);
+        joint.compound = compound;
+        
+        var joint2 : PivotJoint = Config.pivotJoint(JointType.MULTIELASTIC);
+        joint2.body1 = body1;
+        joint2.body2 = body2;
+        joint2.anchor1 = body1.worldPointToLocal(pos2);
+        joint2.anchor2 = body2.worldPointToLocal(pos2);
+        joint2.compound = compound;
+        
+        var cmpbeam = new CmpMultiBeam(compound);
+        var cmptrans = new CmpTransform(pos1);
         
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
@@ -76,5 +122,4 @@ class EntFactory
         return e;
     }
     
-    var top : Top;
 }

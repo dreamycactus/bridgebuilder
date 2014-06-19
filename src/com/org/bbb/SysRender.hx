@@ -51,16 +51,11 @@ class SysRender extends System
         return false;
     }
     
-    override public function onEntChanged(e : Entity)
+    override public function inserted(e : Entity)
     {
-        if (isValidEnt(e) ) {
-            ents.add(e);
-            var cmp = e.getCmp(CmpRenderGrid);
-            cmpsToRender.push(cmp);
-            stage.addChild(cmp.gridSprite);
-        } else if (ents.has(e) ) {
-            ents.remove(e);
-        }
+        var cmp = e.getCmp(CmpRenderGrid);
+        cmpsToRender.push(cmp);
+        stage.addChild(cmp.gridSprite);
     }
     
     var debug:Debug;

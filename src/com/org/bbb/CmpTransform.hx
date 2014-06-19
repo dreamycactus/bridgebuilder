@@ -7,18 +7,14 @@ import nape.geom.Vec2;
  * ...
  * @author 
  */
-class CmpTransform implements Cmp
+class CmpTransform extends Cmp
 {
-    public var entity : Entity;
     public var pos(default,default) : Vec2;
     
     public function new(pos : Vec2 = null) 
     {
+        super();
         this.pos = pos;
     }
-    
-    public function update()
-    {
-        
-    }
+
 }

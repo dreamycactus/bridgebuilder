@@ -3,30 +3,31 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="BridgeBuilderBob" package="com.org.bbb.BridgeBuilderBob" version="1.0.0" company="" />
+	<meta title="BridgeBuilderBob" package="com.org.bbb" version="1.0.0" company="" />
 	
 	<!-- output -->
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
     <app swf-version="11.5" /> 
 	
-	<window background="#000000" fps="60" />
-    <window width="800" height="600"/>
-	<window width="0" height="0" unless="flash" />
-	<window orientation="landscape" vsync="false" antialiasing="0" if="cpp" />
-	
+	<window background="#000000" />
+    <window width="0" height="0" />
+    <window width="1300" height="600" if="flash" />
+	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->
 	<source path="src" />
 	<haxelib name="openfl" />
-	<haxelib name="actuate" />
 	<haxelib name="nape" />
-    
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
 	<assets path="assets/img" rename="img" />
+    
     <android target-sdk-version="19" />
-	
-	<!-- optimize output 
-	<haxeflag name="-dce full" /> -->
+	<android install-location="internalOnly" />
+	<!-- optimize output -->
+    <haxeflag name="-dce std" />
+
+    <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
+    <haxedef name="NAPE_NO_INLINE" if="neko" />
 	
 </project>

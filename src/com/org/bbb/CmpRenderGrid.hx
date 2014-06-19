@@ -1,43 +1,42 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
-import flash.display.Sprite;
+import openfl.display.Sprite;
+import openfl.Lib;
 
 /**
  * ...
  * @author 
  */
-class CmpRenderGrid implements Cmp implements CmpRender
+class CmpRenderGrid extends CmpRender
 {
-    public var entity : Entity;
     public var gridSprite : Sprite;
 
     public function new(cmpGrid : CmpGrid) 
     {
+        super();
         this.gridSprite = new Sprite();
         this.cmpGrid = cmpGrid;
     }
-   
-    public function update() : Void
-    {
-    }
-    public function render(dt : Float) : Void
+
+    override public function render(dt : Float) : Void
     {
         var g = gridSprite.graphics;
         var cellsz = cmpGrid.cellSize;
+        var w = Lib.current.stage.stageWidth;
+        var h = Lib.current.stage.stageHeight;
         
         g.clear();
         g.lineStyle(lineThickness, lineColour, lineAlpha);
         g.beginFill(0xFFFFFF, 1.0);
-        
         for (x in 0...cmpGrid.columns) {
             g.moveTo(x * cellsz, 0);
-            g.lineTo(x * cellsz, 600);      
+            g.lineTo(x * cellsz, h);      
         }
         
         for (y in 0...cmpGrid.rows) {
             g.moveTo(0, y * cellsz);
-            g.lineTo(800, y * cellsz);
+            g.lineTo(w, y * cellsz);
         }
         g.endFill();
     }

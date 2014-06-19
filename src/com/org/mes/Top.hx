@@ -10,16 +10,22 @@ class Top
     var sys : List<System>;
     var entIndex : Int;
     
+    var cmpManager : CmpManager;
+    
     public var prevTime : Int;
     public var dt : Float;
+    public var entCount(get_entCount, null) : Int;
     
     public function new() 
     {
         ents = new List();
         sys = new List();
         entIndex = 0;
+        
+        cmpManager = new CmpManager();
+        Cmp.cmpManager = cmpManager;
     }
-    
+        
     public function init()
     {
         for (s in sys) {
@@ -39,13 +45,17 @@ class Top
     {
         ents.add(e);
         for (s in sys) {
-            s.onEntChanged(e);
+            s.onInserted(e);
         }
     }
     
     public function deleteEnt(e : Entity)
     {
+        for (s in sys) {
+            s.onRemoved(e);
+        }
         ents.remove(e);
+        
     }
     
     public function onEntChanged(e : Entity)
@@ -88,4 +98,6 @@ class Top
         }
     }
     
+    public function get_entCount() { return ents.length; }
+
 }

@@ -18,7 +18,6 @@ import nape.phys.BodyType;
 import nape.shape.Polygon;
 import nape.geom.Vec2;
 import nape.util.Debug;
-import nape.util.BitmapDebug;
 import nape.util.ShapeDebug;
 import nape.constraint.PivotJoint;
 
@@ -57,7 +56,8 @@ class Template extends Sprite {
     var params:TemplateParams;
     var useHand:Bool;
     function new(params:TemplateParams) {
-        baseMemory = System.totalMemoryNumber;
+        //baseMemory = System.totalMemoryNumber;
+        baseMemory = 800;
         super();
 
         if (params.velIterations != null) {
@@ -91,7 +91,7 @@ class Template extends Sprite {
                 hand = new PivotJoint(space.world, null, Vec2.weak(), Vec2.weak());
                 hand.active = false;
                 hand.stiff = false;
-                hand.maxForce = 1e6;
+                hand.maxForce = 1e7;
                 hand.space = space;
                 stage.addEventListener(MouseEvent.MOUSE_UP, handMouseUp);
             }
@@ -104,7 +104,7 @@ class Template extends Sprite {
         }
 
         if (params.shapeDebug == null || !params.shapeDebug) {
-            debug = new BitmapDebug(stage.stageWidth, stage.stageHeight, stage.color);
+            debug = new ShapeDebug(stage.stageWidth, stage.stageHeight, stage.color);
         }
         else {
             debug = new ShapeDebug(stage.stageWidth, stage.stageHeight, stage.color);
@@ -119,11 +119,11 @@ class Template extends Sprite {
         addEventListener(Event.ENTER_FRAME, enterFrame);
 
         init();
-
+//
         textField = new TextField();
         textField.defaultTextFormat = new TextFormat("Arial", null, 0xffffff);
         textField.selectable = false;
-        textField.width = 1280;
+        textField.width = 600;
         textField.height = 800;
         addChild(textField);
     }
@@ -164,7 +164,7 @@ class Template extends Sprite {
                     hand.space = space;
                 }
             }
-            System.pauseForGCIfCollectionImminent(0);
+            //System.pauseForGCIfCollectionImminent(0);
             init();
         }
     }
@@ -221,67 +221,60 @@ class Template extends Sprite {
         var fps = (1000 / deltaTime);
         smoothFps = (smoothFps == -1 ? fps : (smoothFps * 0.97) + (fps * 0.03));
         var text = "fps: " + ((""+smoothFps).substr(0, 5)) + "\n" +
-                   "mem: " + ((""+(System.totalMemoryNumber - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
+                   "mem: " + ((""+(800 - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
         if (space != null) {
             text += "\n\n"+
                     "velocity-iterations: " + velIterations + "\n" +
                     "position-iterations: " + posIterations + "\n";
         }
-        textField.text = text;
+        //textField.text = text;
 
         if (hand != null && hand.active) {
             hand.anchor1.setxy(mouseX, mouseY);
+            trace(mouseX, mouseY);
             hand.body2.angularVel *= 0.9;
         }
 
         var noStepsNeeded = false;
 
-        if (variableStep) {
-            if (deltaTime > (1000 / 30)) {
-                deltaTime = (1000 / 30);
-            }
-
-            debug.clear();
-
-            preStep(deltaTime * 0.001);
-            if (space != null) {
-                space.step(deltaTime * 0.001, velIterations, posIterations);
-            }
-            prevTime = curTime;
-        }
-        else {
-            var stepSize = (1000 / stage.frameRate);
-            stepSize = 1000/60;
-            var steps = Math.round(deltaTime / stepSize);
-
-            var delta = Math.round(deltaTime - (steps * stepSize));
-            prevTime = (curTime - delta);
-            if (steps > 4) {
-                steps = 4;
-            }
-            deltaTime = stepSize * steps;
-
-            if (steps == 0) {
-                noStepsNeeded = true;
-            }
-            else {
-                debug.clear();
-            }
-
-            while (steps-- > 0) {
-                preStep(stepSize * 0.001);
-                if (space != null) {
-                    space.step(stepSize * 0.001, velIterations, posIterations);
-                }
-            }
-        }
-
-        if (space != null && !customDraw && !noStepsNeeded) {
-            debug.draw(space);
-        }
-        if (!noStepsNeeded) {
-            postUpdate(deltaTime * 0.001);
-            debug.flush();
-        }
+        //if (variableStep) {
+            //if (deltaTime > (1000 / 60)) {
+                //deltaTime = (1000 / 60);
+            //}
+//
+            //debug.clear();
+//
+            //preStep(deltaTime * 0.001);
+            //if (space != null) {
+                //space.step(deltaTime * 0.001, velIterations, posIterations);
+            //}
+            //prevTime = curTime;
+        //}
+        //else {
+            //var stepSize = (1000 / stage.frameRate);
+            //stepSize = 1000/60;
+            //var steps = Math.round(deltaTime / stepSize);
+//
+            //var delta = Math.round(deltaTime - (steps * stepSize));
+            //prevTime = (curTime - delta);
+            //if (steps > 4) {
+                //steps = 4;
+            //}
+            //deltaTime = stepSize * steps;
+//
+            //if (steps == 0) {
+                //noStepsNeeded = true;
+            //}
+            //else {
+                //debug.clear();
+            //}
+//
+            //while (steps-- > 0) {
+                //preStep(stepSize * 0.001);
+                //if (space != null) {
+                    //space.step(stepSize * 0.001, velIterations, posIterations);
+                //}
+            //}
+        //}
     }
 }

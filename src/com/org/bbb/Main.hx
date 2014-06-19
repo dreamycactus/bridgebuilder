@@ -3,7 +3,8 @@ package com.org.bbb;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.Lib;
-import nape.constraint.Constraint;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
 
 import nape.geom.Vec2;
 
@@ -23,7 +24,9 @@ class Main extends Sprite
 	{
 		if (inited) return;
 		inited = true;
-        
+        Lib.current.stage.align = StageAlign.TOP_LEFT;
+        Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		
         addChild(new BridgeProto() );
 
 		// (your code here)
@@ -57,8 +60,8 @@ class Main extends Sprite
 	public static function main() 
 	{
 		// static entry point
-		Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		Lib.current.stage.scaleMode = flash.display.StageScaleMode.EXACT_FIT;
-		Lib.current.addChild(new Main());
+		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
+		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
+        Lib.current.addChild(new Main());
 	}
 }
