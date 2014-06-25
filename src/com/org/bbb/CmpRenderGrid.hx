@@ -1,6 +1,7 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import flash.display.Stage;
 import openfl.display.Sprite;
 import openfl.Lib;
 
@@ -10,18 +11,17 @@ import openfl.Lib;
  */
 class CmpRenderGrid extends CmpRender
 {
-    public var gridSprite : Sprite;
 
-    public function new(cmpGrid : CmpGrid) 
+    public function new(stage : Stage, cmpGrid : CmpGrid) 
     {
-        super();
-        this.gridSprite = new Sprite();
+        super(stage);
         this.cmpGrid = cmpGrid;
+        this.sprite = new Sprite();
     }
 
     override public function render(dt : Float) : Void
     {
-        var g = gridSprite.graphics;
+        var g = sprite.graphics;
         var cellsz = cmpGrid.cellSize;
         var w = Lib.current.stage.stageWidth;
         var h = Lib.current.stage.stageHeight;

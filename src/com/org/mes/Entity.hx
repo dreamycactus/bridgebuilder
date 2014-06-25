@@ -50,7 +50,7 @@ class Entity
         var at = Cmp.cmpManager.getCmp(cast(ancestor));
         if (at == null) {
             trace("No such cmp ancestor " + ancestor);
-            return null;
+            return new Array();
         }
         var res = new Array<T>();
         for (c in cmps) {

@@ -93,9 +93,9 @@ class Template extends Sprite {
                 hand.stiff = false;
                 hand.maxForce = 1e6;
                 hand.space = space;
-                stage.addEventListener(MouseEvent.MOUSE_UP, handMouseUp);
+                //stage.addEventListener(MouseEvent.MOUSE_UP, handMouseUp);
             }
-            stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+            //stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
         }
 
         if (params.noReset == null || !params.noReset) {

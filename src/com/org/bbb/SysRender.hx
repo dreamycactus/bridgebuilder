@@ -44,7 +44,7 @@ class SysRender extends System
     override public function isValidEnt(e : Entity) : Bool
     {
         
-        if ( e.hasCmp(CmpRenderGrid) ) {
+        if ( e.getCmpsHavingAncestor(CmpRender).length > 0 ) {
             var c : CmpRenderGrid;
             return true;
         }
@@ -53,9 +53,11 @@ class SysRender extends System
     
     override public function inserted(e : Entity)
     {
-        var cmp = e.getCmp(CmpRenderGrid);
-        cmpsToRender.push(cmp);
-        stage.addChild(cmp.gridSprite);
+        var res = e.getCmpsHavingAncestor(CmpRender);
+        for (c in res) {
+            cmpsToRender.push(c);
+            c.addToScene();
+        }
     }
     
     var debug:Debug;

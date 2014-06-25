@@ -25,8 +25,8 @@ class CmpBeam extends CmpPhys
     public var body : Body;
     public var material : BeamMat;
     public var jointOffsets : Array<Vec2>;
-    public var stressMHp : Float = 300;
-    public var stressSHp : Float = 300;
+    public var stressCHp : Float = 300;
+    public var stressTHp : Float = 300;
     
     public function new(body : Body, material : BeamMat=null) 
     {
@@ -56,29 +56,27 @@ class CmpBeam extends CmpPhys
         
         var stress = body.worldVectorToLocal(body.calculateBeamStress().xy(true));
 
-        if (Math.abs(stress.y) > 3000 ) {
-            stressSHp -= dt;
+        if (Math.abs(stress.x) > 3000 ) {
+            stressTHp -= dt;
         }
         
-        //if (Math.abs(stress.x)
-        
-        var splitType = SplitType.MOMENT;
+        var splitType = SplitType.TENSION;
         var isBreaking = false;
         
-        if (stressMHp > 0 && stressMHp < 150) {
-            stressMHp += dt * 3;
-            splitType = SplitType.MOMENT;
+        if (stressTHp > 0 && stressTHp < 300) {
+            stressTHp += dt * 3;
+            splitType = SplitType.TENSION;
             isBreaking = true;
-        } else if (stressSHp > 0 && stressSHp < 150) {
-            stressSHp += dt * 3;
+        } else if (stressCHp > 0 && stressCHp < 300) {
+            stressCHp += dt * 3;
             splitType = SplitType.SHEAR;
             isBreaking = true;
         }
         
-        //if (isBreaking) {
-            //entity.top.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
-            //entity.top.deleteEnt(entity);
-        //}
+        if (isBreaking) {
+            entity.top.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
+            entity.top.deleteEnt(entity);
+        }
         
     }
     

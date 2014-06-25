@@ -7,6 +7,7 @@ import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.Compound;
+import openfl.Lib;
 
 /**
  * ...
@@ -114,7 +115,7 @@ class EntFactory
     {
         var e = top.createEnt("grid");
         var cmpGrid = new CmpGrid(cellsz, cellCount);
-        var cmpRenderGrid = new CmpRenderGrid(cmpGrid);
+        var cmpRenderGrid = new CmpRenderGrid(Lib.current.stage, cmpGrid);
         
         e.attachCmp(cmpGrid);
         e.attachCmp(cmpRenderGrid);

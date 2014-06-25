@@ -47,7 +47,7 @@ class CmpMultiBeam extends CmpPhys
         var combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight * 0.7) );
         
         switch (splitType) {
-        case MOMENT:
+        case TENSION:
             comtop = beamBody.localPointToWorld(Vec2.weak(0, -rectheight*0.7) );
             combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight*0.7) );
         case SHEAR:
