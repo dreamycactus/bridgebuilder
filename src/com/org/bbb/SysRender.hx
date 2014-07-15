@@ -7,6 +7,11 @@ import flash.Lib;
 import nape.space.Space;
 import nape.util.Debug;
 import nape.util.ShapeDebug;
+import openfl.display.DisplayObject;
+import openfl.display.Sprite;
+import openfl.geom.Rectangle;
+import ru.stablex.ui.UIBuilder;
+import ru.stablex.ui.widgets.Text;
 using Lambda;
 /**
  * ...
@@ -16,7 +21,7 @@ class SysRender extends System
 {
     public var space : Space;
     public var stage : Stage;
-    
+    public var camera : Camera;
     public function new(top : Top, space : Space, stage : Stage)
     {
         super(top);
@@ -27,11 +32,25 @@ class SysRender extends System
         this.debug.drawConstraints = true;
         this.stage = stage;
         
-        stage.addChild(debug.display);
+        camera = new Camera();
+        camera.mainSprite.addChild(debug.display);
+        stage.addChild(camera.mainSprite);
+    }
+     
+    public function addChild(c : DisplayObject)
+    {
+        camera.mainSprite.addChild(c);
+    }
+    
+    override public function init()
+    {
+        
     }
     
     override public function update()
     {
+        space = top.getSystem(SysPhysics).space;
+        camera.update();
         debug.clear();
         debug.draw(space);
         debug.flush();
@@ -56,7 +75,7 @@ class SysRender extends System
         var res = e.getCmpsHavingAncestor(CmpRender);
         for (c in res) {
             cmpsToRender.push(c);
-            c.addToScene();
+            c.addToScene(camera.mainSprite);
         }
     }
     

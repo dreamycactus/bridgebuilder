@@ -6,6 +6,7 @@ package com.org.bbb;
  */
 import com.org.mes.Cmp;
 import flash.display.Stage;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 
 class CmpRender extends Cmp
@@ -23,14 +24,14 @@ class CmpRender extends Cmp
         
     }
     
-    public function addToScene() : Void 
+    public function addToScene(scene : DisplayObjectContainer) : Void 
     {
         if (sprite == null) { return; }
-        stage.addChild(sprite);
+        scene.addChild(sprite);
     }
-    public function removeFromScene() : Void 
+    public function removeFromScene(scene : DisplayObjectContainer) : Void 
     {
         if (sprite == null) { return; }
-        stage.removeChild(sprite);
+        scene.removeChild(sprite);
     }
 }

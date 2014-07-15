@@ -15,12 +15,15 @@
 	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->
 	<source path="src" />
+	<haxelib name="stablexui" />
+	<haxelib name="actuate" />
 	<haxelib name="openfl" />
 	<haxelib name="nape" />
 	
 	<!-- assets -->
 	<icon path="assets/openfl.svg" />
 	<assets path="assets/img" rename="img" />
+	<assets path="data/levels" rename="levels" />
     
     <android target-sdk-version="19" />
 	<android install-location="internalOnly" />
@@ -29,5 +32,4 @@
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
     <haxedef name="NAPE_NO_INLINE" if="neko" />
-	
 </project>

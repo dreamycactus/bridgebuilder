@@ -1,6 +1,6 @@
 package com.org.bbb;
 import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.Config.BeamMat;
+import com.org.bbb.Config.BuildMat;
 import com.org.bbb.Config.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
@@ -23,12 +23,13 @@ using com.org.bbb.Util;
 class CmpBeam extends CmpPhys
 {
     public var body : Body;
-    public var material : BeamMat;
+    public var material : BuildMat;
     public var jointOffsets : Array<Vec2>;
-    public var stressCHp : Float = 300;
-    public var stressTHp : Float = 300;
+    public var stressCHp : Float = Config.stressHp;
+    public var stressTHp : Float = Config.stressHp;
+    public var stressSHp : Float = Config.stressHp;
     
-    public function new(body : Body, material : BeamMat=null) 
+    public function new(body : Body, material : BuildMat=null) 
     {
         super();
         this.body = body;
@@ -55,27 +56,43 @@ class CmpBeam extends CmpPhys
         }
         
         var stress = body.worldVectorToLocal(body.calculateBeamStress().xy(true));
-
-        if (Math.abs(stress.x) > 3000 ) {
-            stressTHp -= dt;
-        }
-        
         var splitType = SplitType.TENSION;
         var isBreaking = false;
+
+        if (stress.x > 2000) { // Tension
+            stressTHp -= dt;
+            if (stressTHp < 0) {
+                isBreaking = true;
+                splitType = SplitType.TENSION;
+            }
+        } else if (stressTHp < Config.stressHp) {
+            stressTHp += dt;
+        }
         
-        if (stressTHp > 0 && stressTHp < 300) {
-            stressTHp += dt * 3;
-            splitType = SplitType.TENSION;
-            isBreaking = true;
-        } else if (stressCHp > 0 && stressCHp < 300) {
-            stressCHp += dt * 3;
-            splitType = SplitType.SHEAR;
-            isBreaking = true;
+        if (stress.x < -2000) {
+            stressCHp -= dt;
+            if (stressCHp < 0) {
+                isBreaking = true;
+                splitType = SplitType.COMPRESSION;
+            }
+        } else if (stressTHp < Config.stressHp) {
+            stressCHp += dt;
+        }
+        
+        if (Math.abs(stress.y) > 1000) {
+            stressSHp -= dt;
+            if (stressCHp < 0) {
+                isBreaking = true;
+                splitType = SplitType.SHEAR;
+            }
+        } else if (stressSHp < Config.stressHp) {
+            stressSHp += dt;
         }
         
         if (isBreaking) {
             entity.top.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
             entity.top.deleteEnt(entity);
+            trace(splitType);
         }
         
     }

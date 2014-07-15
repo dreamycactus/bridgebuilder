@@ -55,7 +55,7 @@ class CmpType
             throw "Recursive cmpType" + cmpType + ", " + this;
         }
         if (isAncestorOf(cmpType) ) {
-            trace(this + "is already ancestor of " + cmpType);
+            trace(this + " is already ancestor of " + cmpType);
             return;
         }
         children.push(cmpType);

@@ -11,6 +11,9 @@ import nape.phys.Compound;
 import nape.shape.Polygon;
 import nape.shape.Shape;
 import nape.space.Space;
+import openfl.display.Sprite;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 
 using Lambda;
 
@@ -155,5 +158,15 @@ class Util
             loc.y *= -1;
         }
         return Vec3.get(loc.x, loc.y, totalStressAtCenter.z);
+    }
+    
+    public static function zoomInAtPoint(sprite : Sprite, x : Float, y : Float , scale : Float)
+    {
+        var mat = new Matrix();
+        mat.translate(-x,-y);
+        mat.scale(scale,scale);
+        mat.translate(x,y);
+        sprite.transform.matrix=mat;
+        
     }
 }

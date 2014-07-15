@@ -3,6 +3,7 @@ package com.org.bbb;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.Lib;
+import haxe.macro.Compiler;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 

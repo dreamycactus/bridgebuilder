@@ -1,5 +1,6 @@
 package com.org.bbb;
-import com.org.bbb.Config.BeamMat;
+import com.org.bbb.Config.BuildMat;
+import com.org.bbb.Config.MatType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.callbacks.InteractionCallback;
@@ -31,7 +32,7 @@ enum SplitType
 class CmpMultiBeam extends CmpPhys
 {
     public var compound : Compound;
-    public var material : BeamMat;
+    public var material : BuildMat;
     public var consDecayRate : Float = 3e4;
     
     public static function createFromBeam(beamBody : Body, splitType : SplitType, brokenCons : PivotJoint) : Compound
@@ -48,8 +49,13 @@ class CmpMultiBeam extends CmpPhys
         
         switch (splitType) {
         case TENSION:
-            comtop = beamBody.localPointToWorld(Vec2.weak(0, -rectheight*0.7) );
-            combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight*0.7) );
+            var off = Util.randomf( -30, 30);
+            combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
+            comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
+        case COMPRESSION:
+            var off = Util.randomf( -30, 30);
+            comtop = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
+            combot = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
         case SHEAR:
             var breakingPoint = Vec2.get();
             //var breakingPoint = brokenCons.body1.localPointToWorld(brokenCons.anchor1);
@@ -57,7 +63,6 @@ class CmpMultiBeam extends CmpPhys
             combot = breakingPoint.add(  beamBody.localVectorToWorld( Vec2.weak(0, rectheight * 0.7) )  );
           default:
         }
-        trace("com" + comtop + combot + "id" + beamBody.id);
         var ray : Ray = Ray.fromSegment(comtop, combot);
         var rayresult = space.rayMultiCast(ray, false, new InteractionFilter(Config.cgSensor) );
         if (rayresult.length != 0) {
@@ -69,11 +74,10 @@ class CmpMultiBeam extends CmpPhys
             }
             var geomPoly = new GeomPoly(polyToCut.worldVerts);
             var segmentPolys = geomPoly.cut(comtop, combot, true, true);
-            trace(comtop + "," + combot);
             var prev : Body = null;
             segmentPolys.foreach(function (s){
                 var body : Body = new Body();
-                body.shapes.push(new Polygon(s, Material.steel()));                                                                                                                                                    
+                body.shapes.push(new Polygon(s, Material.steel()));
                 body.shapes.at(0).filter.collisionGroup = beamBody.shapes.at(0).filter.collisionGroup;
                 body.shapes.at(0).filter.collisionMask = beamBody.shapes.at(0).filter.collisionMask;
                 body.compound = c;
@@ -86,6 +90,7 @@ class CmpMultiBeam extends CmpPhys
             });
             
         } else {
+            trace(comtop + "," + combot);
             throw "No ray intersection detected when trying to break beam";
         }  
         /* If there are any existing joints attached to a beam, move them to new multi-beam */
@@ -144,7 +149,7 @@ class CmpMultiBeam extends CmpPhys
         return null;
     }
     
-    public function new(compound : Compound, material : BeamMat=null) 
+    public function new(compound : Compound, material : BuildMat=null) 
     {
         super();
         this.compound = compound;
@@ -164,9 +169,9 @@ class CmpMultiBeam extends CmpPhys
         var dt = entity.top.dt;
 
         for (c in constraints) {
-            //var f = c.frequency - 0.0045 * dt;
-            //f = Util.clampf(f, 0.4, 1000);
-            //c.frequency = f;
+            var f = c.frequency - 0.0045 * dt;
+            f = Util.clampf(f, 0.4, 1000);
+            c.frequency = f;
             
             if (c.maxForce > consDecayRate * dt) {
                 c.maxForce -= consDecayRate * dt;

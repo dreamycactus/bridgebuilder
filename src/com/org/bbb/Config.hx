@@ -5,21 +5,16 @@ import nape.shape.Circle;
 import nape.shape.Polygon;
 
 
-typedef BeamMat =
+typedef BuildMat =
 {
-    var contactBreak : Float;
+    var matType : MatType;
     var momentBreak  : Float;
     var tensionBreak : Float;
     var compressionBreak :Float;
     var height : Float;
 }
-typedef CableMat =
-{
-    var maxTension : Float;
-    var segHeight : Float;
-    var segWidth : Float;
-}
-enum BuildMat { STEELBEAM; CABLE; }
+
+enum MatType { BEAM; CABLE; DECK; }
 
 enum JointType
 {
@@ -34,22 +29,32 @@ enum JointType
 
 class Config
 {
+    public static var camDragCoeff = 10;
+    
+    public static var cableSegWidth = 30;
+    public static var stressHp = 500;
+    
     public static var cgBeam        = 1;
     public static var cgDeck        = 2;
     public static var cgBeamSplit   = 4;
     public static var cgSharedJoint = 8;
     public static var cgAnchor      = 16;
     public static var cgLoad        = 32;
+    public static var cgCable        = 64;
     public static var cgSensor      = 2048;
     
     public static var sharedJointRadius = 15;
     
-    public static var cmSharedJoint = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor);
-    public static var cmBeam = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor);
-    public static var cmDeck = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor);
+    public static var cmSharedJoint = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor|cgLoad);
+    public static var cmBeam = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor|cgLoad);
+    public static var cmDeck = ~(cgBeam | cgDeck | cgSharedJoint | cgAnchor);
+    public static var cmCable = cgSensor;
+    public static var cmAnchor = ~(Config.cgBeam | Config.cgBeamSplit | Config.cgDeck);
     
-    public static var matIron = { contactBreak : 0, momentBreak : 0, tensionBreak : 0, height : 24 };
-    
+    public static var matSteel : BuildMat = { matType : MatType.BEAM, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 24 };
+    public static var matSteelDeck : BuildMat = { matType : MatType.DECK, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 24 };
+    public static var matCable : BuildMat = { matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15 };
+
     public static function pivotJoint(type : JointType) : PivotJoint
     {
         var ret : PivotJoint = new PivotJoint(null, null, Vec2.weak(), Vec2.weak() );
@@ -80,10 +85,9 @@ class Config
             ret.maxForce = 1e9;
             
         case ANCHOR:
+            ret.frequency = 20;
+            ret.damping = 10;
             //ret.stiff = true;
-            //ret.damping = 1e7;
-            //ret.frequency = 200;
-            //
             //ret.breakUnderError = true;
             //ret.maxError = 1e9;
             //ret.breakUnderForce = true;

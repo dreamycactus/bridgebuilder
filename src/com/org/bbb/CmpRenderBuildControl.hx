@@ -1,7 +1,9 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
 import flash.display.Stage;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
+import ru.stablex.ui.UIBuilder;
 
 /**
  * ...
@@ -9,13 +11,21 @@ import openfl.display.Sprite;
  */
 class CmpRenderBuildControl extends CmpRender
 {
-    var buildControl : CmpBuildControl;
+    var buildControl : CmpControlBuild;
+    var scene:DisplayObjectContainer;
     
-    public function new(stage : Stage, buildControl : CmpBuildControl) 
+    public function new(stage : Stage, buildControl : CmpControlBuild) 
     {
         super(stage);
         this.buildControl = buildControl;
         this.sprite = new Sprite();
+        
+                UIBuilder.regClass('CmpControlBuild');
+        UIBuilder.regClass('Config');
+        
+        stage.addChild(UIBuilder.buildFn('data/test.xml')( {
+            controlBuild : buildControl
+        }) );
     }
     
     
@@ -33,5 +43,16 @@ class CmpRenderBuildControl extends CmpRender
             g.lineTo(stage.mouseX, stage.mouseY);    
             g.endFill();
         }
+    }
+    
+    override public function addToScene(scene : DisplayObjectContainer) : Void 
+    {
+        super.addToScene(scene);
+    }
+    
+    override public function removeFromScene(scene : DisplayObjectContainer) : Void 
+    {
+        super.removeFromScene(scene);
+        
     }
 }

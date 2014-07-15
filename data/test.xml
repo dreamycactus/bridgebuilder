@@ -1,0 +1,17 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+
+<Widget id="'root'" w="800" h="600">
+    <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
+    <!-- Buttons -->
+    <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matCable;"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Deck'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = true;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = false;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
+                 on-click="@controlBuild.togglePause();" />
+    </VBox>
+   
+</Widget>

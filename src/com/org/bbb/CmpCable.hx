@@ -1,7 +1,8 @@
 package com.org.bbb;
-import com.org.bbb.Config.CableMat;
+import com.org.bbb.Config.BuildMat;
 import com.org.bbb.Config.JointType;
 import com.org.mes.Cmp;
+import nape.constraint.DistanceJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.Compound;
@@ -16,9 +17,9 @@ import nape.space.Space;
 class CmpCable extends CmpPhys
 {
     public var compound : Compound;
-    var cableMat : CableMat;
+    var cableMat : BuildMat;
     
-    public function new(body1 : Body, body2 : Body, pos1 : Vec2, pos2 : Vec2, cableMat : CableMat) 
+    public function new(body1 : Body, body2 : Body, pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
     {
         super();
         this.cableMat = cableMat;
@@ -26,19 +27,19 @@ class CmpCable extends CmpPhys
         var dir = pos2.sub(pos1);
         var len = dir.length;
         dir = dir.normalise();
-        var segCount = Math.round(len / cableMat.segWidth);
-        this.compound = new Compound();
+        var segCount = Math.round(len / Config.cableSegWidth);
         var prev : Body = null;
-        var segWidth = cableMat.segWidth * 0.99;
+        var segWidth = Config.cableSegWidth;
         var offset = segWidth * 0.5;
         var startPos = pos1.add(dir.mul(segWidth * 0.5) );
         
+        var l = pos1.sub(pos2).length;
+        compound = new Compound();
         for (i in 0...segCount) {
             var body = new Body();
-            var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.segHeight, true) );
-            shape.filter.collisionGroup = Config.cgBeam;
-            shape.filter.collisionMask = Config.cmBeam;
-            
+            var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.height, true) );
+            shape.filter.collisionGroup = Config.cgCable;
+            shape.filter.collisionMask = Config.cmCable;
             body.shapes.add(shape);
             body.position = startPos.add(dir.mul(i * segWidth)); 
             body.rotation = dir.angle;
@@ -46,8 +47,8 @@ class CmpCable extends CmpPhys
             
             if (prev != null) {
                 var pj = Config.pivotJoint(JointType.MULTISTIFF);
-                pj.maxForce = 1e4;
-                pj.breakUnderForce = false;
+                pj.maxForce = cableMat.tensionBreak;
+                pj.breakUnderForce = true;
                 pj.body1 = prev;
                 pj.body2 = body;
                 pj.anchor1 = Vec2.weak(offset, 0);
@@ -76,7 +77,6 @@ class CmpCable extends CmpPhys
     
     override public function update() : Void
     {
-     
     }
     override function set_space(space : Space) : Space
     {

@@ -7,6 +7,8 @@ import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.Compound;
+import nape.phys.Material;
+import nape.shape.Polygon;
 import openfl.Lib;
 
 /**
@@ -119,6 +121,24 @@ class EntFactory
         
         e.attachCmp(cmpGrid);
         e.attachCmp(cmpRenderGrid);
+        
+        return e;
+    }
+    
+    public function createCar(pos :Vec2) : Entity
+    {
+        var e = top.createEnt();
+        var b = new Body(null, pos);
+        var s = new Polygon(Polygon.box(50, 20, true) );
+        s.material = new Material(0.0, 0.0, 0.1, 20);
+        s.filter.collisionGroup = Config.cgLoad;
+        b.shapes.add(s);
+        
+        var cm = new CmpMover(b);
+        var cc = new CmpControlMoverCar(cm);
+        
+        e.attachCmp(cm);
+        e.attachCmp(cc);
         
         return e;
     }

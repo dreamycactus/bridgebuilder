@@ -2,6 +2,8 @@ package com.org.bbb;
 import com.org.mes.Entity;
 import com.org.mes.System;
 import com.org.mes.Top;
+import flash.display.Stage;
+import ru.stablex.ui.UIBuilder;
 
 /**
  * ...
@@ -9,10 +11,17 @@ import com.org.mes.Top;
  */
 class SysControl extends System
 {
-
-    public function new(top : Top)
+    public var stage : Stage;
+    public function new(top : Top, stage : Stage)
     {
         super(top);
+        this.stage = stage;
+    }
+    
+    override public function init()
+    {
+        UIBuilder.init();
+        trace("hello");
     }
     
     override public function inserted(e : Entity)

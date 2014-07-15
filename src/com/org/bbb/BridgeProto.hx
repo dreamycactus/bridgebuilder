@@ -2,13 +2,19 @@ package com.org.bbb;
 
 import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.CableMat;
 import com.org.bbb.Config.JointType;
 import com.org.bbb.Template.TemplateParams;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.Top;
+import haxe.macro.Context;
+import haxe.Resource;
 import nape.dynamics.InteractionFilter;
+import openfl.Assets;
+import openfl.events.Event;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import ru.stablex.ui.UIBuilder;
 //import com.org.mes.Entity;
 //import com.org.mes.Top;
 import openfl.display.Sprite;
@@ -33,90 +39,88 @@ using com.org.bbb.Util;
  * ...
  * @author 
  */
-class BridgeProto extends Template
+class BridgeProto extends Sprite
 {
     var joint : Constraint;
     var top : Top;
     var entfactory : EntFactory;
     var grid : Entity;
     var cmpGrid : CmpGrid;
+    var cmpControl : CmpControlBuild;
     var uiSprite : Sprite;
-    
+    var textField : TextField;
+    var prevTime : Float = 0;
+    var inited = false;
     public function new() 
     {
-        super( {
-            generator: generateObject,
-            gravity: Vec2.get(0, 600),
-            noReset: true
-        });
+        super();
         top = new Top();
         entfactory = new EntFactory(top);
         grid = entfactory.createGridEnt(40, [4]);
         cmpGrid = grid.getCmp(CmpGrid);
         uiSprite = new Sprite();
+        
+        textField = new TextField();
+        textField.defaultTextFormat = new TextFormat("Arial", null, 0xffffff);
+        textField.selectable = false;
+        textField.width = 1280;
+        textField.height = 800;
+        addChild(textField);
+        
+        addEventListener(Event.ENTER_FRAME, enterFrame);
+        addEventListener(Event.ADDED_TO_STAGE, init);
+        
     }
         var prev : Body = null;
     
         var found : PivotJoint;
         var found1 : PivotJoint;
         
-    override function init() 
+    function init(_) 
     {
-        super.init();
-        stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, mouseDown);
-        stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, handMouseUp);
-        top.insertSystem(new SysPhysics(top, this.space) );
-        top.insertSystem(new SysRender(top, this.space, Lib.current.stage) );
-        top.insertSystem(new SysControl(top) );
+        if (inited) return;
+        
+        inited = true;
+        top.insertSystem(new SysPhysics(top, null) );
+        top.insertSystem(new SysRender(top, null, Lib.current.stage) );
+        top.insertSystem(new SysControl(top, Lib.current.stage) );
         top.init();
         
         Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderBuildControl]);
         Cmp.cmpManager.registerCmp(CmpPhys);
-        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpSharedJoint, CmpCable]);
+        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpSharedJoint, CmpCable, CmpMover]);
         Cmp.cmpManager.registerCmp(CmpControl);
-        Cmp.cmpManager.makeParentChild(CmpControl, [CmpBuildControl]);
+        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlMoverCar]);
         
         trace(Cmp.cmpManager.printAll() );
         top.insertEnt(grid);
         
-        var w = Lib.current.stage.stageWidth;
-        var h = Lib.current.stage.stageHeight;   
+        var level = top.createEnt();
+        var cl = CmpLevel.genFromXml("levels/b01.xml");
+        level.attachCmp(cl);
+        top.insertEnt(level);
         
-        var floor = new Body(BodyType.STATIC);
-        floor.shapes.add(new Polygon(Polygon.rect(50, (h - 50), (w - 100), 1)));
-        floor.space = space;
-        
-        var floor1 = new Body(BodyType.STATIC);
-        floor1.shapes.add(new Polygon(Polygon.box(100, 500)));
-        floor1.position.setxy(150, 350);
-        floor1.shapes.at(0).filter.collisionGroup = Config.cgAnchor;
-        floor1.shapes.at(0).filter.collisionMask = ~(Config.cgBeam|Config.cgBeamSplit|Config.cgDeck);
-        floor1.space = space;
-        
-        var floor2 = new Body(BodyType.STATIC);
-        floor2.shapes.add(  new Polygon( Polygon.box(100, 500) )  );
-        floor2.position.setxy(1000, 350);
-        floor2.shapes.at(0).filter.collisionGroup = Config.cgAnchor;
-        floor2.shapes.at(0).filter.collisionMask = ~(Config.cgBeam|Config.cgBeamSplit|Config.cgDeck);
-        floor2.space = space;
+        top.getSystem(SysPhysics).space = cl.space;
         
         var controllerEnt = top.createEnt();
-        var cc = new CmpBuildControl(Lib.current.stage, space, cmpGrid);
-        controllerEnt.attachCmp(cc);
-        controllerEnt.attachCmp(new CmpRenderBuildControl(Lib.current.stage, cc) );
+        cmpControl = new CmpControlBuild(Lib.current.stage, cl.space, cmpGrid);
+        controllerEnt.attachCmp(cmpControl);
+        controllerEnt.attachCmp(new CmpRenderBuildControl(Lib.current.stage, cmpControl) );
         top.insertEnt(controllerEnt);
+
+        var rootWidget = UIBuilder.get('root');
+        rootWidget.w = stage.stageWidth;
+        rootWidget.h = stage.stageWidth;
     }
     
-    override function enterFrame(_) {
+    function enterFrame(_) {
         var curTime = Lib.getTimer();
         var deltaTime:Float = (curTime - prevTime);
         prevTime = curTime;
         
-        super.enterFrame(_);
         top.update(deltaTime);
-        hand.anchor1.setxy(mouseX, mouseY);
-        var bodies = space.bodies;
-        
+        var space = top.getSystem(SysPhysics).space;
+
         var mp = Vec2.get(mouseX, mouseY);
         var bb : BodyList = space.bodiesUnderPoint(mp, null, null);
         
@@ -125,10 +129,10 @@ class BridgeProto extends Template
         } else {
             textField.text = "";
         }
-
+        
         var cp = cmpGrid.getClosestCell(mp);
         textField.text += "\n" + cp +"\n" + mp +"\n";
-        
+        textField.text += cmpControl.isDeck + "\n";
     }
     
     function printBodyForces(body : Body)
@@ -143,59 +147,6 @@ class BridgeProto extends Template
             str += "constraint impulse: " + c.bodyImpulse(body).Vec3ToIntString() +"\n";
         }
         return str;
-    }
-    
-    function generateObject(pos:Vec2) {
-        var body = new Body();
-        body.position = pos;
- 
-        body.shapes.add(new Polygon(Polygon.box(20, 20)));
-        body.shapes.at(0).filter.collisionGroup = Config.cgLoad;
-            
-        body.mass = 50;
-        body.space = space;
-    }
-    
-    override function mouseDown(_) {
-        var mp = Vec2.get(mouseX, mouseY);
-        var cp = cmpGrid.getClosestCell(mp);
-        super.mouseDown(_);
-        if (useHand) {
-            // re-use the same list each time.
-            bodyList = space.bodiesUnderPoint(mp, new InteractionFilter(Config.cgSensor), bodyList);
-            trace(bodyList.length);
-            for (body in bodyList) {
-                if (body.isDynamic()) {
-                    hand.body2 = body;
-                    hand.anchor2 = body.worldPointToLocal(mp, true);
-                    hand.active = true;
-                    break;
-                }
-            }
-
-            if (bodyList.empty()) {
-                if (params.generator != null) {
-                    params.generator(mp);
-                }
-            }
-            else if (!hand.active) {
-                if (params.staticClick != null) {
-                    params.staticClick(mp);
-                }
-            }
-
-            // recycle nodes.
-            bodyList.clear();
-        }
-        else {
-            if (params.generator != null) {
-                params.generator(mp);
-            }
-        }
-    }
-
-    override function handMouseUp(_) {
-        hand.active = false;
     }
 
 }

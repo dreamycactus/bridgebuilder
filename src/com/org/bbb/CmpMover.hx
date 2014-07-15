@@ -1,6 +1,7 @@
 package com.org.bbb;
 import nape.geom.Vec2;
 import nape.phys.Body;
+import nape.space.Space;
 
 /**
  * ...
