@@ -59,7 +59,7 @@ class CmpBeam extends CmpPhys
         var splitType = SplitType.TENSION;
         var isBreaking = false;
 
-        if (stress.x > 2000) { // Tension
+        if (stress.x > 1000) { // Tension
             stressTHp -= dt;
             if (stressTHp < 0) {
                 isBreaking = true;
@@ -69,7 +69,7 @@ class CmpBeam extends CmpPhys
             stressTHp += dt;
         }
         
-        if (stress.x < -2000) {
+        if (stress.x < -1000) {
             stressCHp -= dt;
             if (stressCHp < 0) {
                 isBreaking = true;

@@ -16,8 +16,8 @@ class CmpControlCar extends CmpControl
     
     override public function update() : Void
     {
-        if (mover.body.velocity.x < 100)
-        mover.moveHor(2.0);
+        //if (mover.body.velocity.x < 100)
+        //mover.moveHor(2.0);
     }
     
 }

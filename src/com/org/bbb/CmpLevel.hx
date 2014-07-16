@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.mes.Cmp;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
+import nape.geom.Vec3;
 import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.shape.Polygon;
@@ -12,9 +13,18 @@ import openfl.Assets;
  * ...
  * @author 
  */
+
+typedef Spawn =
+{
+   var pos : Vec2;
+   var dir : Float;
+   var type : Int;
+};
+
 class CmpLevel extends Cmp
 {
     public var space : Space;
+    public var spawns : Array<Spawn>;
     
     public function new() 
     {
@@ -49,6 +59,12 @@ class CmpLevel extends Cmp
                 anc.shapes.at(0).filter.collisionMask = Config.cmAnchor;
                 anc.position.setxy(x, y);
                 anc.space = level.space;
+            case "spawn":
+                var x = Std.parseFloat(e.get("x"));
+                var y = Std.parseFloat(e.get("y"));
+                var dir = Std.parseInt(e.get("dir"));
+            default:
+                 
             }
         }
         return level;

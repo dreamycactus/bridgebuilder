@@ -1,6 +1,7 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
  <root>
-     <anchor x ="150" y ="350" w="100" h="500" />
-     <anchor x ="1000" y ="350" w="100" h="500" />
+     <spawn x="150" y="320" dir="1" />
+     <anchor x ="150" y ="370" w="100" h="500" />
+     <anchor x ="1000" y ="370" w="100" h="500" />
  </root>

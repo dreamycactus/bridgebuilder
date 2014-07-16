@@ -9,7 +9,7 @@
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Deck'" autoHeight="true" 
                  on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = true;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
-                 on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = false;" />
+                 on-click="@controlBuild.material = $Config.matSteelBeam; @controlBuild.isDeck = false;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
                  on-click="@controlBuild.togglePause();" />
     </VBox>

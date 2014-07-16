@@ -26,9 +26,21 @@ class Camera
     public function update()
     {
         mainSprite.zoomInAtPoint(pos.x , pos.y, zoom);
+        mainSprite.x = pos.x;
+        mainSprite.y = pos.y;
         
-        mainSprite.transform.matrix.tx = pos.x;
-        mainSprite.transform.matrix.ty = pos.y;
+        //mainSprite.transform.matrix.tx = pos.x;
+        //mainSprite.transform.matrix.ty = pos.y;
+    }
+    
+    public function screenToWorld(v : Vec2) : Vec2
+    {
+        return v.mul(1.0 / zoom, true).sub(pos);
+    }
+    
+    public function worldToScreen(v : Vec2) : Vec2
+    {
+        return v.mul(zoom).add(pos);
     }
     
     

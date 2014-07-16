@@ -22,6 +22,7 @@ class SysRender extends System
     public var space : Space;
     public var stage : Stage;
     public var camera : Camera;
+    
     public function new(top : Top, space : Space, stage : Stage)
     {
         super(top);
@@ -51,6 +52,7 @@ class SysRender extends System
     {
         space = top.getSystem(SysPhysics).space;
         camera.update();
+        
         debug.clear();
         debug.draw(space);
         debug.flush();

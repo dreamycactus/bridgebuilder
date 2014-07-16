@@ -6,6 +6,7 @@ import com.org.bbb.Config.JointType;
 import com.org.bbb.Template.TemplateParams;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import com.org.mes.MESState;
 import com.org.mes.Top;
 import haxe.macro.Context;
 import haxe.Resource;
@@ -80,17 +81,18 @@ class BridgeProto extends Sprite
     {
         if (inited) return;
         
+        var s1 = new MESState(top);
+        s1.sys = [new SysPhysics(top, null), new SysRender(top, null, Lib.current.stage), new SysControl(top, Lib.current.stage)];
+        
         inited = true;
-        top.insertSystem(new SysPhysics(top, null) );
-        top.insertSystem(new SysRender(top, null, Lib.current.stage) );
-        top.insertSystem(new SysControl(top, Lib.current.stage) );
-        top.init();
+        top.changeState(s1);
         
         Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderBuildControl]);
         Cmp.cmpManager.registerCmp(CmpPhys);
-        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpSharedJoint, CmpCable, CmpMover]);
+        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam,
+                                                CmpSharedJoint, CmpCable, CmpMover, CmpMoverCar]);
         Cmp.cmpManager.registerCmp(CmpControl);
-        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlMoverCar]);
+        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlCar]);
         
         trace(Cmp.cmpManager.printAll() );
         top.insertEnt(grid);

@@ -29,7 +29,7 @@ enum JointType
 
 class Config
 {
-    public static var camDragCoeff = 10;
+    public static var camDragCoeff = 3;
     
     public static var cableSegWidth = 30;
     public static var stressHp = 500;
@@ -51,8 +51,8 @@ class Config
     public static var cmCable = cgSensor;
     public static var cmAnchor = ~(Config.cgBeam | Config.cgBeamSplit | Config.cgDeck);
     
-    public static var matSteel : BuildMat = { matType : MatType.BEAM, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 24 };
-    public static var matSteelDeck : BuildMat = { matType : MatType.DECK, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 24 };
+    public static var matSteelBeam : BuildMat = { matType : MatType.BEAM, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 20 };
+    public static var matSteelDeck : BuildMat = { matType : MatType.DECK, momentBreak : 0, tensionBreak : 0, compressionBreak : -1, height : 40 };
     public static var matCable : BuildMat = { matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15 };
 
     public static function pivotJoint(type : JointType) : PivotJoint

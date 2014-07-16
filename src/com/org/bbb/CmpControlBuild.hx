@@ -39,17 +39,19 @@ class CmpControlBuild extends CmpControl
 
     var startBody : Body;
     
-    var camera : Camera;
+    public var camera : Camera;
     var camBody : Body;
     var prevMouse : Vec2;
+    var level : CmpLevel;
 
-    public function new(stage : Stage, space : Space, cmpGrid : CmpGrid) 
+    public function new(stage : Stage, space : Space, cmpGrid : CmpGrid, level : CmpLevel) 
     {
         super();
         this.stage = stage;
         this.space = space;
         this.cmpGrid = cmpGrid;
         this.camBody = new Body();
+        this.level = level;
     }
     
     override public function update() : Void
@@ -58,6 +60,7 @@ class CmpControlBuild extends CmpControl
             dragCamera();
         }
         prevMouse = Vec2.get(stage.mouseX, stage.mouseY);
+        //trace(camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY)));
     }
     
     override public function init()
@@ -67,7 +70,7 @@ class CmpControlBuild extends CmpControl
         stage.addEventListener(MouseEvent.MOUSE_UP, beamUp);
         stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
         
-        material = Config.matSteel;
+        material = Config.matSteelDeck;
         this.camBody.inertia = 50; 
 
         camera = top.getSystem(SysRender).camera;
@@ -82,12 +85,14 @@ class CmpControlBuild extends CmpControl
     
     function beamDown(_) 
     {
-        var mp = Vec2.get(stage.mouseX, stage.mouseY);
+        var mp = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
         var cp = cmpGrid.getClosestCell(mp);
         spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
+        trace(spawn1 + ", " + cp + ", " + mp);
         var bb : BodyList = space.bodiesUnderPoint(spawn1, new InteractionFilter(Config.cgSensor) ) ;
         var otherBody : Body = null;
         startBody = null;
+        isDrawing = true;
         /* Prefer to join to shared joint if possible */
         for (b in bb) {
             if (b.shapes.at(0).filter.collisionGroup&(Config.cgSharedJoint|Config.cgAnchor) != 0) {
@@ -108,7 +113,7 @@ class CmpControlBuild extends CmpControl
     
     function beamUp(_)
     {
-         var mp = Vec2.get(stage.mouseX, stage.mouseY);
+        var mp = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
         var cp1 = cmpGrid.getClosestCell(spawn1);
         var cp2 = cmpGrid.getClosestCell(mp);
         spawn2 = cmpGrid.getCellPos(cp2.x, cp2.y);
@@ -136,17 +141,8 @@ class CmpControlBuild extends CmpControl
         case MatType.DECK:
             var body : Body = new Body();
             var center = spawn1.add(spawn2).mul(0.5);
-            var mat = Config.matSteel;
-            var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, mat.height) );
-            
-            if (isDeck) {
-                beamshape.filter.collisionGroup = Config.cgDeck;
-                beamshape.filter.collisionMask = Config.cmDeck;
-            } else {
-                beamshape.filter.collisionGroup = Config.cgBeam;
-                beamshape.filter.collisionMask = Config.cmBeam;
-            }
-            
+            var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, material.height), 
+                                        null, new InteractionFilter(Config.cgDeck, Config.cmDeck) );
             body.shapes.add(beamshape);
             body.rotation = spawn2.sub(spawn1).angle;
             body.mass = 1;
@@ -166,27 +162,28 @@ class CmpControlBuild extends CmpControl
                 }
             }
         case MatType.BEAM:
+            var body : Body = new Body();
             var center = spawn1.add(spawn2).mul(0.5);
-            var mat = Config.matSteel;
-            var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, mat.height) );
+            var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, material.height), 
+                                        null, new InteractionFilter(Config.cgBeam, Config.cmBeam) );
+            body.shapes.add(beamshape);
+            body.rotation = spawn2.sub(spawn1).angle;
+            body.mass = 1;
+            body.space = space;
+            top.insertEnt(EntFactory.inst.createBeamEnt(center, body, "bob") );
             
-            if (isDeck) {
-                beamshape.filter.collisionGroup = Config.cgDeck;
-                beamshape.filter.collisionMask = Config.cmDeck;
-            } else {
-                beamshape.filter.collisionGroup = Config.cgBeam;
-                beamshape.filter.collisionMask = Config.cmBeam;
-            }
-
+            var ejoint = EntFactory.inst.createJointEnt(spawn1, startBody, body, JointType.ANCHOR);
+            top.insertEnt(ejoint);        
+            lastBody = body;
             if (endBody == null) {
-                var e = EntFactory.inst.createSharedJoint(spawn2, [otherBody]);
+                var e = EntFactory.inst.createSharedJoint(spawn2, [lastBody, otherBody]);
                 top.insertEnt(e);
                 endBody = e.getCmp(CmpSharedJoint).body;
+            } else {
+                if (endBody.userData.sharedJoint != null) {
+                    endBody.userData.sharedJoint.addBody(body);
+                }
             }
-            var cab = top.createEnt();
-            var cmp = new CmpCable(startBody, endBody, spawn1, spawn2, Config.matCable);
-            cab.attachCmp(cmp);
-            top.insertEnt(cab);
         case MatType.CABLE:
             var cab = top.createEnt();
             var end = endBody == null ? otherBody : endBody;
@@ -206,7 +203,7 @@ class CmpControlBuild extends CmpControl
     
     function dragCamera()
     {
-        camera.pos = camera.pos.add(prevMouse.sub(Vec2.weak(stage.mouseX, stage.mouseY) ).mul(Config.camDragCoeff) );
+        camera.pos = camera.pos.sub(prevMouse.sub(Vec2.weak(stage.mouseX, stage.mouseY) ).mul(Config.camDragCoeff) );
     }
     
     public function togglePause()
@@ -221,7 +218,7 @@ class CmpControlBuild extends CmpControl
         if (ev.keyCode == Keyboard.SPACE ) {
             togglePause();
         } else if (ev.keyCode == Keyboard.C) {
-            top.insertEnt( EntFactory.inst.createCar( Vec2.get(stage.mouseX, stage.mouseY) ) );
+            top.insertEnt( EntFactory.inst.createCar( camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY))) );
         } else if (ev.keyCode == Keyboard.D) {
             var bbb = space.bodiesUnderPoint(Vec2.weak(stage.mouseX, stage.mouseY), new InteractionFilter(Config.cgSensor) );
             bbb.foreach(function(b) {
@@ -231,7 +228,7 @@ class CmpControlBuild extends CmpControl
                 b.space = null;
             });
         } else if (ev.keyCode == Keyboard.NUMBER_1) {
-            material = Config.matSteel;
+            material = Config.matSteelBeam;
         } else if (ev.keyCode == Keyboard.NUMBER_2) {
             material = Config.matCable;
         } else if (ev.keyCode == Keyboard.NUMBER_0) {

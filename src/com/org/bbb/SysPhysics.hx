@@ -25,7 +25,6 @@ typedef PhysicsParams = {
 class SysPhysics extends System
 {
     public var space : Space;
-    public var paused : Bool;
     
     public function new(top : Top, space : Space) 
     {

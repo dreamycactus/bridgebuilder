@@ -50,12 +50,12 @@ class CmpMultiBeam extends CmpPhys
         switch (splitType) {
         case TENSION:
             var off = Util.randomf( -30, 30);
-            combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
+            comtop = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
             comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
         case COMPRESSION:
             var off = Util.randomf( -30, 30);
-            comtop = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
-            combot = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
+            combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
+            comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
         case SHEAR:
             var breakingPoint = Vec2.get();
             //var breakingPoint = brokenCons.body1.localPointToWorld(brokenCons.anchor1);

@@ -7,6 +7,7 @@ using Lambda;
 class System
 {
     public var top : Top;
+    public var paused : Bool = false;
     
     public function new(top : Top) 
     {
@@ -19,11 +20,10 @@ class System
         
     }
     
+    public function deinit() : Void { }
+    
     public function update()
     {
-        for (e in ents) {
-            e.update();
-        }
     }
     
     public function inserted(e : Entity) : Void { }

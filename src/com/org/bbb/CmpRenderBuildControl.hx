@@ -1,6 +1,7 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
 import flash.display.Stage;
+import nape.geom.Vec2;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import ru.stablex.ui.UIBuilder;
@@ -38,9 +39,10 @@ class CmpRenderBuildControl extends CmpRender
 
             g.lineStyle(1, 0xFF0088, 0.6);
             g.beginFill(0xFFFFFF, 1.0);
-        
+            
+            var pp = buildControl.camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY) );
             g.moveTo(buildControl.spawn1.x, buildControl.spawn1.y);
-            g.lineTo(stage.mouseX, stage.mouseY);    
+            g.lineTo(pp.x, pp.y);    
             g.endFill();
         }
     }

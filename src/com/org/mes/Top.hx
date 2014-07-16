@@ -6,6 +6,7 @@ package com.org.mes;
  */
 class Top
 {
+    var state : MESState;
     var ents : List<Entity>;
     var sys : List<System>;
     var entIndex : Int;
@@ -15,6 +16,9 @@ class Top
     public var prevTime : Int;
     public var dt : Float;
     public var entCount(get_entCount, null) : Int;
+    
+    public var transitioning : Bool = false;
+    public var transition : Transition;
     
     public function new() 
     {
@@ -26,11 +30,20 @@ class Top
         Cmp.cmpManager = cmpManager;
     }
         
-    public function init()
+    public function changeState(newState : MESState, trans : Transition=null)
     {
-        for (s in sys) {
-            s.init();
+        transitioning = true;
+        this.transition = trans;
+        
+        if (trans == null) {
+            transitioning = false;
+            if (state != null) {
+                state.deinit();
+            }
+            state = newState;
         }
+        
+        newState.init();
     }
     
     public function createEnt(name : String = "") : Entity
@@ -74,6 +87,11 @@ class Top
         }
     }
     
+    public function removeSystem(s : System)
+    {
+        sys.remove(s);
+    }
+    
     public function getSystem<T>(t:Class<T>) : T
     {
         for (s in sys) {
@@ -95,6 +113,16 @@ class Top
         
         for (e in ents) {
             e.update();
+        }
+        
+        if (transitioning && transition != null) {
+            transition.update(dt);
+            if (transition.isDone) {
+                transitioning = false;
+                transition = null;
+                transition.oldState.deinit();
+                state = transition.newState;
+            }
         }
     }
     
