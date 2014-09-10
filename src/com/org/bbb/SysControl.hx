@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.mes.Entity;
+import com.org.mes.MESState;
 import com.org.mes.System;
 import com.org.mes.Top;
 import flash.display.Stage;
@@ -12,16 +13,15 @@ import ru.stablex.ui.UIBuilder;
 class SysControl extends System
 {
     public var stage : Stage;
-    public function new(top : Top, stage : Stage)
+    public function new(state : MESState, stage : Stage)
     {
-        super(top);
+        super(state);
         this.stage = stage;
     }
     
     override public function init()
     {
-        UIBuilder.init();
-        trace("hello");
+        UIBuilder.init("data/ui/defaults.xml");
     }
     
     override public function inserted(e : Entity)
@@ -46,5 +46,31 @@ class SysControl extends System
             return true;
         }
         return false;
+    }
+    
+    override public function deinit()
+    {
+        for (e in ents) {
+            var res = e.getCmpsHavingAncestor(CmpControl);
+            for (c in res) {
+                c.deinit();
+            }
+        }
+    }
+    
+    override function set_active(a : Bool) : Bool
+    {  
+        super.set_active(a);
+        if (!a) {
+            deinit();
+        } else {
+            for (e in ents) {
+                var res = e.getCmpsHavingAncestor(CmpControl);
+                for (c in res) {
+                    c.init();
+                }
+            }
+        }
+        return a;
     }
 }

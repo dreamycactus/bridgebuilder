@@ -1,6 +1,8 @@
 package com.org.bbb;
+import com.org.bbb.Config.BuildMat;
 import com.org.bbb.Config.JointType;
 import com.org.mes.Entity;
+import com.org.mes.MESState;
 import com.org.mes.Top;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
@@ -17,23 +19,33 @@ import openfl.Lib;
  */
 class EntFactory
 {
-    public static var inst : EntFactory; // Forgive me..
+    public static var inst(get_inst, null) : EntFactory; // Forgive me..
+    static var instance : EntFactory;
     public var top : Top;
-
+    public var state : MESState;
     
-    public function new(top : Top) 
+    public function new(top : Top, state : MESState) 
     {
-        if (inst != null) {
+        if (instance != null) {
             throw "Only one...... QQ";
         }
         inst = this;
         this.top = top;
+        this.state = state;
+    }
+    
+    public static function get_inst() 
+    {
+        if (instance == null) {
+            instance = new EntFactory(null, null);
+        }
+        return inst;
     }
     
     public function createJointEnt(pos : Vec2, body1 : Body, body2 : Body, type : JointType
                                  , compound : Compound = null, name : String = "") : Entity
     {
-        var e = top.createEnt(name);
+        var e = state.createEnt(name);
         var joint : PivotJoint = Config.pivotJoint(type);
         joint.body1 = body1;
         joint.body2 = body2;
@@ -50,15 +62,16 @@ class EntFactory
         return e;
     }
     
-    public function createBeamEnt(pos : Vec2, body : Body, name : String = "") : Entity
+    public function createBeamEnt(pos : Vec2, body : Body, material : BuildMat, name : String = "") : Entity
     {
-        var e = top.createEnt(name);
-        var cmpbeam = new CmpBeam(body);
+        var e = state.createEnt("be");
+        var cmpbeam = new CmpBeam(body, material);
         var cmptrans = new CmpTransform(pos);
         
         if (pos != null) {
             body.position = pos;
         }
+        body.userData.entity = e;
         
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
@@ -68,7 +81,7 @@ class EntFactory
     
     public function createMultiBeamEnt(pos : Vec2, compound : Compound, name : String = "") : Entity
     {
-        var e = top.createEnt(name);
+        var e = state.createEnt(name);
         var cmpbeam = new CmpMultiBeam(compound);
         
         e.attachCmp(cmpbeam);
@@ -78,7 +91,7 @@ class EntFactory
     
     public function createSharedJoint(pos : Vec2, bodies : Array<Body>, name : String = "") : Entity
     {
-        var e = top.createEnt(name);
+        var e = state.createEnt("sj");
         var sj = new CmpSharedJoint(pos, bodies);
         
         e.attachCmp(sj);
@@ -89,7 +102,7 @@ class EntFactory
     public function createDoubleJoint(pos1 : Vec2, pos2 : Vec2, body1 : Body, body2 : Body,
                                       compound : Compound, name : String = "") : Entity
     {
-        var e = top.createEnt(name);
+        var e = state.createEnt(name);
         var joint : PivotJoint = Config.pivotJoint(JointType.MULTISTIFF);
         joint.body1 = body1;
         joint.body2 = body2;
@@ -113,11 +126,11 @@ class EntFactory
         return e;
     }
     
-    public function createGridEnt(cellsz : Int, cellCount : Array<Int>) : Entity
+    public function createGridEnt(w : Float, h : Float, cellsz : Int, cellCount : Array<Int>) : Entity
     {
-        var e = top.createEnt("grid");
-        var cmpGrid = new CmpGrid(cellsz, cellCount);
-        var cmpRenderGrid = new CmpRenderGrid(Lib.current.stage, cmpGrid);
+        var e = state.createEnt("grid");
+        var cmpGrid = new CmpGrid(w, h, cellsz, cellCount);
+        var cmpRenderGrid = new CmpRenderGrid(cmpGrid);
         
         e.attachCmp(cmpGrid);
         e.attachCmp(cmpRenderGrid);
@@ -125,17 +138,20 @@ class EntFactory
         return e;
     }
     
-    public function createCar(pos :Vec2) : Entity
+    public function createCar(pos :Vec2, dir : Int) : Entity
     {
-        var e = top.createEnt();
+        var e = state.createEnt();
         
         var cm = new CmpMoverCar(pos);
         var cc = new CmpControlCar(cm);
+        
+        cc.speed = Config.carSpeed * dir;
         
         e.attachCmp(cm);
         e.attachCmp(cc);
         
         return e;
     }
+    
     
 }

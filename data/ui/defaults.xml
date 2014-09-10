@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Defaults>
+    <Text>
+        <Default
+            label-filters    = "[new openfl.filters.GlowFilter(0x333333, 1, 2, 2)]"
+            format-font      = "$Assets.getFont('fonts/nokiafc22.ttf').fontName"
+            format-size      = "8"
+            label-embedFonts = "true"
+            label-selectable = "false"
+        />
+        
+    </Text>
+    <InputText>
+        <Default
+            label-filters    = "[new openfl.filters.GlowFilter(0x333333, 1, 2, 2)]"
+            format-font      = "$Assets.getFont('fonts/nokiafc22.ttf').fontName"
+            format-size      = "8"
+            label-autoSize   = "openfl.text.TextFieldAutoSize.NONE"
+            label-embedFonts = "true"
+            w           = "200"
+            label-width = "200"
+            skin:Paint-border      = "2"
+            skin:Paint-borderColor = "0xcdc4d9"
+            skin:Paint-color       = "0xFFFFFF"
+        />
+    </InputText>
+
+    <Button>
+        <Default
+            padding = "5"
+            h       = "30"
+            label-filters      = "[new openfl.filters.GlowFilter(0x333333, 1, 2, 2)]"
+            label-selectable   = "false"
+            label-mouseEnabled = "false"
+            label-embedFonts   = "true"
+            label-autoSize     = "openfl.text.TextFieldAutoSize.LEFT"
+            format-font        = "$Assets.getFont('fonts/nokiafc22.ttf').fontName"
+            format-size        = "14"
+            format-color       = "0xcdc4d9"
+            format-align       = "openfl.text.TextFormatAlign.CENTER"
+            skin:Tile-corners  = "[10]"
+        />
+    </Button>
+
+</Defaults>

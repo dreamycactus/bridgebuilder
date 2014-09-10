@@ -25,11 +25,11 @@ class CmpBeam extends CmpPhys
     public var body : Body;
     public var material : BuildMat;
     public var jointOffsets : Array<Vec2>;
-    public var stressCHp : Float = Config.stressHp;
-    public var stressTHp : Float = Config.stressHp;
-    public var stressSHp : Float = Config.stressHp;
+    public var stressCHp : Float = Config.beamStressHp;
+    public var stressTHp : Float = Config.beamStressHp;
+    public var stressSHp : Float = Config.beamStressHp;
     
-    public function new(body : Body, material : BuildMat=null) 
+    public function new(body : Body, material : BuildMat) 
     {
         super();
         this.body = body;
@@ -47,9 +47,7 @@ class CmpBeam extends CmpPhys
     
     override public function update()
     {
-        var dt = entity.top.dt;
-        var t : CmpTransform = entity.getCmp(CmpTransform);
-        t.pos = body.position;
+        var dt = entity.state.top.dt;
         
         if (body == null) {
             return;
@@ -59,39 +57,39 @@ class CmpBeam extends CmpPhys
         var splitType = SplitType.TENSION;
         var isBreaking = false;
 
-        if (stress.x > 1000) { // Tension
+        if (stress.x > material.tensionBreak) { // Tension
             stressTHp -= dt;
             if (stressTHp < 0) {
                 isBreaking = true;
                 splitType = SplitType.TENSION;
             }
-        } else if (stressTHp < Config.stressHp) {
+        } else if (stressTHp < Config.beamStressHp) {
             stressTHp += dt;
         }
         
-        if (stress.x < -1000) {
+        if (stress.x < -material.compressionBreak) {
             stressCHp -= dt;
             if (stressCHp < 0) {
                 isBreaking = true;
                 splitType = SplitType.COMPRESSION;
             }
-        } else if (stressTHp < Config.stressHp) {
+        } else if (stressTHp < Config.beamStressHp) {
             stressCHp += dt;
         }
         
-        if (Math.abs(stress.y) > 1000) {
-            stressSHp -= dt;
-            if (stressCHp < 0) {
-                isBreaking = true;
-                splitType = SplitType.SHEAR;
-            }
-        } else if (stressSHp < Config.stressHp) {
-            stressSHp += dt;
-        }
+        //if (Math.abs(stress.y) > 1000) {
+            //stressSHp -= dt;
+            //if (stressCHp < 0) {
+                //isBreaking = true;
+                //splitType = SplitType.SHEAR;
+            //}
+        //} else if (stressSHp < Config.stressHp) {
+            //stressSHp += dt;
+        //}
         
         if (isBreaking) {
-            entity.top.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
-            entity.top.deleteEnt(entity);
+            entity.state.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
+            entity.state.deleteEnt(entity);
             trace(splitType);
         }
         

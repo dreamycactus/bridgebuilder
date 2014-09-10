@@ -1,0 +1,42 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+
+<Widget w="1280" h="600">
+    <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
+    <!-- Buttons -->
+    <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matCable;"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Deck'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = true;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
+                 on-click="@controlBuild.material = $Config.matSteelBeam; @controlBuild.isDeck = false;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
+                 on-click="@controlBuild.togglePause();" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Spawn Cars'" autoHeight="true" 
+                 on-click="@controlBuild.spawn();" />
+    </VBox>
+    <HBox w="400" autoHeight="true" childPadding="10" padding="10">
+        <Text skin:Paint-color="0xFFFFFF" w="100" h="20" text="'Level W/H'"/>
+        <InputText id="'levelWidth'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
+        <InputText id="'levelHeight'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
+    </HBox>
+    <VBox w="200" left="3" top="40" autoHeight="true" childPadding="10" padding="10">
+        <InputText id="'inX'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'x'"/> 
+        <InputText id="'inY'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'y'"/> 
+        <InputText id="'inWidth'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'width'" /> 
+        <InputText id="'inHeight'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'height'"/>
+        <InputText id="'load'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'Load level in'"/>
+        <InputText id="'gen'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'xml'"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Toggle Edit'" autoHeight="true" 
+                 on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Generate XML'" autoHeight="true" 
+                 on-click="@controlBuild.generateLevelXML();"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Load XML'" autoHeight="true" 
+                 on-click="@controlBuild.loadLevelFromXml();"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Create box'" autoHeight="true" 
+                 on-click="@controlBuild.createBox();"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Create Spawn'" autoHeight="true" 
+                 on-click="@controlBuild.createSpawn();"/>
+    </VBox>
+   
+</Widget>

@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import flash.display.Stage;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.Lib;
 
@@ -11,20 +12,18 @@ import openfl.Lib;
  */
 class CmpRenderGrid extends CmpRender
 {
-
-    public function new(stage : Stage, cmpGrid : CmpGrid) 
+    public function new(cmpGrid : CmpGrid) 
     {
-        super(stage);
+        super();
         this.cmpGrid = cmpGrid;
-        this.sprite = new Sprite();
     }
 
     override public function render(dt : Float) : Void
     {
         var g = sprite.graphics;
         var cellsz = cmpGrid.cellSize;
-        var w = Lib.current.stage.stageWidth;
-        var h = Lib.current.stage.stageHeight;
+        var w = cmpGrid.width;
+        var h = cmpGrid.height;
         
         g.clear();
         g.lineStyle(lineThickness, lineColour, lineAlpha);
@@ -45,6 +44,5 @@ class CmpRenderGrid extends CmpRender
     var lineColour : Int = 0xFFFFFF;
     var lineAlpha : Float = 0.3;
     var lineThickness : Float = 0.5;
-    
 
 }

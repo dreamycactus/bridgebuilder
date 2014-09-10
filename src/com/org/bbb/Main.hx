@@ -1,5 +1,6 @@
 package com.org.bbb;
 
+import com.org.mes.Top;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.Lib;
@@ -12,7 +13,8 @@ import nape.geom.Vec2;
 class Main extends Sprite 
 {
 	var inited:Bool;
-
+    var prevTime : Float = 0;
+    var top : Top;
 	/* ENTRY POINT */
 	
 	function resize(e) 
@@ -27,17 +29,26 @@ class Main extends Sprite
 		inited = true;
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
-		
-        addChild(new BridgeProto() );
+        
+        this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 
-		// (your code here)
-		
-		// Stage:
-		// stage.stageWidth x stage.stageHeight @ stage.dpiScale
-		
-		// Assets:
-		// nme.Assets.getBitmapData("img/assetname.jpg");
+		Config.init();
+        top = new Top();
+        EntFactory.inst.top = top;
+        var bp = Config.createLevelState(top, "levels/b1.xml");
+        //var bp = new StateMainMenu(top);
+    
+        top.changeState(bp, false);
 	}
+    
+    function enterFrame(_)
+    {
+        var curTime = Lib.getTimer();
+        var deltaTime:Float = (curTime - prevTime);
+        prevTime = curTime;
+        
+        top.update(deltaTime);
+    }
 
 	/* SETUP */
 

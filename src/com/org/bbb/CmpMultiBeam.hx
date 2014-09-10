@@ -16,6 +16,8 @@ import nape.phys.Compound;
 import nape.phys.Material;
 import nape.shape.Polygon;
 import nape.space.Space;
+import openfl.display.Sprite;
+import openfl.Lib;
 
 /**
  * ...
@@ -33,7 +35,6 @@ class CmpMultiBeam extends CmpPhys
 {
     public var compound : Compound;
     public var material : BuildMat;
-    public var consDecayRate : Float = 3e4;
     
     public static function createFromBeam(beamBody : Body, splitType : SplitType, brokenCons : PivotJoint) : Compound
     {
@@ -43,26 +44,36 @@ class CmpMultiBeam extends CmpPhys
         var c = new Compound();
         var space = beamBody.space;
         var bodySeg : Body;
-        var rectheight = beamBody.copy().shapes.at(0).rotate( -beamBody.rotation).bounds.height;
+        var rectheight = 30;
         var comtop = beamBody.localPointToWorld(Vec2.weak(0, -rectheight*0.7) );
         var combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight * 0.7) );
-        
-        switch (splitType) {
-        case TENSION:
-            var off = Util.randomf( -30, 30);
-            comtop = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
-            comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
-        case COMPRESSION:
-            var off = Util.randomf( -30, 30);
-            combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
-            comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
-        case SHEAR:
-            var breakingPoint = Vec2.get();
-            //var breakingPoint = brokenCons.body1.localPointToWorld(brokenCons.anchor1);
-            comtop = breakingPoint.add(  beamBody.localVectorToWorld( Vec2.weak(0, -rectheight * 0.7) )  );
-            combot = breakingPoint.add(  beamBody.localVectorToWorld( Vec2.weak(0, rectheight * 0.7) )  );
-          default:
+        if (combot.y < comtop.y) {
+            var tmp = combot;
+            combot = comtop;
+            comtop = tmp;
         }
+        //
+        //switch (splitType) {
+        //case TENSION:
+            //var off = Util.randomf( -30, 30);
+            //comtop = beamBody.localPointToWorld(Vec2.get(off, -rectheight*0.7) );
+            //comtop = beamBody.localPointToWorld(Vec2.get(off, rectheight * 0.7) );
+        //case COMPRESSION:
+            //var off = Util.randomf( -30, 30);
+            //combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
+            //comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
+        //case SHEAR:
+            ////var breakingPoint = brokenCons.body1.localPointToWorld(brokenCons.anchor1);
+            //comtop = beamBody.localPointToWorld( Vec2.weak(0, -rectheight * 0.7) );
+            //combot = beamBody.localPointToWorld( Vec2.weak(0, rectheight * 0.7) );
+        //default:
+        ////}
+            //var s = new Sprite();
+            //s.graphics.beginFill(0xFF00FF);
+            //s.graphics.drawCircle(comtop.x, comtop.y, 5);
+            //s.graphics.drawCircle(combot.x, combot.y, 5);
+            //s.graphics.endFill();
+            //Lib.current.stage.addChild(s);
         var ray : Ray = Ray.fromSegment(comtop, combot);
         var rayresult = space.rayMultiCast(ray, false, new InteractionFilter(Config.cgSensor) );
         if (rayresult.length != 0) {
@@ -71,6 +82,9 @@ class CmpMultiBeam extends CmpPhys
                if (r.shape == beamBody.shapes.at(0)) {
                    polyToCut = r.shape.castPolygon;
                }
+            }
+            if (polyToCut == null) {
+                throw "Errorzz couldn't break beam";
             }
             var geomPoly = new GeomPoly(polyToCut.worldVerts);
             var segmentPolys = geomPoly.cut(comtop, combot, true, true);
@@ -84,14 +98,14 @@ class CmpMultiBeam extends CmpPhys
                 
                 if (prev != null) {
                     var ejoint = EntFactory.inst.createDoubleJoint(comtop, combot, prev, body, c);
-                    EntFactory.inst.top.insertEnt(ejoint);
+                    EntFactory.inst.state.insertEnt(ejoint);
                 }
                 prev = body;
             });
             
         } else {
             trace(comtop + "," + combot);
-            throw "No ray intersection detected when trying to break beam";
+            throw "No ray intersection detected when trying to break beam " + beamBody.id + ", " + beamBody.rotation + ", " + beamBody.localPointToWorld(Vec2.get(100, 0));
         }  
         /* If there are any existing joints attached to a beam, move them to new multi-beam */
         if (beamBody.space != null) {
@@ -166,15 +180,15 @@ class CmpMultiBeam extends CmpPhys
         if (compound == null) {
             return;
         }
-        var dt = entity.top.dt;
+        var dt = entity.state.top.dt;
 
         for (c in constraints) {
-            var f = c.frequency - 0.0045 * dt;
+            var f = c.frequency - Config.multiBeamFrequencyDecay * dt;
             f = Util.clampf(f, 0.4, 1000);
             c.frequency = f;
             
-            if (c.maxForce > consDecayRate * dt) {
-                c.maxForce -= consDecayRate * dt;
+            if (c.maxForce > Config.multiBeamJointDecay * dt) {
+                c.maxForce -= Config.multiBeamJointDecay * dt;
             } else {
                 c.maxForce = 40;
             }

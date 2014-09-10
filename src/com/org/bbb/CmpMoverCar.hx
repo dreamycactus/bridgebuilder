@@ -24,18 +24,19 @@ class CmpMoverCar extends CmpMover
     var wheelFrontPos : Vec2;
     var wheelBackPos : Vec2;
     
-    var motorFront : MotorJoint;
-    var motorBack : MotorJoint;
+    public var motorFront : MotorJoint;
+    public var motorBack : MotorJoint;
     
     public function new(pos : Vec2)
     {
         super(null);
         this.compound = new Compound();
         
-        var b = new Body(); // Chassis
-        b.shapes.add( new Polygon(Polygon.box(50, 20), null, new InteractionFilter(Config.cgLoad)) );
-        b.compound = compound;
-        b.position = pos;
+        body = new Body(); // Chassis
+        body.shapes.add( new Polygon(Polygon.box(50, 20), null, new InteractionFilter(Config.cgLoad)) );
+        body.shapes.at(0).material = Material.steel();
+        body.compound = compound;
+        body.position = pos;
         
         var fw = new Body(); // Front wheel
         fw.shapes.add( new Circle(10, null, null, new InteractionFilter(Config.cgLoad)) );
@@ -47,11 +48,11 @@ class CmpMoverCar extends CmpMover
         bw.position = pos.add(Vec2.weak( 20, 7));
         bw.compound = compound;
         
-        var fwj = new PivotJoint(b, fw, Vec2.weak( -20, 7), Vec2.weak());
+        var fwj = new PivotJoint(body, fw, Vec2.weak( -20, 7), Vec2.weak());
         fwj.ignore = true;
         fwj.compound = compound;
         
-        var bwj = new PivotJoint(b, bw, Vec2.weak( 20, 7), Vec2.weak());
+        var bwj = new PivotJoint(body, bw, Vec2.weak( 20, 7), Vec2.weak());
         bwj.ignore = true;
         bwj.compound = compound;
         
@@ -64,14 +65,14 @@ class CmpMoverCar extends CmpMover
     
     override function update()
     {
-        motorFront.rate = 100;
-        motorBack.rate = 100;
     }
     
     override function set_space(space : Space) : Space
     {
-        motorFront.body1 = space.world;
-        motorBack.body1 = space.world;
+        if (space != null) {
+            motorFront.body1 = space.world;
+            motorBack.body1 = space.world;
+        }
         compound.space = space;
         return space;
     }

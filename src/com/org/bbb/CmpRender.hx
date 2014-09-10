@@ -11,13 +11,14 @@ import openfl.display.Sprite;
 
 class CmpRender extends Cmp
 {
-    public var stage : Stage;
     public var sprite : Sprite;
+    public var inCamera : Bool;
     
-    public function new(stage : Stage)
+    public function new(inCamera : Bool=true)
     {
         super();
-        this.stage = stage;
+        this.inCamera = inCamera;
+        sprite = new Sprite();
     }
     public function render(dt : Float) : Void
     {

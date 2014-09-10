@@ -18,6 +18,7 @@ using Lambda;
 class CmpSharedJoint extends CmpPhys
 {   
     public var body : Body;
+    @:isVar public var bodies(default, default) : Array<Body>;
     
     public function new(pos : Vec2, startingBodies : Array<Body> = null) 
     {
@@ -33,6 +34,9 @@ class CmpSharedJoint extends CmpPhys
             for (b in startingBodies) {
                 if (b != null) {
                     addBody(b);
+                    if (b.userData.entity != null) {
+                        ents.push(b.userData.entity);
+                    }   
                 }
             }
         }
@@ -49,15 +53,22 @@ class CmpSharedJoint extends CmpPhys
     
     public function addBody(b : Body) 
     {
-        if (!bodies.has(b) && b != body) {
+        if (!bodies.has(b) && b != body && b != null) {
             bodies.push(b);
             var j = Config.pivotJoint(JointType.SHARED);
             j.body1 = b;
             j.body2 = body;
+            /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */
             j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true), true);
             j.anchor2 = Vec2.get();
-            joints.push(j);
             j.space = body.space;
+            joints.push(j);
+            
+            if (b.userData.entity != null) {
+                ents.push(b.userData.entity);
+            }
+        } else {
+            trace("fail shared joint");
         }
     }
     
@@ -65,11 +76,10 @@ class CmpSharedJoint extends CmpPhys
     {
         if (bodies.remove(b)) {
             b.constraints.foreach(function(c) {
-                c.space = null;
+                if (body.constraints.has(c)) {
+                    c.space = null;
+                }
             });
-        }
-        if (bodies.length == 0) {
-            entity.top.deleteEnt(entity);
         }
     }
     
@@ -78,18 +88,13 @@ class CmpSharedJoint extends CmpPhys
         
     }
 
-    var bodies(default, default) : Array<Body>;
+    var ents : Array<Entity> = new Array();
     var joints : Array<Constraint>;
 
     override function get_space() : Space { return body.space; }
     override function set_space(s : Space) : Space 
     { 
         body.space = s;
-        for (b in bodies) {
-            if (b.compound == null) {
-                b.space = s;
-            }
-        }
         for (j in joints) {
             j.space = s;
         }

@@ -37,6 +37,7 @@ class CmpCable extends CmpPhys
         compound = new Compound();
         for (i in 0...segCount) {
             var body = new Body();
+            body.userData.entity = entity;
             var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.height, true) );
             shape.filter.collisionGroup = Config.cgCable;
             shape.filter.collisionMask = Config.cmCable;

@@ -1,4 +1,7 @@
 package com.org.bbb;
+import haxe.ds.IntMap;
+import haxe.ds.ObjectMap;
+import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
 import nape.dynamics.InteractionFilter;
@@ -42,11 +45,10 @@ class Util
         return res;
     }
     
-    public static function clampf(v : Float, min : Float, max : Float ) : Float
+    public static function clampf(v : Float, min : Float, max : Float) : Float
     {
         if (min > max) {
-            trace("Cannot clamp with min > max" + min + ", " + max);
-            return v;
+            return clampf(v, max, min);
         }
         if (v < min) {
             v = min;
@@ -168,5 +170,45 @@ class Util
         mat.translate(x,y);
         sprite.transform.matrix=mat;
         
+    }
+    
+    public static function spaceDeepCopy(space : Space) : Space
+    {
+        var s = new Space(space.gravity, space.broadphase);
+        s.worldAngularDrag = space.worldAngularDrag;
+        s.worldLinearDrag = space.worldLinearDrag;
+        
+        var bodies = new ObjectMap<Body, Body>();
+        var constraints = new ObjectMap<Constraint, Constraint>();
+        
+        space.bodies.foreach(function(b) {
+            var bcopy = b.copy();
+            bodies.set(b, bcopy);
+            b.constraints.foreach(function(c) {
+                var ccopy : PivotJoint = cast(constraints.get(c));
+                if (ccopy == null) {
+                    ccopy = cast(c.copy(), PivotJoint);
+                    constraints.set(c, ccopy);
+                }
+                var body1 = bodies.get(cast(c, PivotJoint).body1);
+                if (body1 != null) {
+                    ccopy.body1 = body1;
+                }
+                var body2 = bodies.get(cast(c, PivotJoint).body2);
+                if (body2 != null) {
+                    ccopy.body2 = body2;
+                }
+            });
+            
+        });
+        for (b in bodies) {
+            b.space = s;
+        }
+        for (c in constraints) {
+            if (cast(c, PivotJoint).body1 != null && cast(c, PivotJoint).body2 != null) {
+                c.space = s;
+            }
+        }
+        return s;
     }
 }

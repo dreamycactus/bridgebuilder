@@ -1,32 +1,30 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
 import flash.display.Stage;
+import haxe.macro.Expr;
 import nape.geom.Vec2;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import ru.stablex.ui.UIBuilder;
+import ru.stablex.ui.widgets.Text;
+import ru.stablex.ui.widgets.Widget;
 
 /**
  * ...
  * @author 
  */
-class CmpRenderBuildControl extends CmpRender
+class CmpRenderControlBuild extends CmpRender
 {
     var buildControl : CmpControlBuild;
     var scene:DisplayObjectContainer;
     
+    var stage : Stage;
+    
     public function new(stage : Stage, buildControl : CmpControlBuild) 
     {
-        super(stage);
+        super();
         this.buildControl = buildControl;
-        this.sprite = new Sprite();
-        
-                UIBuilder.regClass('CmpControlBuild');
-        UIBuilder.regClass('Config');
-        
-        stage.addChild(UIBuilder.buildFn('data/test.xml')( {
-            controlBuild : buildControl
-        }) );
+        this.stage = stage;
     }
     
     
@@ -35,26 +33,15 @@ class CmpRenderBuildControl extends CmpRender
         var g = sprite.graphics;
             
         g.clear();
-        if (buildControl.isDrawing) {
+        if (buildControl.isDrawing && !buildControl.editMode) {
 
             g.lineStyle(1, 0xFF0088, 0.6);
             g.beginFill(0xFFFFFF, 1.0);
             
-            var pp = buildControl.camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY) );
             g.moveTo(buildControl.spawn1.x, buildControl.spawn1.y);
-            g.lineTo(pp.x, pp.y);    
+            var spawn2 = buildControl.calculateBeamEnd();
+            g.lineTo(spawn2.x, spawn2.y);    
             g.endFill();
         }
-    }
-    
-    override public function addToScene(scene : DisplayObjectContainer) : Void 
-    {
-        super.addToScene(scene);
-    }
-    
-    override public function removeFromScene(scene : DisplayObjectContainer) : Void 
-    {
-        super.removeFromScene(scene);
-        
     }
 }

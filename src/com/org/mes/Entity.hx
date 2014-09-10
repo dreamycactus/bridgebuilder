@@ -12,13 +12,13 @@ class Entity
         
     public var id : Int;
     public var name : String;
-    public var top : Top;
+    public var state : MESState;
     //public var cmpSig : de.polygonal.ds.BitVector;
     
-    public function new(top : Top) 
+    public function new(state : MESState) 
     {
         this.cmps = new StringMap<Cmp>();
-        this.top = top;
+        this.state = state;
         //cmpSig = BitFields.zero;
     }
     
@@ -66,6 +66,11 @@ class Entity
         for (c in cmps) {
             c.update();
         }
+    }
+    
+    public function delete()
+    {
+        state.deleteEnt(this);
     }
     
 }

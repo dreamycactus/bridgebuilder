@@ -6,12 +6,12 @@ using Lambda;
  */
 class System
 {
-    public var top : Top;
-    public var paused : Bool = false;
+    public var state : MESState;
+    public var active(default, set_active) : Bool = false;
     
-    public function new(top : Top) 
+    public function new(state : MESState) 
     {
-        this.top = top;
+        this.state = state;
         ents = new List();
     }
     
@@ -52,6 +52,12 @@ class System
     public function isValidEnt(e : Entity) : Bool
     {
         return false;
+    }
+    
+    function set_active(a : Bool) : Bool
+    {
+        active = a;
+        return a;
     }
  
     var ents : List<Entity>;

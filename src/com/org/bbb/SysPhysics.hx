@@ -1,7 +1,9 @@
 package com.org.bbb;
 import com.org.mes.Entity;
+import com.org.mes.MESState;
 import com.org.mes.System;
 import com.org.mes.Top;
+import nape.phys.Body;
 import openfl.Lib;
 import nape.geom.Vec2;
 import nape.space.Broadphase;
@@ -24,12 +26,13 @@ typedef PhysicsParams = {
 
 class SysPhysics extends System
 {
-    public var space : Space;
+    public var level : CmpLevel;
+    public var paused : Bool;
     
-    public function new(top : Top, space : Space) 
+    public function new(state : MESState, level : CmpLevel) 
     {
-        super(top);
-        this.space = space;
+        super(state);
+        this.level = level;
         this.paused = true;
     }
     
@@ -38,21 +41,20 @@ class SysPhysics extends System
         if (paused) {
             return;
         }
-        var deltaTime : Float = top.dt;
+        var deltaTime : Float = state.top.dt;
         if (deltaTime > (1000 / 60)) {
             deltaTime = (1000 / 60);
         }
 
-        if (space != null) {
-            space.step(deltaTime * 0.001, velIterations, posIterations);
+        if (level.space != null) {
+            level.space.step(deltaTime * 0.001, velIterations, posIterations);
         }
     }
-    
     override public function inserted(e : Entity)
     {
         var res = e.getCmpsHavingAncestor(CmpPhys);
         for (c in res) {
-            c.space = space;
+            c.space = level.space;
         }
     }
     

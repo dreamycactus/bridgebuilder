@@ -1,4 +1,5 @@
 package com.org.bbb;
+import openfl.Lib;
 
 /**
  * ...
@@ -6,9 +7,10 @@ package com.org.bbb;
  */
 class CmpControlCar extends CmpControl
 {
-    var mover : CmpMover;
+    var mover : CmpMoverCar;
+    @:isVar public var speed(default, set_speed) : Float;
     
-    public function new(mover : CmpMover) 
+    public function new(mover : CmpMoverCar) 
     {
         super();
         this.mover = mover;
@@ -16,8 +18,15 @@ class CmpControlCar extends CmpControl
     
     override public function update() : Void
     {
-        //if (mover.body.velocity.x < 100)
-        //mover.moveHor(2.0);
+        if (mover.body.position.y > Lib.current.stage.stageHeight + 100) {
+            entity.delete();
+        }
     }
     
+    function set_speed(s : Float) : Float
+    {
+        mover.motorFront.rate = s;
+        mover.motorBack.rate = s;
+        return s;
+    }
 }

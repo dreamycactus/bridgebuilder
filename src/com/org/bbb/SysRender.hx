@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.mes.Entity;
+import com.org.mes.MESState;
 import com.org.mes.System;
 import com.org.mes.Top;
 import flash.display.Stage;
@@ -19,52 +20,59 @@ using Lambda;
  */
 class SysRender extends System
 {
-    public var space : Space;
+    public var level : CmpLevel;
     public var stage : Stage;
     public var camera : Camera;
+    public var mainSprite : Sprite;
     
-    public function new(top : Top, space : Space, stage : Stage)
+    public function new(state : MESState, level : CmpLevel, stage : Stage)
     {
-        super(top);
-        this.space = space;
+        super(state);
+        this.level = level;
         this.cmpsToRender = new Array();
-        
-        this.debug = new ShapeDebug(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight, Lib.current.stage.color);
-        this.debug.drawConstraints = true;
         this.stage = stage;
-        
-        camera = new Camera();
-        camera.mainSprite.addChild(debug.display);
-        stage.addChild(camera.mainSprite);
     }
      
     public function addChild(c : DisplayObject)
     {
-        camera.mainSprite.addChild(c);
+        camera.sprite.addChild(c);
     }
     
     override public function init()
     {
+        this.debug = new ShapeDebug(Lib.current.stage.stageWidth*2, Lib.current.stage.stageHeight*2, Lib.current.stage.color);
+        this.debug.drawConstraints = true;
+        this.debug.cullingEnabled = true;
         
+        this.mainSprite = new Sprite();
+        stage.addChild(this.mainSprite);
+
+        this.camera = new Camera();
+        this.camera.sprite.addChild(debug.display);
+        this.mainSprite.addChild(this.camera.sprite);
+    }
+    
+    override public function deinit()
+    {
+        camera.sprite.removeChild(debug.display);
+        stage.removeChild(mainSprite);
     }
     
     override public function update()
     {
-        space = top.getSystem(SysPhysics).space;
         camera.update();
         
         debug.clear();
-        debug.draw(space);
+        debug.draw(level.space);
         debug.flush();
         
         for (c in cmpsToRender) {
-            c.render(top.dt);
+            c.render(state.top.dt);
         }
     }
     
     override public function isValidEnt(e : Entity) : Bool
     {
-        
         if ( e.getCmpsHavingAncestor(CmpRender).length > 0 ) {
             var c : CmpRenderGrid;
             return true;
@@ -77,7 +85,24 @@ class SysRender extends System
         var res = e.getCmpsHavingAncestor(CmpRender);
         for (c in res) {
             cmpsToRender.push(c);
-            c.addToScene(camera.mainSprite);
+            if (c.inCamera) {
+                c.addToScene(camera.sprite);
+            } else {
+                c.addToScene(mainSprite);
+            }
+        }
+    }
+    
+    override public function removed(e : Entity)
+    {
+        var res = e.getCmpsHavingAncestor(CmpRender);
+        for (c in res) {
+            cmpsToRender.push(c);
+            if (c.inCamera) {
+                c.removeFromScene(camera.sprite);
+            } else {
+                c.removeFromScene(mainSprite);
+            }
         }
     }
     

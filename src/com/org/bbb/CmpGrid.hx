@@ -9,21 +9,21 @@ class CmpGrid extends Cmp
 {
     public var cellSize : Int;
     public var cellCounts : Array<Int>;
+    public var width : Float;
+    public var height : Float;
     var ents : IntMap<Entity>;
     
-    public var columns = 30;
-    public var rows = 20;
+    public var columns(get_columns, null) : Int;
+    public var rows(get_rows, null) : Int;
     
-    public function new(cellSize : Int, cellCounts : Array<Int>=null ) 
+    public function new(w : Float, h : Float, cellSize : Int, cellCounts : Array<Int>=null ) 
     {
         super();
         this.cellSize = cellSize;
         this.cellCounts = cellCounts;
         this.ents = new IntMap();
-        
-        columns = Std.int(Lib.current.stage.stageWidth / cellSize) + 1;
-        rows = Std.int(Lib.current.stage.stageHeight / cellSize) + 1;
-        trace("hel" + columns + rows);
+        this.width = w;
+        this.height = h;
     }
     
     public function insertAt(x : Int, y : Int, e : Entity)
@@ -39,6 +39,11 @@ class CmpGrid extends Cmp
         if ( !ents.remove(x * columns + y) ) {
             trace("No entity to remove from grid: " + x + ", " + y);
         }
+    }
+    
+    public function lengthOfCells(numCells) : Float
+    {
+        return numCells * cellSize;
     }
     
     public function getEntityAt(x : Int, y : Int) : Entity
@@ -57,4 +62,6 @@ class CmpGrid extends Cmp
         return Vec2.get(x, y).mul(cellSize).add( Vec2.weak(cellSize * 0.5, cellSize * 0.5) );
     }
     
+    function get_columns() { return cast(width / cellSize + 1, Int); }
+    function get_rows() { return cast(height / cellSize + 1, Int); }
 }
