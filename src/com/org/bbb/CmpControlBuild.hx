@@ -54,6 +54,7 @@ class CmpControlBuild extends CmpControl
     var inY : InputText;
     
     public var selectedBody : Body;
+    public var lastSelectedBody : Body;
     public var levelWidth : Float;
     public var levelHeight : Float;
     @:isVar public var editMode(default, set_editMode) : Bool = false;
@@ -91,12 +92,12 @@ class CmpControlBuild extends CmpControl
             //dragCamera();
         //}
         
-        if (selectedBody != null) {
+        //if (lastSelectedBody != null) {
             //setBox();
-        } else if (inW != null) {
+        //} else if (inW != null) {
             //levelWidth = Std.parseFloat(inW.text);
             //levelHeight = Std.parseFloat(inH.text);
-        }
+        //}
         
         if (editMode && selectedBody != null) {
             var dirty = false;
@@ -130,9 +131,7 @@ class CmpControlBuild extends CmpControl
                 }
                 
             }
-            if (dirty) {
-                setBox();
-            }
+            setBox();
             setPos();
         }
         prevMouse = Vec2.get(stage.mouseX, stage.mouseY);
@@ -351,7 +350,7 @@ class CmpControlBuild extends CmpControl
     function selectBody()
     {
         var mousePos = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
-        var results = level.space.bodiesUnderPoint(Vec2.get(stage.mouseX, stage.mouseY), new InteractionFilter(Config.cgSensor, (Config.cgSpawn|Config.cgAnchor)));
+        var results = level.space.bodiesUnderPoint(mousePos, new InteractionFilter(Config.cgSensor, (Config.cgSpawn|Config.cgAnchor)));
         
         if (results.length == 0) {
             selectedBody = null;
@@ -360,15 +359,17 @@ class CmpControlBuild extends CmpControl
             return;
         }
         selectedBody = results.at(0);
+        lastSelectedBody = selectedBody;
+
         if (selectedBody.shapes.at(0).filter.collisionGroup == Config.cgSpawn) {
             isSpawn = true;
         } else {
             isSpawn = false;
         }
-        inW.text = cast(selectedBody.bounds.width);
-        inH.text = cast(selectedBody.bounds.height);
-        inX.text = cast(selectedBody.position.x);
-        inY.text = cast(selectedBody.position.y);
+        inW.text = cast(lastSelectedBody.bounds.width);
+        inH.text = cast(lastSelectedBody.bounds.height);
+        inX.text = cast(lastSelectedBody.position.x);
+        inY.text = cast(lastSelectedBody.position.y);
         
     }
     public function loadLevelFromXml(state : MESState)
@@ -395,10 +396,10 @@ class CmpControlBuild extends CmpControl
             y = -10000;
         }
         
-        if (selectedBody != null && !Math.isNaN(x) && !Math.isNaN(y)) {
-            selectedBody.type = BodyType.DYNAMIC;
-            selectedBody.position.setxy(x, y);
-            selectedBody.type = BodyType.STATIC;
+        if (lastSelectedBody != null && !Math.isNaN(x) && !Math.isNaN(y)) {
+            lastSelectedBody.type = BodyType.DYNAMIC;
+            lastSelectedBody.position.setxy(x, y);
+            lastSelectedBody.type = BodyType.STATIC;
         }
     }
     
@@ -414,19 +415,19 @@ class CmpControlBuild extends CmpControl
             h = 1;
         }
         
-        if (selectedBody != null && !Math.isNaN(w) && !Math.isNaN(h)) {
-            selectedBody.type = BodyType.DYNAMIC;
+        if (lastSelectedBody != null && !Math.isNaN(w) && !Math.isNaN(h)) {
+            lastSelectedBody.type = BodyType.DYNAMIC;
             var newShape = null;
             if (!isSpawn) {
-                newShape = new Polygon(  Polygon.box(w, h, true)
+                newShape = new Polygon( Polygon.box(w, h, true)
                                       , null
                                       , new InteractionFilter(Config.cgAnchor, Config.cmAnchor));
             } else {
-                newShape = cast(selectedBody.shapes.at(0).copy());
+                newShape = cast(lastSelectedBody.shapes.at(0).copy());
             }
-            selectedBody.shapes.pop();
-            selectedBody.shapes.push(newShape);
-            selectedBody.type = BodyType.STATIC;
+            lastSelectedBody.shapes.pop();
+            lastSelectedBody.shapes.push(newShape);
+            lastSelectedBody.type = BodyType.STATIC;
         }
     }
     
