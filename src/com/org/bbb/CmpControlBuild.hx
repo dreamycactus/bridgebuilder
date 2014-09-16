@@ -86,11 +86,12 @@ class CmpControlBuild extends CmpControl
     
     override public function update() : Void
     {
-        panCamera();
 
-        //if (isDrag) {
-            //dragCamera();
-        //}
+        if (isDrag) {
+            dragCamera();
+        } else if (isDrawing) {
+            panCamera();
+        }
         
         //if (lastSelectedBody != null) {
             //setBox();
@@ -104,7 +105,7 @@ class CmpControlBuild extends CmpControl
             if (isDraggingBox) {
                 var v = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
                 selectedBody.type = BodyType.DYNAMIC;
-                selectedBody.position.setxy(v.x, v.y);
+                selectedBody.position.addeq(v.sub(prevMouse, true));
                 selectedBody.type = BodyType.STATIC;
                 inX.text = cast(selectedBody.position.x);
                 inY.text = cast(selectedBody.position.y);
@@ -131,10 +132,10 @@ class CmpControlBuild extends CmpControl
                 }
                 
             }
-            setBox();
-            setPos();
         }
-        prevMouse = Vec2.get(stage.mouseX, stage.mouseY);
+        setBox();
+        setPos();
+        prevMouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
 
     }
     
@@ -297,7 +298,7 @@ class CmpControlBuild extends CmpControl
         body.mass = 1;
         body.space = level.space;
         
-        var ent = EntFactory.inst.createBeamEnt(center, body, material, "bob");
+        var ent = EntFactory.inst.createBeamEnt(center, body, spawn1.sub(spawn2).length + 10, material, "bob");
         state.insertEnt(ent);
         builtBeams.push(ent);
         
@@ -433,7 +434,9 @@ class CmpControlBuild extends CmpControl
     
     function dragCamera()
     {
-        camera.pos = camera.pos.sub(prevMouse.sub(Vec2.weak(stage.mouseX, stage.mouseY) ).mul(Config.camDragCoeff) );
+        camera.dragCamera(camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY)).sub(
+                            prevMouse).mul(
+                                Config.camDragCoeff) );
     }
     
     function panCamera()
@@ -475,7 +478,7 @@ class CmpControlBuild extends CmpControl
     
     public function nextLevel()
     {
-        var s1 = Config.createLevelState(top, "levels/b" + (level.id + 1) + ".xml");
+        var s1 = StateBridgeLevel.createLevelState(top, "levels/b" + (level.id + 1) + ".xml");
         top.changeState(new TransPan(top, cast(top.state), cast(s1)), true);
     }
     
@@ -488,12 +491,15 @@ class CmpControlBuild extends CmpControl
             stage.addEventListener(MouseEvent.MOUSE_UP, unDragBox);
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, expandBox);
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, unExpandBox);
+            
+            cmpGrid.offset = Vec2.get(0, 25-Config.matSteelDeck.height*0.5);
         } else {
             regEvents();
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, dragBox);
             stage.removeEventListener(MouseEvent.MOUSE_UP, unDragBox);
             stage.removeEventListener(MouseEvent.RIGHT_MOUSE_DOWN, expandBox);
             stage.removeEventListener(MouseEvent.RIGHT_MOUSE_UP, unExpandBox);
+            cmpGrid.offset = Vec2.get();
         }
         return m;
     }

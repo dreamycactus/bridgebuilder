@@ -28,11 +28,10 @@ class BuildHistory
             if (e.hasCmp(CmpBeam)) {
                 var cmpBeam = e.getCmp(CmpBeam);
                 
-                var newEnt = state.createEnt();
                 var newBody = cmpBeam.body.copy();
+                var newEnt = EntFactory.inst.createBeamEnt(cmpBeam.body.position, newBody, cmpBeam.width, cmpBeam.material);
+
                 newBody.userData.entity = newEnt;
-                var newCmpBeam = new CmpBeam(newBody, cmpBeam.material);
-                newEnt.attachCmp(newCmpBeam);
                 
                 oldToNew.set(e, newEnt);
                 snapshot.push(newEnt);
@@ -42,10 +41,10 @@ class BuildHistory
         }
         
         for (e in builtEnts.filter(function(s) { return s.hasCmp(CmpSharedJoint); } )) {
-            var newEnt = state.createEnt();
             var sharedJoint = e.getCmp(CmpSharedJoint);
-            var newSharedJoint = new CmpSharedJoint(sharedJoint.body.position);
-            newEnt.attachCmp(newSharedJoint);
+            var newEnt = EntFactory.inst.createSharedJoint(sharedJoint.body.position);
+            var newSharedJoint = newEnt.getCmp(CmpSharedJoint);
+            
             for (b in sharedJoint.bodies) {
                 var ent = b.userData.entity;
                 var newB = oldToNew.get(ent);

@@ -11,6 +11,7 @@ class CmpGrid extends Cmp
     public var cellCounts : Array<Int>;
     public var width : Float;
     public var height : Float;
+    public var offset : Vec2;
     var ents : IntMap<Entity>;
     
     public var columns(get_columns, null) : Int;
@@ -24,6 +25,7 @@ class CmpGrid extends Cmp
         this.ents = new IntMap();
         this.width = w;
         this.height = h;
+        this.offset = Vec2.get();
     }
     
     public function insertAt(x : Int, y : Int, e : Entity)

@@ -7,6 +7,7 @@ import flash.Lib;
 import haxe.macro.Compiler;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
+import openfl.geom.Matrix;
 
 import nape.geom.Vec2;
 
@@ -21,12 +22,27 @@ class Main extends Sprite
 	{
 		if (!inited) init();
 		// else (resize or orientation change)
+        Config.stageHeight = Lib.current.stage.stageHeight;
+        Config.stageWidth = Lib.current.stage.stageWidth;
+        if (top == null) { return; }
+        
+        var msprite = top.state.getSystem(SysRender).mainSprite;
+        var sx = Lib.current.stage.stageWidth / 60;
+        var sy = Lib.current.stage.stageHeight / 30;
+        var scale = Math.min(sy, sx);
+        var mat = new Matrix();
+        mat.scale(scale, scale);
+        //msprite.transform.matrix = mat;
+        
+        var cam = top.state.getSystem(SysRender).camera;
+        cam.zoom = scale;
 	}
 	
 	function init() 
 	{
 		if (inited) return;
 		inited = true;
+        
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
         
@@ -35,10 +51,12 @@ class Main extends Sprite
 		Config.init();
         top = new Top();
         EntFactory.inst.top = top;
-        var bp = Config.createLevelState(top, "levels/b1.xml");
+        var bp = StateBridgeLevel.createLevelState(top, "levels/b1.xml");
         //var bp = new StateMainMenu(top);
     
         top.changeState(bp, false);
+        resize(null);
+
 	}
     
     function enterFrame(_)
@@ -62,11 +80,7 @@ class Main extends Sprite
 	{
 		removeEventListener(Event.ADDED_TO_STAGE, added);
 		stage.addEventListener(Event.RESIZE, resize);
-		#if ios
-		haxe.Timer.delay(init, 100); // iOS 6
-		#else
-		init();
-		#end
+        init();
 	}
 	
 	public static function main() 
@@ -74,6 +88,7 @@ class Main extends Sprite
 		// static entry point
 		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
+        
         Lib.current.addChild(new Main());
 	}
 }

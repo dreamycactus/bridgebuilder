@@ -27,24 +27,30 @@ class Camera
     
     public function update()
     {
-        sprite.zoomInAtPoint(pos.x , pos.y, zoom);
+        sprite.zoomInAtPoint(sprite.width/2, sprite.height/2, zoom);
 
-        
-        if (dragBounds != null) {
-            pos.x = Util.clampf(pos.x, -dragBounds.width*zoom + Config.stageWidth, 0);
-            pos.y = Util.clampf(pos.y, -dragBounds.height*zoom + Config.stageHeight, 0);
-        }
         sprite.x = pos.x;
         sprite.y = pos.y;
+        
+        Util.sortZ(sprite);
 
         
         //sprite.transform.matrix.tx = pos.x;
         //sprite.transform.matrix.ty = pos.y;
     }
     
+    public function dragCamera(delta : Vec2)
+    {
+        pos.addeq(delta);
+        if (dragBounds != null) {
+            pos.x = Util.clampf(pos.x, -dragBounds.width*zoom + Config.stageWidth, 0);
+            pos.y = Util.clampf(pos.y, -dragBounds.height*zoom + Config.stageHeight, 0);
+        }
+    }
+    
     public function screenToWorld(v : Vec2) : Vec2
     {
-        return v.mul(1.0 / zoom).sub(pos);
+        return v.sub(pos).mul(1.0 / zoom);
     }
     
     public function worldToScreen(v : Vec2) : Vec2
@@ -55,10 +61,9 @@ class Camera
     public function set_zoom(z : Float) : Float
     {
         zoom = z;
-        if (dragBounds != null) {
-            zoom = Util.clampf(z, 1.0, dragBounds.width / Config.stageWidth);
-            trace(dragBounds.width / Config.stageWidth);
-        }
+        //if (dragBounds != null) {
+            //zoom = Util.clampf(z, 1.0, dragBounds.width / Config.stageWidth);
+        //}
         return z;
     }
     

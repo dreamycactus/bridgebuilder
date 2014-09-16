@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import flash.display.Stage;
+import nape.geom.Vec2;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.Lib;
@@ -24,18 +25,20 @@ class CmpRenderGrid extends CmpRender
         var cellsz = cmpGrid.cellSize;
         var w = cmpGrid.width;
         var h = cmpGrid.height;
-        
+        var ox = cmpGrid.offset.x;
+        var oy = cmpGrid.offset.y;
+
         g.clear();
         g.lineStyle(lineThickness, lineColour, lineAlpha);
         g.beginFill(0xFFFFFF, 1.0);
         for (x in 0...cmpGrid.columns) {
-            g.moveTo(x * cellsz, 0);
-            g.lineTo(x * cellsz, h);      
+            g.moveTo(x * cellsz+ox, oy);
+            g.lineTo(x * cellsz+ox, h+oy);      
         }
         
         for (y in 0...cmpGrid.rows) {
-            g.moveTo(0, y * cellsz);
-            g.lineTo(w, y * cellsz);
+            g.moveTo(ox, y * cellsz+oy);
+            g.lineTo(w+ox, y * cellsz+oy);
         }
         g.endFill();
     }

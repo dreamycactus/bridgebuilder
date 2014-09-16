@@ -9,12 +9,14 @@ import nape.geom.Vec2;
  */
 class CmpTransform extends Cmp
 {
-    public var pos(default,default) : Vec2;
+    public var pos(default, default) : Vec2;
+    public var rot : Float;
     
-    public function new(pos : Vec2 = null) 
+    public function new(pos : Vec2 = null, rot : Float = 0) 
     {
         super();
         this.pos = pos;
+        this.rot = rot;
     }
 
 }

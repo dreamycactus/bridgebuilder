@@ -39,6 +39,8 @@ class CmpSharedJoint extends CmpPhys
                     }   
                 }
             }
+        } else {
+            startingBodies = new Array();
         }
 
     }

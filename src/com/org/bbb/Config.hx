@@ -45,16 +45,16 @@ class Config
     public static var cableSegWidth = 50;
     public static var beamStressHp = 500;
     public static var sharedJointRadius = 15;
-    public static var maxBeamCells = 6;
-    public static var gridCellWidth = 50;
     public static var multiBeamFrequencyDecay = 0.007;
     public static var multiBeamJointDecay = 4e4;
     public static var spawnCDCar = 2000;
-    public static var carSpeed = 10;
+    public static var carSpeed = 20;
+    
+    public static var gridCellWidth = 50;
+    public static var maxBeamCells = 6;
     
     public static var panBorder = 0.1;
     public static var panRate = 10;
-    
     
     public static var cgBeam        = 1;
     public static var cgDeck        = 2;
@@ -83,12 +83,12 @@ class Config
     public static function init()
     {
         Cmp.cmpManager = new CmpManager();
-        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI]);
+        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI, CmpRenderTile, CmpRenderSlide]);
         Cmp.cmpManager.registerCmp(CmpPhys);
         Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpAnchor,
                                                 CmpSharedJoint, CmpCable, CmpMover, CmpMoverCar]);
         Cmp.cmpManager.registerCmp(CmpControl);
-        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlCar]);
+        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
         
         stageWidth = Lib.current.stage.stageWidth;
         stageHeight = Lib.current.stage.stageHeight;
@@ -96,7 +96,7 @@ class Config
     
     public static function basicTextField(text : String, sz : Int, colour : Int, align : TextFieldAutoSize) : TextField
     {
-        var font = Assets.getFont("fonts/nokiafc22.ttf");
+        var font = Assets.getFont("fonts/LibreBaskerville-Regular.ttf");
         var ret = new TextField();
         var tf = new TextFormat(font.fontName, sz, colour);
         ret.defaultTextFormat = tf;
@@ -166,39 +166,4 @@ class Config
         return s;
     }
     
-    public static function createLevelState(top : Top, levelPath : String) : BBBState
-    {
-        var s1 = new StateBridgeLevel(top);
-        var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage), new SysControl(s1, Lib.current.stage)];
-        for (s in allsys) {
-            s1.insertSystem(s);
-        }
-        EntFactory.inst.state = s1;
-        
-        var level = s1.createEnt();
-        var cl = CmpLevel.loadLevelXml(s1, levelPath);
-        level.attachCmp(cl);
-        s1.getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
-        s1.insertEnt(level);
-        
-        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, Config.gridCellWidth, [4]);
-        var cmpGrid = grid.getCmp(CmpGrid);
-        s1.insertEnt(grid);
-        s1.cmpGrid = cmpGrid;
-        
-        s1.renderSys = s1.getSystem(SysRender);
-        s1.getSystem(SysPhysics).level = cl;
-        s1.getSystem(SysRender).level = cl;
-        
-        var controllerEnt = s1.createEnt();
-        var cmpControl = new CmpControlBuild(Lib.current.stage, cmpGrid, cl);
-        s1.cmpControl = cmpControl;
-        controllerEnt.attachCmp(cmpControl);
-        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
-        controllerEnt.attachCmp(new CmpRenderControlUI( cmpControl) );
-
-        s1.insertEnt(controllerEnt);
-        
-        return s1;
-    }
 }

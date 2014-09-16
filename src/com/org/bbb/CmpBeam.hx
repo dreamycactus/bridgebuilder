@@ -23,16 +23,18 @@ using com.org.bbb.Util;
 class CmpBeam extends CmpPhys
 {
     public var body : Body;
+    public var width : Float;
     public var material : BuildMat;
     public var jointOffsets : Array<Vec2>;
     public var stressCHp : Float = Config.beamStressHp;
     public var stressTHp : Float = Config.beamStressHp;
     public var stressSHp : Float = Config.beamStressHp;
     
-    public function new(body : Body, material : BuildMat) 
+    public function new(body : Body, width : Float, material : BuildMat) 
     {
         super();
         this.body = body;
+        this.width = width;
         this.jointOffsets = new Array();
         this.material = material;
     }
@@ -48,6 +50,13 @@ class CmpBeam extends CmpPhys
     override public function update()
     {
         var dt = entity.state.top.dt;
+        var trans = entity.getCmp(CmpTransform);
+        
+        var w = width;
+        var h = material.height;
+        
+        trans.pos = body.localPointToWorld(Vec2.weak(-w * 0.5, -h * 0.5));
+        trans.rot = body.rotation;
         
         if (body == null) {
             return;

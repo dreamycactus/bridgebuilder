@@ -57,7 +57,7 @@ class Template extends Sprite {
     var params:TemplateParams;
     var useHand:Bool;
     function new(params:TemplateParams) {
-        baseMemory = System.totalMemoryNumber;
+        baseMemory = 10;
         super();
 
         if (params.velIterations != null) {
@@ -104,7 +104,7 @@ class Template extends Sprite {
         }
 
         if (params.shapeDebug == null || !params.shapeDebug) {
-            debug = new BitmapDebug(stage.stageWidth, stage.stageHeight, stage.color);
+            debug = new ShapeDebug(stage.stageWidth, stage.stageHeight, stage.color);
         }
         else {
             debug = new ShapeDebug(stage.stageWidth, stage.stageHeight, stage.color);
@@ -164,7 +164,7 @@ class Template extends Sprite {
                     hand.space = space;
                 }
             }
-            System.pauseForGCIfCollectionImminent(0);
+            //System.pauseForGCIfCollectionImminent(0);
             init();
         }
     }
@@ -221,7 +221,7 @@ class Template extends Sprite {
         var fps = (1000 / deltaTime);
         smoothFps = (smoothFps == -1 ? fps : (smoothFps * 0.97) + (fps * 0.03));
         var text = "fps: " + ((""+smoothFps).substr(0, 5)) + "\n" +
-                   "mem: " + ((""+(System.totalMemoryNumber - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
+                   "mem: " + ((""+(10 - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
         if (space != null) {
             text += "\n\n"+
                     "velocity-iterations: " + velIterations + "\n" +

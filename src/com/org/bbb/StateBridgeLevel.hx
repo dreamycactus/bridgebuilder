@@ -56,6 +56,42 @@ class StateBridgeLevel extends BBBState
     var prev : Body = null;
     var stage : Stage;
 
+    public static function createLevelState(top : Top, levelPath : String) : BBBState
+    {
+        var s1 = new StateBridgeLevel(top);
+        var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage), new SysControl(s1, Lib.current.stage)];
+        for (s in allsys) {
+            s1.insertSystem(s);
+        }
+        EntFactory.inst.state = s1;
+        
+        var level = s1.createEnt();
+        var cl = CmpLevel.loadLevelXml(s1, levelPath);
+        level.attachCmp(cl);
+        s1.getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
+        s1.insertEnt(level);
+        
+        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, Config.gridCellWidth, [4]);
+        var cmpGrid = grid.getCmp(CmpGrid);
+        s1.insertEnt(grid);
+        s1.cmpGrid = cmpGrid;
+        
+        s1.renderSys = s1.getSystem(SysRender);
+        s1.getSystem(SysPhysics).level = cl;
+        s1.getSystem(SysRender).level = cl;
+        
+        var controllerEnt = s1.createEnt();
+        var cmpControl = new CmpControlBuild(Lib.current.stage, cmpGrid, cl);
+        s1.cmpControl = cmpControl;
+        controllerEnt.attachCmp(cmpControl);
+        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
+        controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, Config.stageWidth, Config.stageHeight) );
+
+        s1.insertEnt(controllerEnt);
+        
+        return s1;
+    }
+    
     public function new(top : Top) 
     {
         super(top);
@@ -89,7 +125,6 @@ class StateBridgeLevel extends BBBState
     
     override function init() 
     {
-
         //var rootWidget = UIBuilder.get('root');
         //rootWidget.w = stage.stageWidth;
         //rootWidget.h = stage.stageWidth;

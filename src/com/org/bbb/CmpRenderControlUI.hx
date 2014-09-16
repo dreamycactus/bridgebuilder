@@ -13,7 +13,7 @@ class CmpRenderControlUI extends CmpRender
     var buildControl : CmpControlBuild;
     public static var uiInstance : Sprite;
     
-    public function new(buildControl : CmpControlBuild) 
+    public function new(buildControl : CmpControlBuild, width : Float, height : Float ) 
     {
         super(false);
         this.buildControl = buildControl;
@@ -28,6 +28,8 @@ class CmpRenderControlUI extends CmpRender
         }
 
         sprite.addChild(uiInstance);
+        var rw = UIBuilder.get('rootWidget');
+        rw.resize(width, height);
     }
     
 }

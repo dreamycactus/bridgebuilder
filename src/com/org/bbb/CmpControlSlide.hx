@@ -4,12 +4,12 @@ package com.org.bbb;
  * ...
  * @author 
  */
-class CmpBeamSup
+class CmpControlSlide extends CmpControl
 {
 
     public function new() 
     {
-        
+        super();
     }
     
 }

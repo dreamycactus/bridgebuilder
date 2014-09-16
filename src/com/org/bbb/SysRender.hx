@@ -40,11 +40,12 @@ class SysRender extends System
     
     override public function init()
     {
-        this.debug = new ShapeDebug(Lib.current.stage.stageWidth*2, Lib.current.stage.stageHeight*2, Lib.current.stage.color);
+        this.debug = new ShapeDebug(1000, 500, Lib.current.stage.color);
         this.debug.drawConstraints = true;
         this.debug.cullingEnabled = true;
         
         this.mainSprite = new Sprite();
+        
         stage.addChild(this.mainSprite);
 
         this.camera = new Camera();
@@ -61,7 +62,8 @@ class SysRender extends System
     override public function update()
     {
         camera.update();
-        
+        Util.sortZ(mainSprite);
+
         debug.clear();
         debug.draw(level.space);
         debug.flush();
@@ -69,6 +71,7 @@ class SysRender extends System
         for (c in cmpsToRender) {
             c.render(state.top.dt);
         }
+        
     }
     
     override public function isValidEnt(e : Entity) : Bool

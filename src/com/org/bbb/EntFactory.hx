@@ -62,11 +62,14 @@ class EntFactory
         return e;
     }
     
-    public function createBeamEnt(pos : Vec2, body : Body, material : BuildMat, name : String = "") : Entity
+    public function createBeamEnt(pos : Vec2, body : Body, width : Float, material : BuildMat, name : String = "") : Entity
     {
         var e = state.createEnt("be");
-        var cmpbeam = new CmpBeam(body, material);
+        var cmpbeam = new CmpBeam(body, width, material);
         var cmptrans = new CmpTransform(pos);
+        
+        //var length = body.shapes.at(0).bounds.width;
+        var cmprend = new CmpRenderTile("img/beam.png", width);
         
         if (pos != null) {
             body.position = pos;
@@ -75,6 +78,7 @@ class EntFactory
         
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
+        e.attachCmp(cmprend);
         
         return e;
     }    
@@ -89,7 +93,7 @@ class EntFactory
         return e;
     }
     
-    public function createSharedJoint(pos : Vec2, bodies : Array<Body>, name : String = "") : Entity
+    public function createSharedJoint(pos : Vec2, bodies : Array<Body>=null, name : String = "") : Entity
     {
         var e = state.createEnt("sj");
         var sj = new CmpSharedJoint(pos, bodies);

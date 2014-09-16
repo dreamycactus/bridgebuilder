@@ -14,6 +14,8 @@ import nape.phys.Compound;
 import nape.shape.Polygon;
 import nape.shape.Shape;
 import nape.space.Space;
+import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -171,44 +173,30 @@ class Util
         sprite.transform.matrix=mat;
         
     }
-    
-    public static function spaceDeepCopy(space : Space) : Space
-    {
-        var s = new Space(space.gravity, space.broadphase);
-        s.worldAngularDrag = space.worldAngularDrag;
-        s.worldLinearDrag = space.worldLinearDrag;
-        
-        var bodies = new ObjectMap<Body, Body>();
-        var constraints = new ObjectMap<Constraint, Constraint>();
-        
-        space.bodies.foreach(function(b) {
-            var bcopy = b.copy();
-            bodies.set(b, bcopy);
-            b.constraints.foreach(function(c) {
-                var ccopy : PivotJoint = cast(constraints.get(c));
-                if (ccopy == null) {
-                    ccopy = cast(c.copy(), PivotJoint);
-                    constraints.set(c, ccopy);
-                }
-                var body1 = bodies.get(cast(c, PivotJoint).body1);
-                if (body1 != null) {
-                    ccopy.body1 = body1;
-                }
-                var body2 = bodies.get(cast(c, PivotJoint).body2);
-                if (body2 != null) {
-                    ccopy.body2 = body2;
-                }
-            });
+    // Bubble sort.. Insert sort would be better, prolly... maybe... not sure.
+    public static function sortZ (dParent : DisplayObjectContainer) : Void {
+        for (i in dParent.numChildren - 1...0) {
             
-        });
-        for (b in bodies) {
-            b.space = s;
-        }
-        for (c in constraints) {
-            if (cast(c, PivotJoint).body1 != null && cast(c, PivotJoint).body2 != null) {
-                c.space = s;
+            var bFlipped = false;
+            for (o in 0...i) {
+                if (dParent.getChildAt(o).z > dParent.getChildAt(o+1).z) {
+                    dParent.swapChildrenAt(o,o+1);
+                    bFlipped = true;
+                }
             }
+            if (!bFlipped)
+                return;
         }
-        return s;
+    }
+    
+    public static function rotateSprite(sp : DisplayObject, point : Vec2, angle : Float)
+    {
+        var mat = sp.transform.matrix;
+        mat.tx -= point.x;
+        mat.ty -= point.y;
+        mat.rotate(angle);
+        mat.tx += point.x;
+        mat.ty += point.y;
+        sp.transform.matrix = mat;
     }
 }

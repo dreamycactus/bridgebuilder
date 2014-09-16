@@ -60,6 +60,8 @@ class MESState
     
     public function deleteEnt(e : Entity)
     {
+        if (e.state == null) { return; }
+        
         for (s in sys) {
             s.onRemoved(e);
         }
