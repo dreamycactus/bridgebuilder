@@ -98,10 +98,12 @@ class CmpLevel extends Cmp
         var content = Assets.getText(xmlAssetPath);
         var level = genLevelFromString(state, content);
         var r = ~/([0-9]+)/;
-        r.match(xmlAssetPath);
-        var levelcount = Std.parseInt(r.matched(1));
-        level.id = levelcount;
-        trace(levelcount);  
+        
+        if (r.match(xmlAssetPath)) {
+            var levelcount = Std.parseInt(r.matched(1));
+            level.id = levelcount;
+            trace(levelcount);  
+        }
         return level;
     }
     

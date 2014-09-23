@@ -40,7 +40,7 @@ class SysRender extends System
     
     override public function init()
     {
-        this.debug = new ShapeDebug(1000, 500, Lib.current.stage.color);
+        this.debug = new ShapeDebug(2000, 2000, Lib.current.stage.color);
         this.debug.drawConstraints = true;
         this.debug.cullingEnabled = true;
         

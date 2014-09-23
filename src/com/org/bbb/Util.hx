@@ -25,6 +25,7 @@ using Lambda;
 class Util
 {
     public static var space : Space;
+    public static var EPSILON : Float = 1e-4;
     
     public static function init(sp : Space)
     {
@@ -191,12 +192,35 @@ class Util
     
     public static function rotateSprite(sp : DisplayObject, point : Vec2, angle : Float)
     {
-        var mat = sp.transform.matrix;
+        var mat = new Matrix();
         mat.tx -= point.x;
         mat.ty -= point.y;
         mat.rotate(angle);
         mat.tx += point.x;
         mat.ty += point.y;
         sp.transform.matrix = mat;
+    }
+    
+    public static function getDigit(num : Int, digit : Int) : Int
+    {
+        var str = Std.string(num);
+        if (digit < 1) { throw "Invalid digit $digit."; } 
+        if (digit > str.length) { throw "Digit > number length"; }
+        return Std.parseInt(str.charAt(str.length - digit));
+    }
+    
+    public static function getLineFormula(p1 : Vec2, p2 : Vec2) : { m : Float, b : Float }
+    {
+        if (p1.x == p2.x) { return { m : Math.NaN, b : p1.x }; }
+        var m = (p2.y - p1.y) / (p2.x - p1.x);
+        var b = p2.y - m * p2.x;
+        return { m : m, b : b };
+    }
+    
+    public static function floatEqual(f1 : Float, f2 : Float) {
+        return Math.abs(f1 - f2) < EPSILON;
+    }
+    public static function floatGrEqual(f1 : Float, f2 : Float) {
+        return (Math.abs(f1 - f2) < EPSILON) || (f1 > f2);
     }
 }

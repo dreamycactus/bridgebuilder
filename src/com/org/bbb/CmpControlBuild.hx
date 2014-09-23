@@ -10,7 +10,7 @@ import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.Top;
-import flash.display.Stage;
+import openfl.display.Stage;
 import haxe.xml.Check.Filter;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
@@ -29,10 +29,6 @@ import ru.stablex.ui.widgets.Text;
 
 using com.org.bbb.Util;
 
-/**
- * ...
- * @author 
- */
 class CmpControlBuild extends CmpControl
 {
     var material : BuildMat;
@@ -52,6 +48,11 @@ class CmpControlBuild extends CmpControl
     var inH : InputText;
     var inX : InputText;
     var inY : InputText;
+    var inLevelW : InputText;
+    var inLevelH : InputText;
+    var console : Text;
+    
+    var lineChecker : LineChecker = new LineChecker();
     
     public var selectedBody : Body;
     public var lastSelectedBody : Body;
@@ -93,12 +94,10 @@ class CmpControlBuild extends CmpControl
             panCamera();
         }
         
-        //if (lastSelectedBody != null) {
-            //setBox();
-        //} else if (inW != null) {
-            //levelWidth = Std.parseFloat(inW.text);
-            //levelHeight = Std.parseFloat(inH.text);
-        //}
+        if (inW != null) {
+            levelWidth = Std.parseFloat(inLevelW.text);
+            levelHeight = Std.parseFloat(inLevelH.text);
+        }
         
         if (editMode && selectedBody != null) {
             var dirty = false;
@@ -136,7 +135,28 @@ class CmpControlBuild extends CmpControl
         setBox();
         setPos();
         prevMouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
+        
+        console.text = "";
+        var res = level.space.bodiesUnderPoint(prevMouse);
+        res.foreach(function(b) {
+            console.text += printBodyForces(b) + '\n';
+        });
 
+    }
+    
+    function printBodyForces(body : Body) : String
+    {
+        var str =        "body id: " + body.id + "\n"
+                       + "rotation: " + body.rotation
+                       + "total contacts: " + body.totalContactsImpulse().Vec3ToIntString() + ",\n" 
+                       + "total impulse: " + body.totalImpulse().Vec3ToIntString() + "\n" 
+                       + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n"
+                       + "total stress: " + body.calculateBeamStress().xy(true) + "\n";
+                       
+        for (c in body.constraints) {
+            str += "constraint impulse: " + c.bodyImpulse(body).Vec3ToIntString() +"\n";
+        }
+        return str;
     }
     
     function regEvents()
@@ -166,6 +186,11 @@ class CmpControlBuild extends CmpControl
             inH = cast(UIBuilder.get('inHeight'), InputText);
             inX = cast(UIBuilder.get('inX'), InputText);
             inY = cast(UIBuilder.get('inY'), InputText);
+            inLevelW = cast(UIBuilder.get('levelWidth'), InputText);
+            inLevelW.text = Std.string(level.width);
+            inLevelH = cast(UIBuilder.get('levelHeight'), InputText);
+            inLevelH.text = Std.string(level.height);
+            console = cast(UIBuilder.get('console'), Text);
         }
         regEvents();
         
@@ -241,8 +266,10 @@ class CmpControlBuild extends CmpControl
         var cp1 = cmpGrid.getClosestCell(spawn1);
         spawn2 = calculateBeamEnd();
         var cp2 = cmpGrid.getClosestCell(spawn2);
+        
+        var validLine = lineChecker.addLine(spawn1, spawn2);
 
-        if ( (cp1.x == cp2.x && cp1.y == cp2.y) || startBody == null) {
+        if ( (cp1.x == cp2.x && cp1.y == cp2.y) || startBody == null || !validLine) {
             return;
         }
         
@@ -329,10 +356,10 @@ class CmpControlBuild extends CmpControl
     {
         var mouseWorldPos = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         var delta = mouseWorldPos.sub(spawn1);
-        var maxlen = cmpGrid.lengthOfCells(material.maxLength);
+        var maxlen = cmpGrid.lengthOfCells(material.maxLength-1);
         var cp : Vec2 = null;
         while(true) {
-            var beamMax = delta.length > maxlen ? 
+            var beamMax = delta.length >= maxlen ? 
                 delta.copy().normalise().mul(maxlen).add(spawn1) 
               : delta.add(spawn1);
             var cell = cmpGrid.getClosestCell(beamMax);
@@ -355,8 +382,6 @@ class CmpControlBuild extends CmpControl
         
         if (results.length == 0) {
             selectedBody = null;
-            //inW.text = cast(levelWidth);
-            //inH.text = cast(levelHeight);
             return;
         }
         selectedBody = results.at(0);
@@ -376,6 +401,7 @@ class CmpControlBuild extends CmpControl
     public function loadLevelFromXml(state : MESState)
     {
         var loadText = cast(UIBuilder.get('load'), InputText).text;
+        if (state == null) { state = entity.state; }
         cast(state, StateBridgeLevel).level = CmpLevel.genLevelFromString(state, loadText);
     }
     

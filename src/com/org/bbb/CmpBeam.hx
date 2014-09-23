@@ -68,7 +68,7 @@ class CmpBeam extends CmpPhys
 
         if (stress.x > material.tensionBreak) { // Tension
             stressTHp -= dt;
-            if (stressTHp < 0) {
+            if (stressTHp < 0 || true) {
                 isBreaking = true;
                 splitType = SplitType.TENSION;
             }
@@ -78,7 +78,7 @@ class CmpBeam extends CmpPhys
         
         if (stress.x < -material.compressionBreak) {
             stressCHp -= dt;
-            if (stressCHp < 0) {
+            if (stressCHp < 0 || true) {
                 isBreaking = true;
                 splitType = SplitType.COMPRESSION;
             }
@@ -97,7 +97,7 @@ class CmpBeam extends CmpPhys
         //}
         
         if (isBreaking) {
-            entity.state.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), CmpMultiBeam.createFromBeam(body, splitType, null) ) );
+            entity.state.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), entity, splitType) );
             entity.state.deleteEnt(entity);
             trace(splitType);
         }

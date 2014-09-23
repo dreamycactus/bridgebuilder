@@ -7,6 +7,8 @@ using com.org.bbb.Util;
  * ...
  * @author 
  */
+
+typedef Bounds = { x : Float, y : Float, width : Float, height : Float };
 class Camera
 {
     public var sprite : Sprite;
@@ -14,7 +16,7 @@ class Camera
     @:isVar public var zoom(default, set_zoom) : Float;
     public var pos : Vec2;
     public var vel : Vec2;
-    public var dragBounds : { x : Float, y : Float, width : Float, height : Float };
+    @:isVar public var dragBounds(default, set_dragBounds) : Bounds;
 
     public function new() 
     {
@@ -33,7 +35,7 @@ class Camera
         sprite.y = pos.y;
         
         Util.sortZ(sprite);
-
+        
         
         //sprite.transform.matrix.tx = pos.x;
         //sprite.transform.matrix.ty = pos.y;
@@ -41,10 +43,14 @@ class Camera
     
     public function dragCamera(delta : Vec2)
     {
+        if (delta.length > 20) {
+            delta = delta.normalise().mul(20);
+        }
         pos.addeq(delta);
         if (dragBounds != null) {
-            pos.x = Util.clampf(pos.x, -dragBounds.width*zoom + Config.stageWidth, 0);
-            pos.y = Util.clampf(pos.y, -dragBounds.height*zoom + Config.stageHeight, 0);
+            var elasticBorder = Config.cameraElasticEdge * dragBounds.width;
+            pos.x = Util.clampf(pos.x, Math.min(-dragBounds.width / zoom + Config.stageWidth, 0),0);
+            pos.y = Util.clampf(pos.y, Math.min(-dragBounds.height / zoom + Config.stageHeight, 0),0);
         }
     }
     
@@ -61,10 +67,17 @@ class Camera
     public function set_zoom(z : Float) : Float
     {
         zoom = z;
-        //if (dragBounds != null) {
-            //zoom = Util.clampf(z, 1.0, dragBounds.width / Config.stageWidth);
-        //}
+        if (dragBounds != null) {
+            zoom = Util.clampf(z, Math.max(Config.stageWidth/dragBounds.width, Config.stageHeight/dragBounds.height), Math.min(Config.stageWidth/500, Config.stageHeight/500));
+        }
         return z;
+    }
+    
+    public function set_dragBounds(db : Bounds ) : Bounds
+    {
+        this.dragBounds = db;
+        zoom = zoom;
+        return db;
     }
     
 }

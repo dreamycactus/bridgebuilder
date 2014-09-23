@@ -27,15 +27,15 @@ class Main extends Sprite
         if (top == null) { return; }
         
         var msprite = top.state.getSystem(SysRender).mainSprite;
-        var sx = Lib.current.stage.stageWidth / 60;
-        var sy = Lib.current.stage.stageHeight / 30;
+        var sx = Lib.current.stage.stageWidth / 600;
+        var sy = Lib.current.stage.stageHeight / 300;
         var scale = Math.min(sy, sx);
         var mat = new Matrix();
         mat.scale(scale, scale);
         //msprite.transform.matrix = mat;
         
-        var cam = top.state.getSystem(SysRender).camera;
-        cam.zoom = scale;
+        //var cam = top.state.getSystem(SysRender).camera;
+        //cam.zoom = scale;
 	}
 	
 	function init() 
@@ -51,7 +51,7 @@ class Main extends Sprite
 		Config.init();
         top = new Top();
         EntFactory.inst.top = top;
-        var bp = StateBridgeLevel.createLevelState(top, "levels/b1.xml");
+        var bp = StateBridgeLevel.createLevelState(top, "levels/btest.xml");
         //var bp = new StateMainMenu(top);
     
         top.changeState(bp, false);
@@ -88,7 +88,9 @@ class Main extends Sprite
 		// static entry point
 		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
-        
+        var a = [1, 2, 3, 4];
+        a.insert(0, 5);
+        trace(a);
         Lib.current.addChild(new Main());
 	}
 }

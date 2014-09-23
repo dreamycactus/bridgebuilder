@@ -1,4 +1,6 @@
 package com.org.bbb;
+import com.org.bbb.CmpMultiBeam.SplitType;
+import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
 import com.org.bbb.Config.BuildMat;
 import com.org.bbb.Config.JointType;
 import com.org.mes.Entity;
@@ -69,12 +71,23 @@ class EntFactory
         var cmptrans = new CmpTransform(pos);
         
         //var length = body.shapes.at(0).bounds.width;
-        var cmprend = new CmpRenderTile("img/beam.png", width);
+        var assetPath : String = "";
+        var offset = Vec2.get();
+        switch(material.name) {
+            case "steelbeam":
+                assetPath = "img/beam.png";
+            case "steeldeck":
+                assetPath = "img/deck.png";
+                offset.y = -20;
+        }
+        var cmprend = new CmpRenderMultiBeam([{bitmap : GfxFactory.inst.createBeamBitmap(assetPath, width), body : body} ], offset);
         
         if (pos != null) {
             body.position = pos;
         }
         body.userData.entity = e;
+        body.userData.width = width;
+        body.userData.height = material.height;
         
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
@@ -83,12 +96,20 @@ class EntFactory
         return e;
     }    
     
-    public function createMultiBeamEnt(pos : Vec2, compound : Compound, name : String = "") : Entity
+    public function createMultiBeamEnt(pos : Vec2, entity : Entity, splitType : SplitType, name : String = "") : Entity
     {
         var e = state.createEnt(name);
+        var compound = CmpMultiBeam.createFromBeam(entity.getCmp(CmpBeam).body, splitType, null);
         var cmpbeam = new CmpMultiBeam(compound);
+        var pairs : Array<BodyBitmap> = new Array();
+        
+        var oldrender = entity.getCmp(CmpRenderMultiBeam);
+        var cmprender = new CmpRenderMultiBeam(
+            GfxFactory.inst.breakBeamBitmap(compound
+                                          , oldrender.pairs[0].bitmap), oldrender.offset);
         
         e.attachCmp(cmpbeam);
+        e.attachCmp(cmprender);
         
         return e;
     }

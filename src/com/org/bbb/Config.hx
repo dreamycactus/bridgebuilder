@@ -17,12 +17,14 @@ import openfl.text.TextFormatAlign;
 
 typedef BuildMat =
 {
+    var name : String;
     var matType : MatType;
     var momentBreak  : Float;
     var tensionBreak : Float;
     var compressionBreak :Float;
     var height : Float;
     var maxLength : Int;
+    var cost : Float;
 }
 
 enum MatType { BEAM; CABLE; DECK; }
@@ -43,10 +45,10 @@ class Config
     public static var camDragCoeff = 3;
     
     public static var cableSegWidth = 50;
-    public static var beamStressHp = 500;
+    public static var beamStressHp = 100;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
-    public static var multiBeamJointDecay = 4e4;
+    public static var multiBeamJointDecay = 9e4;
     public static var spawnCDCar = 2000;
     public static var carSpeed = 20;
     
@@ -55,6 +57,7 @@ class Config
     
     public static var panBorder = 0.1;
     public static var panRate = 10;
+    public static var cameraElasticEdge = 0.1;
     
     public static var cgBeam        = 1;
     public static var cgDeck        = 2;
@@ -73,9 +76,9 @@ class Config
     public static var cmSpawn = cgSensor;
     public static var cmAnchor = ~(Config.cgBeam | Config.cgBeamSplit | Config.cgDeck);
     
-    public static var matSteelBeam : BuildMat = { matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6 };
-    public static var matSteelDeck : BuildMat = { matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6 };
-    public static var matCable : BuildMat = { matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15, maxLength : 10 };
+    public static var matSteelBeam : BuildMat = { name : "steelbeam", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };
+    public static var matSteelDeck : BuildMat = { name : "steeldeck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };
+    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15, maxLength : 10, cost : 3 };
 
     public static var stageWidth;
     public static var stageHeight;
@@ -83,7 +86,8 @@ class Config
     public static function init()
     {
         Cmp.cmpManager = new CmpManager();
-        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI, CmpRenderTile, CmpRenderSlide]);
+        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI,
+                                                   CmpRenderTile, CmpRenderMultiBeam, CmpRenderSlide]);
         Cmp.cmpManager.registerCmp(CmpPhys);
         Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpAnchor,
                                                 CmpSharedJoint, CmpCable, CmpMover, CmpMoverCar]);

@@ -7,25 +7,25 @@
 	
 	<!-- output -->
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
-    <app swf-version="11.5" /> 
+    <app swf-version="11.8" /> 
 	
 	<window background="#222222" />
-    <window width="0" height="0" />
-    <window width="1300" height="600" if="flash" />
+    <window width="0" height="0" orientation="landscape" unless="flash" />
+    <window width="1024" height="576" />
 	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->
 	<source path="src" />
+    <haxelib name="openfl" />
 	<haxelib name="stablexui" />
 	<haxelib name="actuate" />
-	<haxelib name="openfl" />
 	<haxelib name="nape" />
+	<haxelib name="spritesheet" />
 	
 	<!-- assets -->
-	<icon path="assets/openfl.svg" />
-	<assets path="assets/img" rename="img" />
+	<assets path="assets/img" rename="img" exclude="icon.svg" />
     <assets path="assets/fonts" rename="fonts" />
-
 	<assets path="data/levels" rename="levels" />
+    <set name="BUILD_DIR" value="export" />
     
     <android target-sdk-version="19" />
 	<android install-location="internalOnly" />
@@ -33,5 +33,5 @@
     <haxeflag name="-dce std" />
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
-    <haxedef name="NAPE_NO_INLINE" if="neko" />
+    <!--<haxedef name="NAPE_NO_INLINE" if="neko" />-->
 </project>

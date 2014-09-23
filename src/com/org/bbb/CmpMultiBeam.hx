@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.bbb.Config.BuildMat;
+import com.org.bbb.Config.JointType;
 import com.org.bbb.Config.MatType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
@@ -8,6 +9,7 @@ import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.dynamics.InteractionFilter;
 import nape.geom.GeomPoly;
+import nape.geom.Mat23;
 import nape.geom.Ray;
 import nape.geom.Vec2;
 import nape.phys.Body;
@@ -89,16 +91,42 @@ class CmpMultiBeam extends CmpPhys
             var geomPoly = new GeomPoly(polyToCut.worldVerts);
             var segmentPolys = geomPoly.cut(comtop, combot, true, true);
             var prev : Body = null;
-            segmentPolys.foreach(function (s){
+            segmentPolys.foreach(function (s) {
+                var centroid : Vec2 = Vec2.get();
+                for (point in s.forwardIterator()) {
+                    centroid.addeq(point);
+                }
+                centroid.muleq(1 / s.size());
+                s.transform(Mat23.translation(-centroid.x, -centroid.y));
+                s.transform(Mat23.rotation( -beamBody.rotation));
+                var width = s.right().x - s.left().x;
                 var body : Body = new Body();
                 body.shapes.push(new Polygon(s, Material.steel()));
                 body.shapes.at(0).filter.collisionGroup = beamBody.shapes.at(0).filter.collisionGroup;
                 body.shapes.at(0).filter.collisionMask = beamBody.shapes.at(0).filter.collisionMask;
+                body.position = centroid;
+                body.rotation = beamBody.rotation;
                 body.compound = c;
+                body.userData.width = width;
+                body.userData.height = beamBody.userData.height;
                 
                 if (prev != null) {
-                    var ejoint = EntFactory.inst.createDoubleJoint(comtop, combot, prev, body, c);
-                    EntFactory.inst.state.insertEnt(ejoint);
+                    var body1 = prev;
+                    var body2 = body;
+                    
+                    var joint : PivotJoint = Config.pivotJoint(JointType.MULTISTIFF);
+                    joint.body1 = body1;
+                    joint.body2 = body2;
+                    joint.anchor1 = body1.worldPointToLocal(comtop);
+                    joint.anchor2 = body2.worldPointToLocal(comtop);
+                    joint.compound = c;
+                    
+                    var joint2 : PivotJoint = Config.pivotJoint(JointType.MULTIELASTIC);
+                    joint2.body1 = body1;
+                    joint2.body2 = body2;
+                    joint2.anchor1 = body1.worldPointToLocal(combot);
+                    joint2.anchor2 = body2.worldPointToLocal(combot);
+                    joint2.compound = c;
                 }
                 prev = body;
             });

@@ -69,6 +69,7 @@ class StateBridgeLevel extends BBBState
         var cl = CmpLevel.loadLevelXml(s1, levelPath);
         level.attachCmp(cl);
         s1.getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
+        s1.getSystem(SysRender).camera.zoom = -1;
         s1.insertEnt(level);
         
         var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, Config.gridCellWidth, [4]);
@@ -138,29 +139,16 @@ class StateBridgeLevel extends BBBState
         var mp = Vec2.get(stage.mouseX, stage.mouseY);
         var bb : BodyList = space.bodiesUnderPoint(getSystem(SysRender).camera.screenToWorld(mp), null, null);
         
-        if (bb != null && bb.length > 0) {
-            textField.text = printBodyForces(bb.at(0) );
-        } else {
-            textField.text = "";
-        }
+        //if (bb != null && bb.length > 0) {
+            //textField.text = printBodyForces(bb.at(0) );
+        //} else {
+            //textField.text = "";
+        //}
         
         var cp = cmpGrid.getClosestCell(mp);
         textField.text += "\n" + cp +"\n" + mp +"\n";
-    }
-    
-    function printBodyForces(body : Body)
-    {
-        var str =        "body id: " + body.id + "\n"
-                       + "rotation: " + body.rotation
-                       + "total contacts: " + body.totalContactsImpulse().Vec3ToIntString() + ",\n" 
-                       + "total impulse: " + body.totalImpulse().Vec3ToIntString() + "\n" 
-                       + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n"
-                       + "total stress: " + body.calculateBeamStress().xy(true) + "\n";
-                       
-        for (c in body.constraints) {
-            str += "constraint impulse: " + c.bodyImpulse(body).Vec3ToIntString() +"\n";
-        }
-        return str;
+        
+        
     }
     
     function set_level(cl : CmpLevel) : CmpLevel
