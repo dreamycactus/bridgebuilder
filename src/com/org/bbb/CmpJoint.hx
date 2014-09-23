@@ -1,5 +1,5 @@
 package com.org.bbb;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;

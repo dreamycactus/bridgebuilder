@@ -1,8 +1,8 @@
 package com.org.bbb;
 import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.Top;
@@ -48,7 +48,7 @@ class EntFactory
                                  , compound : Compound = null, name : String = "") : Entity
     {
         var e = state.createEnt(name);
-        var joint : PivotJoint = Config.pivotJoint(type);
+        var joint : PivotJoint = GameConfig.pivotJoint(type);
         joint.body1 = body1;
         joint.body2 = body2;
         joint.anchor1 = body1.worldPointToLocal(pos);
@@ -128,14 +128,14 @@ class EntFactory
                                       compound : Compound, name : String = "") : Entity
     {
         var e = state.createEnt(name);
-        var joint : PivotJoint = Config.pivotJoint(JointType.MULTISTIFF);
+        var joint : PivotJoint = GameConfig.pivotJoint(JointType.MULTISTIFF);
         joint.body1 = body1;
         joint.body2 = body2;
         joint.anchor1 = body1.worldPointToLocal(pos1);
         joint.anchor2 = body2.worldPointToLocal(pos1);
         joint.compound = compound;
         
-        var joint2 : PivotJoint = Config.pivotJoint(JointType.MULTIELASTIC);
+        var joint2 : PivotJoint = GameConfig.pivotJoint(JointType.MULTIELASTIC);
         joint2.body1 = body1;
         joint2.body2 = body2;
         joint2.anchor1 = body1.worldPointToLocal(pos2);
@@ -170,7 +170,7 @@ class EntFactory
         var cm = new CmpMoverCar(pos);
         var cc = new CmpControlCar(cm);
         
-        cc.speed = Config.carSpeed * dir;
+        cc.speed = GameConfig.carSpeed * dir;
         
         e.attachCmp(cm);
         e.attachCmp(cc);

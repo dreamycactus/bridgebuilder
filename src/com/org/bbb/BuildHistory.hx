@@ -17,8 +17,9 @@ typedef BuildState =
 
 class BuildHistory
 {
-    var stack : List<Array<Entity>> = new List<Array<Entity>>();
+    var stack : List<BuildState> = new List<BuildState>();
     var state : MESState;
+    var maxStackDepth = 10;
     
     public function new(state : MESState) 
     {
@@ -68,11 +69,16 @@ class BuildHistory
             snapshot.push(newEnt);
         }
         
-        stack.add(snapshot);
+        stack.push({ ents: snapshot, lines : linechecker.copy() });
     }
     
-    public function pop() : Array<Entity>
+    public function pop() : BuildState
     {
         return stack.pop();
+    }
+    
+    public function peek() : BuildState
+    {
+        return stack.first();
     }
 }

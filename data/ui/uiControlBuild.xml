@@ -5,13 +5,15 @@
     <!-- Buttons -->
     <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
-                 on-click="@controlBuild.material = $Config.matCable;"/>
+                 on-click="@controlBuild.material = $GameConfig.matCable;"/>
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Deck'" autoHeight="true" 
-                 on-click="@controlBuild.material = $Config.matSteelDeck; @controlBuild.isDeck = true;" />
+                 on-click="@controlBuild.material = $GameConfig.matSteelDeck; @controlBuild.isDeck = true;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
-                 on-click="@controlBuild.material = $Config.matSteelBeam; @controlBuild.isDeck = false;" />
+                 on-click="@controlBuild.material = $GameConfig.matSteelBeam; @controlBuild.isDeck = false;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
                  on-click="@controlBuild.togglePause();" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Undo'" autoHeight="true" 
+                 on-click="@controlBuild.undo();" />
     </VBox>
     <VBox w="300" right ="0" bottom="100" autoHeight="true" childPadding="10" padding="10" >
         <Text id="'console'" skin:Paint-color="0xFFFFFF" w="300" h="100" format-size="14" text="''"/>

@@ -1,5 +1,5 @@
 package com.org.bbb;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.constraint.Constraint;
@@ -24,7 +24,7 @@ class CmpSharedJoint extends CmpPhys
     {
         super();
         body = new Body();
-        body.shapes.add(Config.sharedJointShape());
+        body.shapes.add(GameConfig.sharedJointShape());
         body.position = pos;
         //body.allowRotation = false;
         body.userData.sharedJoint = this;
@@ -57,7 +57,7 @@ class CmpSharedJoint extends CmpPhys
     {
         if (!bodies.has(b) && b != body && b != null) {
             bodies.push(b);
-            var j = Config.pivotJoint(JointType.SHARED);
+            var j = GameConfig.pivotJoint(JointType.SHARED);
             j.body1 = b;
             j.body2 = body;
             /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */

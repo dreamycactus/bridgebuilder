@@ -48,9 +48,9 @@ class Camera
         }
         pos.addeq(delta);
         if (dragBounds != null) {
-            var elasticBorder = Config.cameraElasticEdge * dragBounds.width;
-            pos.x = Util.clampf(pos.x, Math.min(-dragBounds.width / zoom + Config.stageWidth, 0),0);
-            pos.y = Util.clampf(pos.y, Math.min(-dragBounds.height / zoom + Config.stageHeight, 0),0);
+            var elasticBorder = GameConfig.cameraElasticEdge * dragBounds.width;
+            pos.x = Util.clampf(pos.x, Math.min(-dragBounds.width / zoom + GameConfig.stageWidth, 0),0);
+            pos.y = Util.clampf(pos.y, Math.min(-dragBounds.height / zoom + GameConfig.stageHeight, 0),0);
         }
     }
     
@@ -68,7 +68,7 @@ class Camera
     {
         zoom = z;
         if (dragBounds != null) {
-            zoom = Util.clampf(z, Math.max(Config.stageWidth/dragBounds.width, Config.stageHeight/dragBounds.height), Math.min(Config.stageWidth/500, Config.stageHeight/500));
+            zoom = Util.clampf(z, Math.max(GameConfig.stageWidth/dragBounds.width, GameConfig.stageHeight/dragBounds.height), Math.min(GameConfig.stageWidth/500, GameConfig.stageHeight/500));
         }
         return z;
     }

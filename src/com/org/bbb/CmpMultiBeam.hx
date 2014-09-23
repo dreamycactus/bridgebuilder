@@ -1,7 +1,7 @@
 package com.org.bbb;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.JointType;
-import com.org.bbb.Config.MatType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.JointType;
+import com.org.bbb.GameConfig.MatType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.callbacks.InteractionCallback;
@@ -77,7 +77,7 @@ class CmpMultiBeam extends CmpPhys
             //s.graphics.endFill();
             //Lib.current.stage.addChild(s);
         var ray : Ray = Ray.fromSegment(comtop, combot);
-        var rayresult = space.rayMultiCast(ray, false, new InteractionFilter(Config.cgSensor) );
+        var rayresult = space.rayMultiCast(ray, false, new InteractionFilter(GameConfig.cgSensor) );
         if (rayresult.length != 0) {
             var polyToCut : Polygon = null;
             for (r in rayresult) {
@@ -114,14 +114,14 @@ class CmpMultiBeam extends CmpPhys
                     var body1 = prev;
                     var body2 = body;
                     
-                    var joint : PivotJoint = Config.pivotJoint(JointType.MULTISTIFF);
+                    var joint : PivotJoint = GameConfig.pivotJoint(JointType.MULTISTIFF);
                     joint.body1 = body1;
                     joint.body2 = body2;
                     joint.anchor1 = body1.worldPointToLocal(comtop);
                     joint.anchor2 = body2.worldPointToLocal(comtop);
                     joint.compound = c;
                     
-                    var joint2 : PivotJoint = Config.pivotJoint(JointType.MULTIELASTIC);
+                    var joint2 : PivotJoint = GameConfig.pivotJoint(JointType.MULTIELASTIC);
                     joint2.body1 = body1;
                     joint2.body2 = body2;
                     joint2.anchor1 = body1.worldPointToLocal(combot);
@@ -155,7 +155,7 @@ class CmpMultiBeam extends CmpPhys
                 
                 var anchorWorld = beamBody.localPointToWorld(otheranchor);
                 var newAnchorBody : Body = null;
-                var colbodies = Util.closestBodyToPoint(space, anchorWorld, new InteractionFilter(Config.cgSensor), false, 10, 40);
+                var colbodies = Util.closestBodyToPoint(space, anchorWorld, new InteractionFilter(GameConfig.cgSensor), false, 10, 40);
                 
                 for (i in 0...colbodies.length) {
                     var b = colbodies.at(i);
@@ -211,12 +211,12 @@ class CmpMultiBeam extends CmpPhys
         var dt = entity.state.top.dt;
 
         for (c in constraints) {
-            var f = c.frequency - Config.multiBeamFrequencyDecay * dt;
+            var f = c.frequency - GameConfig.multiBeamFrequencyDecay * dt;
             f = Util.clampf(f, 0.4, 1000);
             c.frequency = f;
             
-            if (c.maxForce > Config.multiBeamJointDecay * dt) {
-                c.maxForce -= Config.multiBeamJointDecay * dt;
+            if (c.maxForce > GameConfig.multiBeamJointDecay * dt) {
+                c.maxForce -= GameConfig.multiBeamJointDecay * dt;
             } else {
                 c.maxForce = 40;
             }

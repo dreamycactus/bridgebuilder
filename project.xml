@@ -32,5 +32,5 @@
     <haxeflag name="-dce std" />
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
-    <!--<haxedef name="NAPE_NO_INLINE" if="neko" />-->
+    <haxedef name="NAPE_NO_INLINE" if="neko" />
 </project>

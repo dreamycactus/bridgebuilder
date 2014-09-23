@@ -1,6 +1,6 @@
 package com.org.bbb;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import nape.constraint.DistanceJoint;
 import nape.geom.Vec2;
@@ -27,9 +27,9 @@ class CmpCableStable extends CmpPhys
         var dir = pos2.sub(pos1);
         var len = dir.length;
         dir = dir.normalise();
-        var segCount = Math.round(len / Config.cableSegWidth);
+        var segCount = Math.round(len / GameConfig.cableSegWidth);
         var prev : Body = null;
-        var segWidth = Config.cableSegWidth;
+        var segWidth = GameConfig.cableSegWidth;
         var offset = segWidth * 0.5;
         var startPos = pos1.add(dir.mul(segWidth * 0.5) );
         
@@ -38,15 +38,15 @@ class CmpCableStable extends CmpPhys
         //for (i in 0...segCount) {
             //var body = new Body();
             //var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.height, true) );
-            //shape.filter.collisionGroup = Config.cgCable;
-            //shape.filter.collisionMask = Config.cmCable;
+            //shape.filter.collisionGroup = GameConfig.cgCable;
+            //shape.filter.collisionMask = GameConfig.cmCable;
             //body.shapes.add(shape);
             //body.position = startPos.add(dir.mul(i * segWidth)); 
             //body.rotation = dir.angle;
             //body.compound = compound;
             //
             //if (prev != null) {
-                //var pj = Config.pivotJoint(JointType.MULTISTIFF);
+                //var pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
                 //pj.maxForce = cableMat.tensionBreak;
                 //pj.breakUnderForce = true;
                 //pj.body1 = prev;
@@ -58,14 +58,14 @@ class CmpCableStable extends CmpPhys
             //prev = body;
         //}
         //
-        //var pj = Config.pivotJoint(JointType.MULTISTIFF);
+        //var pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
         //pj.body1 = compound.bodies.at(compound.bodies.length-1);
         //pj.body2 = body1;
         //pj.anchor1 = Vec2.weak(-offset, 0);
         //pj.anchor2 = body1.worldPointToLocal(pos1);
         //pj.compound = compound;
         //
-        //pj = Config.pivotJoint(JointType.MULTISTIFF);
+        //pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
         //pj.body1 = prev;
         //pj.body2 = body2;
         //pj.anchor1 = Vec2.weak(offset, 0);

@@ -30,7 +30,7 @@ class CmpLevel extends Cmp
     public var spawns : Array<Spawn>;
     public var width : Float;
     public var height : Float;
-    public var spawnCD : Float = Config.spawnCDCar;
+    public var spawnCD : Float = GameConfig.spawnCDCar;
     public var id : Int;
     
     public function new(id : Int = -1) 
@@ -61,9 +61,9 @@ class CmpLevel extends Cmp
                 var h = Std.parseFloat(e.get("h"));
                 
                 var anc = new Body(BodyType.STATIC);
-                anc.shapes.add( new Polygon(Polygon.box(w, h), null, new InteractionFilter(Config.cgAnchor, Config.cmAnchor) ) );
-                anc.shapes.at(0).filter.collisionGroup = Config.cgAnchor;
-                anc.shapes.at(0).filter.collisionMask = Config.cmAnchor;
+                anc.shapes.add( new Polygon(Polygon.box(w, h), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor) ) );
+                anc.shapes.at(0).filter.collisionGroup = GameConfig.cgAnchor;
+                anc.shapes.at(0).filter.collisionMask = GameConfig.cmAnchor;
                 anc.position.setxy(x, y);
                 anc.space = level.space;
                 var ent = state.createEnt();
@@ -77,7 +77,7 @@ class CmpLevel extends Cmp
                 var dir = Std.parseInt(e.get("dir"));
                 
                 var spawnIcon = new Body(BodyType.KINEMATIC );
-                spawnIcon.shapes.add(new Polygon(Polygon.regular(20, 20, 3, 0.0), null, new InteractionFilter(Config.cgSpawn, Config.cmSpawn)));
+                spawnIcon.shapes.add(new Polygon(Polygon.regular(20, 20, 3, 0.0), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmSpawn)));
                 spawnIcon.position = Vec2.get(x, y);
                 if (dir == -1) {
                     spawnIcon.rotation = Math.PI;
@@ -115,7 +115,7 @@ class CmpLevel extends Cmp
         space.bodies.foreach(function(b) {
             if (b.shapes.length == 1) {
                 switch(b.shapes.at(0).filter.collisionGroup) {
-                case Config.cgAnchor:
+                case GameConfig.cgAnchor:
                     var bounds = b.bounds;
                     var anchor = Xml.createElement('anchor');
                     anchor.set("x", cast(b.position.x));
@@ -123,7 +123,7 @@ class CmpLevel extends Cmp
                     anchor.set("w", cast(bounds.width));
                     anchor.set("h", cast(bounds.height));
                     xml.addChild(anchor);
-                case Config.cgSpawn:
+                case GameConfig.cgSpawn:
                     var spawn = Xml.createElement('spawn');
                     spawn.set("x", cast(b.position.x));
                     spawn.set("y", cast(b.position.y));
@@ -152,7 +152,7 @@ class CmpLevel extends Cmp
                 }
                 if (spawnCD < 0) {
                     entity.state.insertEnt(EntFactory.inst.createCar(s.pos, s.dir));
-                    spawnCD = Config.spawnCDCar;
+                    spawnCD = GameConfig.spawnCDCar;
                 }
             }
         }

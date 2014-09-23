@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.LineChecker;
 import haxe.ds.HashMap;
 import haxe.ds.IntMap;
 import nape.geom.Vec2;
@@ -23,6 +24,12 @@ private class BeamLine
         this.p2 = p2.copy();
         this.length = p1.sub(p2).length;
     }
+    
+    public function copy() : BeamLine
+    {
+        return new BeamLine(slope, yint, p1, p2);
+    }
+    
     @:op(a == b)
     public function equals(rhs:BeamLine) : Bool
     {
@@ -41,6 +48,10 @@ class LineChecker
     public function copy() : LineChecker
     {
         var linechecker = new LineChecker();
+        linechecker.lines = new Array();
+        lines.map(function(bl) {
+            linechecker.lines.push(bl.copy());
+        });
         return linechecker;
     }
     

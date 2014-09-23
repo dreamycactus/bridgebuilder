@@ -3,9 +3,9 @@ import nape.constraint.ConstraintList;
 import nape.phys.BodyType;
 import openfl.geom.Point;
 import ru.stablex.ui.widgets.Radio;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.MatType;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.MatType;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -181,7 +181,8 @@ class CmpControlBuild extends CmpControl
     {
         this.top = entity.state.top;
         this.state = entity.state;
-        this.buildHistory = new BuildHistory(state);
+        buildHistory = new BuildHistory(state);
+        buildHistory.snapAndPush(builtBeams, lineChecker);
         
         if (inW == null) {
             inW = cast(UIBuilder.get('inWidth'), InputText);
@@ -196,7 +197,7 @@ class CmpControlBuild extends CmpControl
         }
         regEvents();
         
-        material = Config.matSteelDeck;
+        material = GameConfig.matSteelDeck;
         this.camBody.inertia = 50; 
 
         camera = state.getSystem(SysRender).camera;
@@ -210,7 +211,7 @@ class CmpControlBuild extends CmpControl
     public function createBox()
     {
         var b = new Body(BodyType.STATIC);
-        b.shapes.add(new Polygon(Polygon.box(100, 100), null, new InteractionFilter(Config.cgAnchor, Config.cmAnchor)));
+        b.shapes.add(new Polygon(Polygon.box(100, 100), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor)));
         b.mass = 100;
         b.position.setxy(stage.stageWidth * 0.5, stage.stageHeight * 0.5);
         b.space = level.space;
@@ -219,7 +220,7 @@ class CmpControlBuild extends CmpControl
     public function createSpawn()
     {
         var spawnIcon = new Body(BodyType.STATIC);
-        spawnIcon.shapes.add(new Polygon(Polygon.box(30, 30), null, new InteractionFilter(Config.cgSpawn, Config.cmSpawn)));
+        spawnIcon.shapes.add(new Polygon(Polygon.box(30, 30), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmSpawn)));
         spawnIcon.position = Vec2.get(300, 300);
         spawnIcon.space = level.space;
     }
@@ -229,13 +230,13 @@ class CmpControlBuild extends CmpControl
         var mp = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         var cp = cmpGrid.getClosestCell(mp);
         spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
-        var bb : BodyList = level.space.bodiesUnderPoint(spawn1, new InteractionFilter(Config.cgSensor) ) ;
+        var bb : BodyList = level.space.bodiesUnderPoint(spawn1, new InteractionFilter(GameConfig.cgSensor) ) ;
         var otherBody : Body = null;
         startBody = null;
         isDrawing = true;
         /* Prefer to join to shared joint if possible */
         for (b in bb) {
-            if (b.shapes.at(0).filter.collisionGroup&(Config.cgSharedJoint|Config.cgAnchor) != 0) {
+            if (b.shapes.at(0).filter.collisionGroup&(GameConfig.cgSharedJoint|GameConfig.cgAnchor) != 0) {
                 startBody = b;
             } else {
                 otherBody = b;
@@ -275,12 +276,12 @@ class CmpControlBuild extends CmpControl
             return;
         }
         
-        var bb : BodyList = level.space.bodiesUnderPoint(spawn2, new InteractionFilter(Config.cgSensor) );
+        var bb : BodyList = level.space.bodiesUnderPoint(spawn2, new InteractionFilter(GameConfig.cgSensor) );
         var endBody : Body = null;
         var otherBody : Body = null;
         
         for (b in bb) {
-            if ((b.shapes.at(0).filter.collisionGroup&Config.cgSharedJoint) != 0) {
+            if ((b.shapes.at(0).filter.collisionGroup&GameConfig.cgSharedJoint) != 0) {
                 endBody = b;
             } else {
                 otherBody = b;
@@ -289,27 +290,30 @@ class CmpControlBuild extends CmpControl
         var genBody : { body : Body, ent : Entity } = null;
         switch(material.matType) {
         case MatType.DECK:
-            genBody = genBeam(endBody, otherBody, new InteractionFilter(Config.cgDeck, Config.cmDeck));
+            genBody = genBeam(endBody, otherBody, new InteractionFilter(GameConfig.cgDeck, GameConfig.cmDeck));
         case MatType.BEAM:
-            genBody = genBeam(endBody, otherBody, new InteractionFilter(Config.cgBeam, Config.cmBeam));
+            genBody = genBeam(endBody, otherBody, new InteractionFilter(GameConfig.cgBeam, GameConfig.cmBeam));
         case MatType.CABLE:
             var cab = state.createEnt();
             var end = endBody == null ? otherBody : endBody;
             if (end != null && startBody != null) {
-                var cmp = new CmpCable(startBody, end, spawn1, spawn2, Config.matCable);
+                var cmp = new CmpCable(startBody, end, spawn1, spawn2, GameConfig.matCable);
                 cab.attachCmp(cmp);
                 state.insertEnt(cab);
                 //lastBody = cmp.compound.bodies.at(0); 
             }
             builtBeams.push(cab);
         default:
-        } 
+        }
+        builtBeams.push(genBody.ent);
         
         if (startBody.userData.sharedJoint == null) {
             var e = EntFactory.inst.createSharedJoint( spawn1, [startBody, genBody.body]);
             state.insertEnt(e);
             builtBeams.push(e);
         }
+        
+        buildHistory.snapAndPush(builtBeams, lineChecker);
 
         spawn1 = null;
         spawn2 = null;
@@ -329,7 +333,6 @@ class CmpControlBuild extends CmpControl
         
         var ent = EntFactory.inst.createBeamEnt(center, body, spawn1.sub(spawn2).length + 10, material, "bob");
         state.insertEnt(ent);
-        builtBeams.push(ent);
         
         //var ejoint = EntFactory.inst.createJointEnt(spawn1, startBody, body, JointType.BEAM);
         //state.insertEnt(ejoint);
@@ -371,7 +374,7 @@ class CmpControlBuild extends CmpControl
                 cp = cellpos;
                 break;
             } else {
-                maxlen -= Config.gridCellWidth * 0.5;
+                maxlen -= GameConfig.gridCellWidth * 0.5;
             }
         }
         return cp;
@@ -380,7 +383,7 @@ class CmpControlBuild extends CmpControl
     function selectBody()
     {
         var mousePos = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
-        var results = level.space.bodiesUnderPoint(mousePos, new InteractionFilter(Config.cgSensor, (Config.cgSpawn|Config.cgAnchor)));
+        var results = level.space.bodiesUnderPoint(mousePos, new InteractionFilter(GameConfig.cgSensor, (GameConfig.cgSpawn|GameConfig.cgAnchor)));
         
         if (results.length == 0) {
             selectedBody = null;
@@ -389,7 +392,7 @@ class CmpControlBuild extends CmpControl
         selectedBody = results.at(0);
         lastSelectedBody = selectedBody;
 
-        if (selectedBody.shapes.at(0).filter.collisionGroup == Config.cgSpawn) {
+        if (selectedBody.shapes.at(0).filter.collisionGroup == GameConfig.cgSpawn) {
             isSpawn = true;
         } else {
             isSpawn = false;
@@ -450,7 +453,7 @@ class CmpControlBuild extends CmpControl
             if (!isSpawn) {
                 newShape = new Polygon( Polygon.box(w, h, true)
                                       , null
-                                      , new InteractionFilter(Config.cgAnchor, Config.cmAnchor));
+                                      , new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor));
             } else {
                 newShape = cast(lastSelectedBody.shapes.at(0).copy());
             }
@@ -464,25 +467,44 @@ class CmpControlBuild extends CmpControl
     {
         camera.dragCamera(camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY)).sub(
                             prevMouse).mul(
-                                Config.camDragCoeff) );
+                                GameConfig.camDragCoeff) );
     }
     
     function panCamera()
     {
         var dx = 0.0;
         var dy = 0.0;
-        if (stage.mouseX < Config.stageWidth * Config.panBorder) {
-            dx = Config.panRate;
-        } else if (stage.mouseX > Config.stageWidth * (1 - Config.panBorder)) {
-            dx = -Config.panRate;
+        if (stage.mouseX < GameConfig.stageWidth * GameConfig.panBorder) {
+            dx = GameConfig.panRate;
+        } else if (stage.mouseX > GameConfig.stageWidth * (1 - GameConfig.panBorder)) {
+            dx = -GameConfig.panRate;
         }
-        if (stage.mouseY < Config.stageHeight * Config.panBorder) {
-            dy = Config.panRate;
-        } else if (stage.mouseY > Config.stageHeight * (1 - Config.panBorder)) {
-            dy = -Config.panRate;
+        if (stage.mouseY < GameConfig.stageHeight * GameConfig.panBorder) {
+            dy = GameConfig.panRate;
+        } else if (stage.mouseY > GameConfig.stageHeight * (1 - GameConfig.panBorder)) {
+            dy = -GameConfig.panRate;
         }
         
         camera.pos = camera.pos.add(Vec2.weak(dx, dy));
+    }
+    
+    public function restore()
+    {
+        for (e in builtBeams) {
+            state.deleteEnt(e);
+        }
+        var buildstate = buildHistory.peek();
+        builtBeams = buildstate.ents;
+        lineChecker = buildstate.lines;
+        for (e in builtBeams) {
+            state.insertEnt(e);
+        }
+    }
+    
+    public function undo()
+    {
+       buildHistory.pop();
+       restore();
     }
     
     public function togglePause()
@@ -491,13 +513,7 @@ class CmpControlBuild extends CmpControl
         if (sys.paused) {
             buildHistory.snapAndPush(builtBeams, lineChecker);
         } else {
-            for (e in builtBeams) {
-                state.deleteEnt(e);
-            }
-            builtBeams = buildHistory.pop();
-            for (e in builtBeams) {
-                state.insertEnt(e);
-            }
+            restore();
         }
        sys.paused = !sys.paused;
        
@@ -520,7 +536,7 @@ class CmpControlBuild extends CmpControl
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, expandBox);
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, unExpandBox);
             
-            cmpGrid.offset = Vec2.get(0, 25-Config.matSteelDeck.height*0.5);
+            cmpGrid.offset = Vec2.get(0, 25-GameConfig.matSteelDeck.height*0.5);
         } else {
             regEvents();
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, dragBox);
@@ -566,7 +582,7 @@ class CmpControlBuild extends CmpControl
         if (ev.keyCode == Keyboard.SPACE ) {
             togglePause();
         } else if (ev.keyCode == Keyboard.D) {
-            var bbb = level.space.bodiesUnderPoint(Vec2.weak(stage.mouseX, stage.mouseY), new InteractionFilter(Config.cgSensor) );
+            var bbb = level.space.bodiesUnderPoint(Vec2.weak(stage.mouseX, stage.mouseY), new InteractionFilter(GameConfig.cgSensor) );
             bbb.foreach(function(b) {
                 for (i in 0...b.constraints.length) {
                     b.constraints.at(i).space = null;
@@ -574,9 +590,9 @@ class CmpControlBuild extends CmpControl
                 b.space = null;
             });
         } else if (ev.keyCode == Keyboard.NUMBER_1) {
-            material = Config.matSteelBeam;
+            material = GameConfig.matSteelBeam;
         } else if (ev.keyCode == Keyboard.NUMBER_2) {
-            material = Config.matCable;
+            material = GameConfig.matCable;
         } else if (ev.keyCode == Keyboard.NUMBER_0) {
             isDeck = !isDeck;
         } else if (ev.keyCode == Keyboard.PAGE_UP) {

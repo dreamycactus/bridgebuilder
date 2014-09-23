@@ -1,8 +1,8 @@
 package com.org.bbb;
 
 import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.JointType;
 import com.org.bbb.Template.TemplateParams;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
@@ -72,7 +72,7 @@ class StateBridgeLevel extends BBBState
         s1.getSystem(SysRender).camera.zoom = -1;
         s1.insertEnt(level);
         
-        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, Config.gridCellWidth, [4]);
+        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, GameConfig.gridCellWidth, [4]);
         var cmpGrid = grid.getCmp(CmpGrid);
         s1.insertEnt(grid);
         s1.cmpGrid = cmpGrid;
@@ -86,7 +86,7 @@ class StateBridgeLevel extends BBBState
         s1.cmpControl = cmpControl;
         controllerEnt.attachCmp(cmpControl);
         controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
-        controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, Config.stageWidth, Config.stageHeight) );
+        controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, GameConfig.stageWidth, GameConfig.stageHeight) );
 
         s1.insertEnt(controllerEnt);
         

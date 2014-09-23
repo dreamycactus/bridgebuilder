@@ -1,7 +1,7 @@
 package com.org.bbb;
 import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.Config.BuildMat;
-import com.org.bbb.Config.JointType;
+import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.geom.Vec3;
@@ -26,9 +26,9 @@ class CmpBeam extends CmpPhys
     public var width : Float;
     public var material : BuildMat;
     public var jointOffsets : Array<Vec2>;
-    public var stressCHp : Float = Config.beamStressHp;
-    public var stressTHp : Float = Config.beamStressHp;
-    public var stressSHp : Float = Config.beamStressHp;
+    public var stressCHp : Float = GameConfig.beamStressHp;
+    public var stressTHp : Float = GameConfig.beamStressHp;
+    public var stressSHp : Float = GameConfig.beamStressHp;
     
     public function new(body : Body, width : Float, material : BuildMat) 
     {
@@ -72,7 +72,7 @@ class CmpBeam extends CmpPhys
                 isBreaking = true;
                 splitType = SplitType.TENSION;
             }
-        } else if (stressTHp < Config.beamStressHp) {
+        } else if (stressTHp < GameConfig.beamStressHp) {
             stressTHp += dt;
         }
         
@@ -82,7 +82,7 @@ class CmpBeam extends CmpPhys
                 isBreaking = true;
                 splitType = SplitType.COMPRESSION;
             }
-        } else if (stressTHp < Config.beamStressHp) {
+        } else if (stressTHp < GameConfig.beamStressHp) {
             stressCHp += dt;
         }
         
@@ -92,7 +92,7 @@ class CmpBeam extends CmpPhys
                 //isBreaking = true;
                 //splitType = SplitType.SHEAR;
             //}
-        //} else if (stressSHp < Config.stressHp) {
+        //} else if (stressSHp < GameConfig.stressHp) {
             //stressSHp += dt;
         //}
         

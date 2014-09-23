@@ -1,4 +1,5 @@
 package com.org.bbb;
+
 import com.org.mes.Cmp;
 import com.org.mes.CmpManager;
 import com.org.mes.MESState;
@@ -74,7 +75,7 @@ class GameConfig
     public static var cmDeck = ~(cgBeam | cgDeck | cgSharedJoint | cgAnchor);
     public static var cmCable = cgSensor;
     public static var cmSpawn = cgSensor;
-    public static var cmAnchor = ~(Config.cgBeam | Config.cgBeamSplit | Config.cgDeck);
+    public static var cmAnchor = ~(GameConfig.cgBeam | GameConfig.cgBeamSplit | GameConfig.cgDeck);
     
     public static var matSteelBeam : BuildMat = { name : "steelbeam", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };
     public static var matSteelDeck : BuildMat = { name : "steeldeck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };

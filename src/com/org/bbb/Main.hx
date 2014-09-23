@@ -4,7 +4,6 @@ import com.org.mes.Top;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
-import haxe.macro.Compiler;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.geom.Matrix;
@@ -22,8 +21,8 @@ class Main extends Sprite
 	{
 		if (!inited) init();
 		// else (resize or orientation change)
-        Config.stageHeight = Lib.current.stage.stageHeight;
-        Config.stageWidth = Lib.current.stage.stageWidth;
+        GameConfig.stageHeight = Lib.current.stage.stageHeight;
+        GameConfig.stageWidth = Lib.current.stage.stageWidth;
         if (top == null) { return; }
         
         var msprite = top.state.getSystem(SysRender).mainSprite;
@@ -48,7 +47,7 @@ class Main extends Sprite
         
         this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 
-		Config.init();
+		GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
         var bp = StateBridgeLevel.createLevelState(top, "levels/btest.xml");

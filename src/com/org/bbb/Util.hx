@@ -226,4 +226,22 @@ class Util
     public static function similar(v : Vec2, v2 : Vec2) : Bool {
         return floatEqual(v.x, v2.x) && floatEqual(v.y, v2.y);
     }
+    @:access(List)
+    public static function popLast<T>(list : List<T>) : List<T>
+    {
+        var cur = list.h;
+        var prev = null;
+        while (cur != null) {
+            if (cur[1] == null) {
+                if (prev == null) {
+                    list.h = null;
+                } else {
+                    prev[1] = null;
+                }
+            }
+            prev = cur;
+            cur = cur[1];
+        }
+        return list;
+    }
 }

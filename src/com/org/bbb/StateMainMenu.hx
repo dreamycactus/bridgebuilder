@@ -35,13 +35,13 @@ class StateMainMenu extends BBBState
         super(top);
         sprite = new Sprite();
         
-        titleText = Config.basicTextField("Bridge Builder", 60, 0xFFFFFF, TextFieldAutoSize.CENTER);
-        titleText.x = (Config.stageWidth-titleText.width)/2;
-        titleText.y = Config.stageHeight * 0.1;
+        titleText = GameConfig.basicTextField("Bridge Builder", 60, 0xFFFFFF, TextFieldAutoSize.CENTER);
+        titleText.x = (GameConfig.stageWidth-titleText.width)/2;
+        titleText.y = GameConfig.stageHeight * 0.1;
         
-        startText = Config.basicTextField("Click to start", 30, 0xFFFFFF, TextFieldAutoSize.CENTER);
-        startText.x = (Config.stageWidth - startText.width) / 2;
-        startText.y = Config.stageHeight * 0.85;
+        startText = GameConfig.basicTextField("Click to start", 30, 0xFFFFFF, TextFieldAutoSize.CENTER);
+        startText.x = (GameConfig.stageWidth - startText.width) / 2;
+        startText.y = GameConfig.stageHeight * 0.85;
         
         sprite.addChild(titleText);
         sprite.addChild(startText);
@@ -60,7 +60,7 @@ class StateMainMenu extends BBBState
     
     function startLevel(_)
     {
-        top.changeState(new TransPan(top, this, Config.createLevelState(top, "levels/b1.xml")));
+        top.changeState(new TransPan(top, this, GameConfig.createLevelState(top, "levels/b1.xml")));
     }
     
     public override function deinit()
