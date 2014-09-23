@@ -9,9 +9,15 @@ using Lambda;
  * ...
  * @author 
  */
+typedef BuildState = 
+{
+    ents : Array<Entity>,
+    lines : LineChecker
+};
+
 class BuildHistory
 {
-    var stack : GenericStack<Array<Entity>> = new GenericStack<Array<Entity>>();
+    var stack : List<Array<Entity>> = new List<Array<Entity>>();
     var state : MESState;
     
     public function new(state : MESState) 
@@ -19,7 +25,7 @@ class BuildHistory
         this.state = state;
     }
     
-    public function snapAndPush(builtEnts : Array<Entity>)
+    public function snapAndPush(builtEnts : Array<Entity>, linechecker : LineChecker)
     {
         var snapshot : Array<Entity> = new Array();
         var oldToNew : ObjectMap<Entity, Entity> = new ObjectMap();

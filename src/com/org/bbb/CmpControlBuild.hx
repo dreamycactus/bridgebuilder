@@ -37,6 +37,7 @@ class CmpControlBuild extends CmpControl
     var top : Top;
     var state :MESState;
     var cmpGrid : CmpGrid;
+    
     public var spawn1 : Vec2;
     public var spawn2 : Vec2;
     public var isDrawing : Bool = false;
@@ -52,7 +53,6 @@ class CmpControlBuild extends CmpControl
     var inLevelH : InputText;
     var console : Text;
     
-    var lineChecker : LineChecker = new LineChecker();
     
     public var selectedBody : Body;
     public var lastSelectedBody : Body;
@@ -71,6 +71,8 @@ class CmpControlBuild extends CmpControl
     public var editSpace : Space;
     public var builtBeams : Array<Entity> = new Array();
     public var buildHistory : BuildHistory;
+    var lineChecker : LineChecker = new LineChecker();
+
 
     public function new(stage : Stage, cmpGrid : CmpGrid, level : CmpLevel) 
     {
@@ -487,7 +489,7 @@ class CmpControlBuild extends CmpControl
     {
         var sys = state.getSystem(SysPhysics);
         if (sys.paused) {
-            buildHistory.snapAndPush(builtBeams);
+            buildHistory.snapAndPush(builtBeams, lineChecker);
         } else {
             for (e in builtBeams) {
                 state.deleteEnt(e);

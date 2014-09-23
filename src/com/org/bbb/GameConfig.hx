@@ -25,7 +25,7 @@ typedef BuildMat =
     var height : Float;
     var maxLength : Int;
     var cost : Float;
-}
+};
 
 enum MatType { BEAM; CABLE; DECK; }
 
@@ -40,7 +40,7 @@ enum JointType
     CABLELINK;
 }
 
-class Config
+class GameConfig
 {
     public static var camDragCoeff = 3;
     

@@ -223,4 +223,7 @@ class Util
     public static function floatGrEqual(f1 : Float, f2 : Float) {
         return (Math.abs(f1 - f2) < EPSILON) || (f1 > f2);
     }
+    public static function similar(v : Vec2, v2 : Vec2) : Bool {
+        return floatEqual(v.x, v2.x) && floatEqual(v.y, v2.y);
+    }
 }

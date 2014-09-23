@@ -2,28 +2,52 @@ package com.org.bbb;
 import haxe.ds.HashMap;
 import haxe.ds.IntMap;
 import nape.geom.Vec2;
+import openfl._internal.renderer.AbstractRenderer;
 
 using Lambda;
+using com.org.bbb.Util;
 
-typedef BeamLine =
+private class BeamLine
 {
-    slope : Float,
-    yint : Float,
-    p1 : Vec2,
-    p2 : Vec2,
-    length : Float
+    public var slope : Float;
+    public var yint : Float;
+    public var p1 : Vec2;
+    public var p2 : Vec2;
+    public var length : Float;
+    
+    public function new(slope : Float, yint : Float, p1 : Vec2, p2 : Vec2) 
+    {
+        this.slope = slope;
+        this.yint = yint;
+        this.p1 = p1.copy();
+        this.p2 = p2.copy();
+        this.length = p1.sub(p2).length;
+    }
+    @:op(a == b)
+    public function equals(rhs:BeamLine) : Bool
+    {
+        return (rhs.p1.similar(p1) && rhs.p2.similar(p2)) || (rhs.p2.similar(p1) && rhs.p1.similar(p2));
+    }
 }
+
 class LineChecker
 {
     var lines : Array<BeamLine> = new Array();
+    
     public function new() 
     {
+    }
+    
+    public function copy() : LineChecker
+    {
+        var linechecker = new LineChecker();
+        return linechecker;
     }
     
     public function addLine(p1 : Vec2, p2 : Vec2) : Bool
     {
         var line =  Util.getLineFormula(p1, p2);
-        var beamline : BeamLine = { slope : line.m, yint : line.b, p1 : p1, p2 : p2, length : p2.sub(p1).length };
+        var beamline : BeamLine = new BeamLine(line.m, line.b, p1, p2);
         var res = binaryFindColinear(beamline);
         var colinear = res.a;
         
@@ -81,9 +105,6 @@ class LineChecker
         }
         if (!ins) {
             lines.push(beamline);
-            if (beamline.slope == -1) {
-                trace('uh');
-            }
         }
             
         return true;
@@ -91,7 +112,9 @@ class LineChecker
     
     public function removeLine(p1 : Vec2, p2 : Vec2)
     {
-        
+        var line =  Util.getLineFormula(p1, p2);
+        var beamline : BeamLine = new BeamLine(line.m, line.b, p1, p2);
+        lines.remove(beamline);
     }
     inline function bothNan(v : Float, v2 : Float) : Bool
     {
@@ -110,15 +133,14 @@ class LineChecker
         var index = -1;
         
         while (imax >= imin) {
-            var mid = Std.int((imax + imin) * 0.5);
+            var mid = imin + Std.int((imax - imin) * 0.5);
             if (equalSlopes(lines[mid].slope, beamLine.slope)
             && Util.floatEqual(lines[mid].yint, beamLine.yint)) {
                 index = mid;
                 ret.push(lines[mid]);
                 break;
-            } else if (lines[mid].slope < beamLine.slope 
-                || (equalSlopes(lines[mid].slope, beamLine.slope)
-                    && lines[mid].yint <= beamLine.yint)) {
+            } else if ((lines[mid].slope < beamLine.slope || (!Math.isNaN(lines[mid].slope) && Math.isNaN(beamLine.slope)))
+                || (equalSlopes(lines[mid].slope, beamLine.slope) && lines[mid].yint <= beamLine.yint)) {
                 imin = mid + 1;
             } else {
                 imax = mid - 1;

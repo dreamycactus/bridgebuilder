@@ -25,7 +25,6 @@
 	<assets path="assets/img" rename="img" exclude="icon.svg" />
     <assets path="assets/fonts" rename="fonts" />
 	<assets path="data/levels" rename="levels" />
-    <set name="BUILD_DIR" value="export" />
     
     <android target-sdk-version="19" />
 	<android install-location="internalOnly" />

@@ -1,9 +1,9 @@
 package com.org.bbb;
 
 import com.org.mes.Top;
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.Lib;
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.Lib;
 import haxe.macro.Compiler;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
@@ -88,9 +88,6 @@ class Main extends Sprite
 		// static entry point
 		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
-        var a = [1, 2, 3, 4];
-        a.insert(0, 5);
-        trace(a);
         Lib.current.addChild(new Main());
 	}
 }
