@@ -62,7 +62,6 @@ class SysRender extends System
     override public function update()
     {
         camera.update();
-        Util.sortZ(mainSprite);
 
         debug.clear();
         debug.draw(level.space);

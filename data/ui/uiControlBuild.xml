@@ -4,24 +4,35 @@
     <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
     <!-- Buttons -->
     <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
+        
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
-                 on-click="@controlBuild.material = $GameConfig.matCable;"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Deck'" autoHeight="true" 
-                 on-click="@controlBuild.material = $GameConfig.matSteelDeck; @controlBuild.isDeck = true;" />
+                 on-click="@controlBuild.set_material($GameConfig.matCable);"/>
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Road'" autoHeight="true" 
+                 on-click="@controlBuild.set_material($GameConfig.matDeck); @controlBuild.isDeck = true;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
-                 on-click="@controlBuild.material = $GameConfig.matSteelBeam; @controlBuild.isDeck = false;" />
+                 on-click="@controlBuild.set_material($GameConfig.matSteel); @controlBuild.isDeck = false;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Wood'" autoHeight="true" 
+                 on-click="@controlBuild.set_material($GameConfig.matWood); @controlBuild.isDeck = false;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Concrete'" autoHeight="true" 
+                 on-click="@controlBuild.set_material($GameConfig.matConcrete); @controlBuild.isDeck = false;" />
+        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Delete Mode'" autoHeight="true" 
+                 on-click="@controlBuild.isDeleteBeam = true;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
                  on-click="@controlBuild.togglePause();" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Undo'" autoHeight="true" 
                  on-click="@controlBuild.undo();" />
+                 
+        
     </VBox>
-    <VBox w="300" right ="0" bottom="100" autoHeight="true" childPadding="10" padding="10" >
-        <Text id="'console'" skin:Paint-color="0xFFFFFF" w="300" h="100" format-size="14" text="''"/>
+    <VBox w="200" right ="0" bottom="0" autoHeight="true" childPadding="10" padding="10" >
+        <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>
     </VBox>    
     <HBox w="400" autoHeight="true" childPadding="10" padding="10">
         <Text skin:Paint-color="0xFFFFFF" w="100" h="20" text="'Level W/H'"/>
         <InputText id="'levelWidth'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
         <InputText id="'levelHeight'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
+        <Text id="'mem'" skin:Paint-color="0xFFFFFF" w="300" h="100" format-size="14" text="''"/>
+        
     </HBox>
     <VBox w="200" left="3" top="40" autoHeight="true" childPadding="10" padding="10">
         <InputText id="'inX'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'x'"/> 

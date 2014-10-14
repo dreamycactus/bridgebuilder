@@ -7,7 +7,7 @@ package com.org.mes;
 class Cmp
 {
     public static var cmpManager : CmpManager;
-    public var entity : Entity;
+    public var entity(default, set_entity) : Entity;
     public var type : CmpType;
     
     public function new()
@@ -19,4 +19,6 @@ class Cmp
     {
         
     }
+    
+    function set_entity(e : Entity) : Entity { entity = e; return e; };
 }

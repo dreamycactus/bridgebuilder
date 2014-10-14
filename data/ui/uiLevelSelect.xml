@@ -1,0 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+
+<Widget w="1024" h="600">
+    <!-- Buttons -->
+    <VBox id="'levelstuff'" w="200" left ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
+    </VBox>
+</Widget>

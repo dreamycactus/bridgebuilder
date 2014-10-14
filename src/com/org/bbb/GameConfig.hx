@@ -4,6 +4,7 @@ import com.org.mes.Cmp;
 import com.org.mes.CmpManager;
 import com.org.mes.MESState;
 import com.org.mes.Top;
+import nape.callbacks.CbType;
 import nape.constraint.PivotJoint;
 import nape.geom.Vec2;
 import nape.shape.Circle;
@@ -28,7 +29,7 @@ typedef BuildMat =
     var cost : Float;
 };
 
-enum MatType { BEAM; CABLE; DECK; }
+enum MatType { BEAM; CABLE; DECK; WOOD; CONCRETE; }
 
 enum JointType
 {
@@ -46,7 +47,7 @@ class GameConfig
     public static var camDragCoeff = 3;
     
     public static var cableSegWidth = 50;
-    public static var beamStressHp = 100;
+    public static var beamStressHp = 200;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
     public static var multiBeamJointDecay = 9e4;
@@ -68,18 +69,27 @@ class GameConfig
     public static var cgLoad        = 32;
     public static var cgCable       = 64;
     public static var cgSensor      = (1<<11);
-    public static var cgSpawn       = 128;
+    public static var cgEnd    = 256;
+    public static var cgSpawn       = 512;
     
     public static var cmSharedJoint = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor|cgLoad);
     public static var cmBeam = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor|cgLoad);
     public static var cmDeck = ~(cgBeam | cgDeck | cgSharedJoint | cgAnchor);
     public static var cmCable = cgSensor;
-    public static var cmSpawn = cgSensor;
+    public static var cmEditable = cgSensor;
     public static var cmAnchor = ~(GameConfig.cgBeam | GameConfig.cgBeamSplit | GameConfig.cgDeck);
     
-    public static var matSteelBeam : BuildMat = { name : "steelbeam", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };
-    public static var matSteelDeck : BuildMat = { name : "steeldeck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 2000, height : 20, maxLength : 6, cost : 3 };
-    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15, maxLength : 10, cost : 3 };
+    public static var cbCable = new CbType();
+    public static var cbMulti = new CbType();
+    public static var cbCar = new CbType();
+    public static var cbTruck = new CbType();
+    public static var cbEnd = new CbType();
+    
+    public static var matWood : BuildMat = { name : "wood", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 700, compressionBreak : 500, height : 20, maxLength : 6, cost : 2 };
+    public static var matConcrete : BuildMat = { name : "concrete", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 500, compressionBreak : 4000, height : 20, maxLength : 6, cost : 3 };
+    public static var matSteel : BuildMat = { name : "steel", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 1000, height : 20, maxLength : 6, cost : 4 };
+    public static var matDeck : BuildMat = { name : "deck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 1000, height : 20, maxLength : 6, cost : 4 };
+    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15, maxLength : 30, cost : 1 };
 
     public static var stageWidth;
     public static var stageHeight;
@@ -87,13 +97,15 @@ class GameConfig
     public static function init()
     {
         Cmp.cmpManager = new CmpManager();
-        Cmp.cmpManager.makeParentChild(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI,
-                                                   CmpRenderTile, CmpRenderMultiBeam, CmpRenderSlide]);
-        Cmp.cmpManager.registerCmp(CmpPhys);
-        Cmp.cmpManager.makeParentChild(CmpPhys, [CmpBeam, CmpJoint, CmpMultiBeam, CmpAnchor,
-                                                CmpSharedJoint, CmpCable, CmpMover, CmpMoverCar]);
-        Cmp.cmpManager.registerCmp(CmpControl);
-        Cmp.cmpManager.makeParentChild(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
+        Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
+                                       , CmpRenderMultiBeam, CmpRenderSlide]);
+        Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
+                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpSpawn, CmpEnd]);
+        Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
+        Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
+        Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp]);
+        Cmp.cmpManager.adopt(CmpSpawn, []);
+        
         
         stageWidth = Lib.current.stage.stageWidth;
         stageHeight = Lib.current.stage.stageHeight;
@@ -130,16 +142,16 @@ class GameConfig
         case MULTISTIFF:
             ret.stiff = true;
             ret.ignore = true;
-            //ret.breakUnderError = true;
+            ret.breakUnderError = true;
             //ret.maxError = 1e4;
-            ret.breakUnderForce = true;
+            ret.breakUnderForce = false;
             ret.maxForce = 1e9;
         case MULTIELASTIC:
             ret.stiff = false;
             ret.ignore = true;
-            //ret.breakUnderError = true;
+            ret.breakUnderError = true;
             //ret.maxError = 1e4;
-            ret.breakUnderForce = true;
+            ret.breakUnderForce = false;
             ret.maxForce = 1e9;
             
         case ANCHOR:

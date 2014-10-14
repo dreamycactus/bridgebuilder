@@ -22,6 +22,7 @@ class CmpRenderGrid extends CmpRender
     override public function render(dt : Float) : Void
     {
         var g = sprite.graphics;
+        g.clear();
         var cellsz = cmpGrid.cellSize;
         var w = cmpGrid.width;
         var h = cmpGrid.height;

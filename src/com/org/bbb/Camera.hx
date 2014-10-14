@@ -34,9 +34,6 @@ class Camera
         sprite.x = pos.x;
         sprite.y = pos.y;
         
-        Util.sortZ(sprite);
-        
-        
         //sprite.transform.matrix.tx = pos.x;
         //sprite.transform.matrix.ty = pos.y;
     }

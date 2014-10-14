@@ -30,6 +30,7 @@
 	<android install-location="internalOnly" />
 	<!-- optimize output -->
     <haxeflag name="-dce std" />
+    <haxeflag name="--no-opt " if="flash" />
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
     <haxedef name="NAPE_NO_INLINE" if="neko" />

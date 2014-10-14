@@ -35,6 +35,7 @@ class CmpMoverCar extends CmpMover
         body = new Body(); // Chassis
         body.shapes.add( new Polygon(Polygon.box(50, 20), null, new InteractionFilter(GameConfig.cgLoad)) );
         body.shapes.at(0).material = Material.steel();
+        body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
         body.position = pos;
         

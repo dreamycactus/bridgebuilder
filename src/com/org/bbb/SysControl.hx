@@ -21,7 +21,6 @@ class SysControl extends System
     
     override public function init()
     {
-        UIBuilder.init("data/ui/defaults.xml");
     }
     
     override public function inserted(e : Entity)

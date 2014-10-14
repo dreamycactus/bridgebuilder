@@ -18,7 +18,7 @@ class CmpControlCar extends CmpControl
     
     override public function update() : Void
     {
-        if (mover.body.position.y > Lib.current.stage.stageHeight + 100) {
+        if (mover.body.position.y > Lib.current.stage.stageHeight + 1000) {
             entity.delete();
         }
     }

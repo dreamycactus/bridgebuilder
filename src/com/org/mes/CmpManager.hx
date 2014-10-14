@@ -33,10 +33,10 @@ class CmpManager
         return cmpsByName.get(Type.getClassName(cmpClass) );
     }
     
-    public function makeParentChild(parent : Class<Cmp>, children : Array<Class<Cmp>>)
+    public function adopt(parent : Class<Cmp>, children : Array<Class<Cmp>>)
     {
+        var pt = registerCmp(parent);
         for (child in children) {
-            var pt = registerCmp(parent);
             var ct = registerCmp(child);
             
             pt.addChild(ct);

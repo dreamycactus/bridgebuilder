@@ -45,6 +45,22 @@ class CmpSharedJoint extends CmpPhys
 
     }
     
+    public function deleteNull()
+    {
+        bodies = bodies.filter(function (b) { return b.space != null || b.compound != null; } );
+        joints = joints.filter(function(j) { 
+            var pj = cast(j, PivotJoint);
+            var shouldDelete = pj.body1.space == null || pj.body2.space == null;
+            if (shouldDelete) {
+                pj.space = null;
+            }
+            return !shouldDelete;
+        });
+        if (bodies.length == 0) {
+            entity.delete();
+        }
+    }
+    
     public function breakAll()
     {
         body.constraints.foreach(function(c) {
@@ -57,6 +73,17 @@ class CmpSharedJoint extends CmpPhys
     {
         if (!bodies.has(b) && b != body && b != null) {
             bodies.push(b);
+            if (b.userData.attachedSJ == null) {
+                b.userData.attachedSJ = new Array<CmpSharedJoint>();
+            }
+            b.userData.attachedSJ.push(this);
+            var beamEnt : Entity = b.userData.entity;
+            if(beamEnt != null) {
+                var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
+                for (beam in beams) {
+                    beam.sharedJoints.push(this);
+                }
+            }
             var j = GameConfig.pivotJoint(JointType.SHARED);
             j.body1 = b;
             j.body2 = body;
@@ -77,17 +104,37 @@ class CmpSharedJoint extends CmpPhys
     public function removeBody(b : Body)
     {
         if (bodies.remove(b)) {
-            b.constraints.foreach(function(c) {
+            if (b.userData.attachedSJ != null) {
+                b.userData.attachedSJ.remove(this);
+            }
+            for (j in joints) {
+                var pj : PivotJoint = cast(j);
+                var remove = false;
+                if (pj.body1 == b || pj.body2 == b) {
+                    remove = true;
+                }
+                if (remove) {
+                    pj.space = null;
+                    joints.remove(j);
+                }
+                
+            }
+            var beamEnt : Entity = b.userData.entity;
+            var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
+            for (beam in beams) {
+                beam.sharedJoints.remove(this);
+            }
+            for (c in b.constraints) {
                 if (body.constraints.has(c)) {
                     c.space = null;
                 }
-            });
+            }
         }
     }
     
     override public function update()
     {
-        
+        deleteNull();
     }
 
     var ents : Array<Entity> = new Array();

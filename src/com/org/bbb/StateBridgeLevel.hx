@@ -59,7 +59,9 @@ class StateBridgeLevel extends BBBState
     public static function createLevelState(top : Top, levelPath : String) : BBBState
     {
         var s1 = new StateBridgeLevel(top);
-        var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage), new SysControl(s1, Lib.current.stage)];
+        var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage)
+                    , new SysControl(s1, Lib.current.stage), new SysRuntimeOverlord(s1), new SysObjective(s1)
+                    , new SysLevelDirector(s1, null)];
         for (s in allsys) {
             s1.insertSystem(s);
         }
@@ -80,6 +82,12 @@ class StateBridgeLevel extends BBBState
         s1.renderSys = s1.getSystem(SysRender);
         s1.getSystem(SysPhysics).level = cl;
         s1.getSystem(SysRender).level = cl;
+        s1.getSystem(SysLevelDirector).level = cl;
+        s1.getSystem(SysRuntimeOverlord).level = cl;
+        
+        for (e in cl.ents) {
+            s1.insertEnt(e);
+        }
         
         var controllerEnt = s1.createEnt();
         var cmpControl = new CmpControlBuild(Lib.current.stage, cmpGrid, cl);
@@ -89,6 +97,10 @@ class StateBridgeLevel extends BBBState
         controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, GameConfig.stageWidth, GameConfig.stageHeight) );
 
         s1.insertEnt(controllerEnt);
+        
+        var eobj = s1.createEnt();
+        eobj.attachCmp(new CmpObjectiveAllPass(cl));
+        s1.insertEnt(eobj);
         
         return s1;
     }
@@ -126,29 +138,11 @@ class StateBridgeLevel extends BBBState
     
     override function init() 
     {
-        //var rootWidget = UIBuilder.get('root');
-        //rootWidget.w = stage.stageWidth;
-        //rootWidget.h = stage.stageWidth;
     }
     
     override function update() 
     {
         super.update();
-        var space = getSystem(SysPhysics).level.space;
-
-        var mp = Vec2.get(stage.mouseX, stage.mouseY);
-        var bb : BodyList = space.bodiesUnderPoint(getSystem(SysRender).camera.screenToWorld(mp), null, null);
-        
-        //if (bb != null && bb.length > 0) {
-            //textField.text = printBodyForces(bb.at(0) );
-        //} else {
-            //textField.text = "";
-        //}
-        
-        var cp = cmpGrid.getClosestCell(mp);
-        textField.text += "\n" + cp +"\n" + mp +"\n";
-        
-        
     }
     
     function set_level(cl : CmpLevel) : CmpLevel

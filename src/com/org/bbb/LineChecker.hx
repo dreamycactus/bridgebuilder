@@ -3,7 +3,6 @@ import com.org.bbb.LineChecker;
 import haxe.ds.HashMap;
 import haxe.ds.IntMap;
 import nape.geom.Vec2;
-import openfl._internal.renderer.AbstractRenderer;
 
 using Lambda;
 using com.org.bbb.Util;
@@ -33,7 +32,7 @@ private class BeamLine
     @:op(a == b)
     public function equals(rhs:BeamLine) : Bool
     {
-        return (rhs.p1.similar(p1) && rhs.p2.similar(p2)) || (rhs.p2.similar(p1) && rhs.p1.similar(p2));
+        return (rhs.p1.similar(p1) && rhs.p2.similar(p2)) || (rhs.p1.similar(p2) && rhs.p2.similar(p1));
     }
 }
 
@@ -55,7 +54,7 @@ class LineChecker
         return linechecker;
     }
     
-    public function addLine(p1 : Vec2, p2 : Vec2) : Bool
+    public function isValidLine(p1 : Vec2, p2 : Vec2) : Bool
     {
         var line =  Util.getLineFormula(p1, p2);
         var beamline : BeamLine = new BeamLine(line.m, line.b, p1, p2);
@@ -105,6 +104,17 @@ class LineChecker
                 return false;
             }
         }
+        return true;
+    }
+    
+    public function addLine(p1 : Vec2, p2 : Vec2) : Bool
+    {
+        if (!isValidLine(p1, p2)) {
+            return false;
+        }
+        
+        var line =  Util.getLineFormula(p1, p2);
+        var beamline : BeamLine = new BeamLine(line.m, line.b, p1, p2);
         var ins = false;
         for (i in 0...lines.length) {
             if ((lines[i].slope > beamline.slope || (equalSlopes(lines[i].slope, beamline.slope) && lines[i].yint > beamline.yint))
@@ -125,7 +135,12 @@ class LineChecker
     {
         var line =  Util.getLineFormula(p1, p2);
         var beamline : BeamLine = new BeamLine(line.m, line.b, p1, p2);
-        lines.remove(beamline);
+        for (i in 0...lines.length) {
+            if (lines[i].equals(beamline)) {
+                lines.remove(lines[i]);
+                break;
+            }
+        }
     }
     inline function bothNan(v : Float, v2 : Float) : Bool
     {

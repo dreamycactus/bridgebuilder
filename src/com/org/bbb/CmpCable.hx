@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
+import com.org.mes.Entity;
 import nape.constraint.DistanceJoint;
 import nape.geom.Vec2;
 import nape.phys.Body;
@@ -14,14 +15,14 @@ import nape.space.Space;
  * ...
  * @author 
  */
-class CmpCable extends CmpPhys
+class CmpCable extends CmpBeamBase
 {
     public var compound : Compound;
     var cableMat : BuildMat;
     
-    public function new(body1 : Body, body2 : Body, pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
+    public function new(pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
     {
-        super();
+        super(pos1, pos2);
         this.cableMat = cableMat;
         
         var dir = pos2.sub(pos1);
@@ -37,7 +38,6 @@ class CmpCable extends CmpPhys
         compound = new Compound();
         for (i in 0...segCount) {
             var body = new Body();
-            body.userData.entity = entity;
             var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.height, true) );
             shape.filter.collisionGroup = GameConfig.cgCable;
             shape.filter.collisionMask = GameConfig.cmCable;
@@ -59,25 +59,24 @@ class CmpCable extends CmpPhys
             prev = body;
         }
         
-        var pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
-        pj.body1 = compound.bodies.at(compound.bodies.length-1);
-        pj.body2 = body1;
-        pj.anchor1 = Vec2.weak(-offset, 0);
-        pj.anchor2 = body1.worldPointToLocal(pos1);
-        pj.compound = compound;
-        
-        pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
-        pj.body1 = prev;
-        pj.body2 = body2;
-        pj.anchor1 = Vec2.weak(offset, 0);
-
-        pj.anchor2 = body2.worldPointToLocal(pos2);
-        pj.compound = compound;
-        
     }
     
     override public function update() : Void
     {
+    }
+    
+    public function getBody(i : Int) : Body
+    {
+        if (i > compound.bodies.length - 1 || i < 0) {
+            return null;
+        }
+        var j = 0;
+        for (k in compound.bodies) {
+            if (j++ == i) {
+                return k;
+            }
+        }
+        return null;
     }
     override function set_space(space : Space) : Space
     {
@@ -88,5 +87,13 @@ class CmpCable extends CmpPhys
     override function get_space() : Space
     {
         return compound.space;
+    }
+    
+    override function set_entity(e : Entity) : Entity
+    {
+        for (b in compound.bodies) {
+            b.userData.entity = e;
+        }
+        return e;
     }
 }

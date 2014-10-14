@@ -6,6 +6,7 @@ class MESState
     public var sys : Array<System>;
     public var ents : List<Entity>;
     public var top : Top;
+    var index = 0;
     
     public function new(top : Top) 
     {
@@ -45,7 +46,7 @@ class MESState
     
     public function createEnt(name : String = "") : Entity
     {
-        var e = new Entity(this);
+        var e = new Entity(this, index++);
         e.name = name;
         return e;
     }
@@ -53,6 +54,9 @@ class MESState
     public function insertEnt(e : Entity)
     {
         ents.add(e);
+        if (e.state == null) {
+            trace("OK");
+        }
         for (s in sys) {
             s.onInserted(e);
         }
@@ -61,13 +65,13 @@ class MESState
     public function deleteEnt(e : Entity)
     {
         if (e.state == null) { return; }
+        ents.remove(e);
         e.state = null;
         
         for (s in sys) {
             s.onRemoved(e);
         }
         //TODO assign indicies to entities that are reusable like artemis to allow fast access and removal
-        ents.remove(e);
         
     }
     
@@ -103,6 +107,11 @@ class MESState
             }
         }
         return null;
+    }
+    
+    public function onLeaveState(newState : MESState)
+    {
+        
     }
 
 }

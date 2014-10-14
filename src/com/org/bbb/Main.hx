@@ -7,6 +7,7 @@ import openfl.Lib;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.geom.Matrix;
+import ru.stablex.ui.UIBuilder;
 
 import nape.geom.Vec2;
 
@@ -25,12 +26,14 @@ class Main extends Sprite
         GameConfig.stageWidth = Lib.current.stage.stageWidth;
         if (top == null) { return; }
         
-        var msprite = top.state.getSystem(SysRender).mainSprite;
-        var sx = Lib.current.stage.stageWidth / 600;
-        var sy = Lib.current.stage.stageHeight / 300;
-        var scale = Math.min(sy, sx);
-        var mat = new Matrix();
-        mat.scale(scale, scale);
+            if (top.state.getSystem(SysRender) != null) {
+            var msprite = top.state.getSystem(SysRender).mainSprite;
+            var sx = Lib.current.stage.stageWidth / 600;
+            var sy = Lib.current.stage.stageHeight / 300;
+            var scale = Math.min(sy, sx);
+            var mat = new Matrix();
+            mat.scale(scale, scale);
+            }
         //msprite.transform.matrix = mat;
         
         //var cam = top.state.getSystem(SysRender).camera;
@@ -45,13 +48,17 @@ class Main extends Sprite
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
         
+        UIBuilder.regClass('CmpControlBuild');
+        UIBuilder.regClass('GameConfig');
+        UIBuilder.init("data/ui/defaults.xml");
         this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 
 		GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
-        var bp = StateBridgeLevel.createLevelState(top, "levels/btest.xml");
+        //var bp = StateBridgeLevel.createLevelState(top, "levels/btest.xml");
         //var bp = new StateMainMenu(top);
+        var bp = new StateLevelSelect(top);
     
         top.changeState(bp, false);
         resize(null);

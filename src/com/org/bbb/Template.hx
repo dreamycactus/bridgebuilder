@@ -164,7 +164,9 @@ class Template extends Sprite {
                     hand.space = space;
                 }
             }
-            //System.pauseForGCIfCollectionImminent(0);
+            #if flash
+            System.pauseForGCIfCollectionImminent(0);
+            #end
             init();
         }
     }

@@ -64,6 +64,15 @@ class SysPhysics extends System
         for (c in res) {
             c.space = null;
         }
+        var beamz = e.getCmpsHavingAncestor(CmpBeamBase);
+        if (beamz.length != 0) {
+            for (b in beamz) {
+                for (sj in b.sharedJoints) {
+                    sj.deleteNull();
+                }
+            }
+        }
+        
     }
     
     override public function isValidEnt(e : Entity) : Bool

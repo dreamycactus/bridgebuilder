@@ -20,6 +20,7 @@ class BuildHistory
     var stack : List<BuildState> = new List<BuildState>();
     var state : MESState;
     var maxStackDepth = 10;
+    public var length(get_length, null) : Int;
     
     public function new(state : MESState) 
     {
@@ -32,19 +33,24 @@ class BuildHistory
         var oldToNew : ObjectMap<Entity, Entity> = new ObjectMap();
         
         for (e in builtEnts) {
+            var newEnt : Entity = null;
             if (e.hasCmp(CmpBeam)) {
                 var cmpBeam = e.getCmp(CmpBeam);
-                
                 var newBody = cmpBeam.body.copy();
-                var newEnt = EntFactory.inst.createBeamEnt(cmpBeam.body.position, newBody, cmpBeam.width, cmpBeam.material);
-
-                newBody.userData.entity = newEnt;
                 
+                newEnt = EntFactory.inst.createBeamEnt(cmpBeam.p1, cmpBeam.p2, cmpBeam.body.position, newBody, cmpBeam.width, cmpBeam.material);
+                newBody.userData.entity = newEnt;
+            } else if (e.hasCmp(CmpCable)) {
+                var cmpCable = e.getCmp(CmpCable);
+                newEnt = state.createEnt();
+                var newCable = new CmpCable(cmpCable.p1, cmpCable.p2, GameConfig.matCable);
+                newEnt.attachCmp(newCable);
+            }
+            if (newEnt != null) {
                 oldToNew.set(e, newEnt);
                 snapshot.push(newEnt);
-            } else if (true) {
-                
             }
+            
         }
         
         for (e in builtEnts.filter(function(s) { return s.hasCmp(CmpSharedJoint); } )) {
@@ -63,13 +69,27 @@ class BuildHistory
                     body = newB.getCmp(CmpBeam).body;
                 } else if (newB.hasCmp(CmpAnchor)) {
                     body = newB.getCmp(CmpAnchor).body;
+                } else if (newB.hasCmp(CmpCable)) {
+                    var cmpCable = newB.getCmp(CmpCable);
+                    var b1 = cmpCable.getBody(0);
+                    var b2 = cmpCable.getBody(cmpCable.compound.bodies.length - 1);
+                    body = b2;
+                    var dp = sharedJoint.body.position.sub(b1.position);
+                    var dp2 = sharedJoint.body.position.sub(b2.position);
+                    
+                    if (dp.lsq() < dp2.lsq()) {
+                        body = b1;
+                    }
                 }
                 newSharedJoint.addBody(body);
             }
             snapshot.push(newEnt);
         }
         
-        stack.push({ ents: snapshot, lines : linechecker.copy() });
+        stack.push( { ents: snapshot, lines : linechecker.copy() } );
+        if (stack.length >= maxStackDepth) {
+            Util.popLast(stack);
+        }
     }
     
     public function pop() : BuildState
@@ -80,5 +100,10 @@ class BuildHistory
     public function peek() : BuildState
     {
         return stack.first();
+    }
+    
+    public function get_length() : Int
+    {
+        return stack.length;
     }
 }

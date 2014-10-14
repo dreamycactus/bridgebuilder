@@ -20,6 +20,12 @@ class CmpType
         this.children = new Array();
     }
     
+    @:op(a == b)
+    public function equals(rhs : CmpType)
+    {
+        return Type.getClassName(rhs.type) == Type.getClassName(type);
+    }
+    
     public function isAncestorOf(descendant : CmpType) : Bool
     {
         if (children.length == 0) {
@@ -39,9 +45,12 @@ class CmpType
     
     public function isDecendantOf(ancestor : CmpType) : Bool
     {
+        if (ancestor == this) {
+            return true;
+        }
         var p = parent;
         while (p != null) {
-            if (ancestor.hasChild(this) ) { 
+            if (ancestor == p) { 
                 return true;
             }
             p = p.parent;
@@ -58,10 +67,12 @@ class CmpType
             trace(this + " is already ancestor of " + cmpType);
             return;
         }
+        if (cmpType.depth != 0 && cmpType.depth <= depth) {
+            throw "Invalid children... $cmpType for parent $this";
+        }
         children.push(cmpType);
         cmpType.parent = this;
         for (c in cmpType.children) {
-            c.depth++;
             if (isDecendantOf(c) ) {
                 throw "Recursive cmpType" + c + ", " + this;
             }
@@ -70,7 +81,7 @@ class CmpType
             }
         }
         
-        cmpType.depth = depth + 1;
+        cmpType.incDepth();
     }
     
     public function hasChild(c : CmpType) : Bool
@@ -86,4 +97,11 @@ class CmpType
         return Type.getClassName(type);
     }
     
+    function incDepth()
+    {
+        depth++;
+        for (c in children) {
+            c.incDepth();
+        }
+    }
 }

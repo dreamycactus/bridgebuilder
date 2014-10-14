@@ -44,41 +44,23 @@ class EntFactory
         return inst;
     }
     
-    public function createJointEnt(pos : Vec2, body1 : Body, body2 : Body, type : JointType
-                                 , compound : Compound = null, name : String = "") : Entity
-    {
-        var e = state.createEnt(name);
-        var joint : PivotJoint = GameConfig.pivotJoint(type);
-        joint.body1 = body1;
-        joint.body2 = body2;
-        joint.anchor1 = body1.worldPointToLocal(pos);
-        joint.anchor2 = body2.worldPointToLocal(pos);
-        joint.compound = compound;
-        
-        var cmpmj = new CmpJoint(joint, type);
-        var cmptrans = new CmpTransform(pos);
-        
-        e.attachCmp(cmpmj);
-        e.attachCmp(cmptrans);
-        
-        return e;
-    }
-    
-    public function createBeamEnt(pos : Vec2, body : Body, width : Float, material : BuildMat, name : String = "") : Entity
+    public function createBeamEnt(p1 : Vec2, p2 : Vec2, pos : Vec2, body : Body, width : Float, material : BuildMat, name : String = "") : Entity
     {
         var e = state.createEnt("be");
-        var cmpbeam = new CmpBeam(body, width, material);
+        var cmpbeam = new CmpBeam(p1, p2, body, width, material);
         var cmptrans = new CmpTransform(pos);
         
         //var length = body.shapes.at(0).bounds.width;
         var assetPath : String = "";
         var offset = Vec2.get();
         switch(material.name) {
-            case "steelbeam":
+            case "steel":
                 assetPath = "img/beam.png";
-            case "steeldeck":
+            case "deck":
                 assetPath = "img/deck.png";
                 offset.y = -20;
+            default:
+                assetPath = "img/beam.png";
         }
         var cmprend = new CmpRenderMultiBeam([{bitmap : GfxFactory.inst.createBeamBitmap(assetPath, width), body : body} ], offset);
         
@@ -88,6 +70,13 @@ class EntFactory
         body.userData.entity = e;
         body.userData.width = width;
         body.userData.height = material.height;
+        body.userData.matType = material.matType;
+        
+        if (body.rotation > Math.PI/2 && body.rotation < Math.PI*1.5) {
+            body.rotation += Math.PI;
+        } else if (body.rotation < -Math.PI/2 && body.rotation > -Math.PI*1.5) {
+            body.rotation -= Math.PI;
+        }
         
         e.attachCmp(cmpbeam);
         e.attachCmp(cmptrans);
@@ -99,13 +88,13 @@ class EntFactory
     public function createMultiBeamEnt(pos : Vec2, entity : Entity, splitType : SplitType, name : String = "") : Entity
     {
         var e = state.createEnt(name);
-        var compound = CmpMultiBeam.createFromBeam(entity.getCmp(CmpBeam).body, splitType, null);
-        var cmpbeam = new CmpMultiBeam(compound);
+        var oldCmpBeam = entity.getCmp(CmpBeam);
+        var cmpbeam = CmpMultiBeam.createFromBeam(oldCmpBeam, splitType, null);
         var pairs : Array<BodyBitmap> = new Array();
         
         var oldrender = entity.getCmp(CmpRenderMultiBeam);
         var cmprender = new CmpRenderMultiBeam(
-            GfxFactory.inst.breakBeamBitmap(compound
+            GfxFactory.inst.breakBeamBitmap(cmpbeam.compound
                                           , oldrender.pairs[0].bitmap), oldrender.offset);
         
         e.attachCmp(cmpbeam);
@@ -142,7 +131,7 @@ class EntFactory
         joint2.anchor2 = body2.worldPointToLocal(pos2);
         joint2.compound = compound;
         
-        var cmpbeam = new CmpMultiBeam(compound);
+        var cmpbeam = new CmpMultiBeam(pos1, pos2, compound);
         var cmptrans = new CmpTransform(pos1);
         
         e.attachCmp(cmpbeam);

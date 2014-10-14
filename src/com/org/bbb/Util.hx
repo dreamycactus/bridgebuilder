@@ -238,6 +238,7 @@ class Util
                 } else {
                     prev[1] = null;
                 }
+                list.length--;
             }
             prev = cur;
             cur = cur[1];

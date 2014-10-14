@@ -221,7 +221,7 @@ class Template extends Sprite {
         var fps = (1000 / deltaTime);
         smoothFps = (smoothFps == -1 ? fps : (smoothFps * 0.97) + (fps * 0.03));
         var text = "fps: " + ((""+smoothFps).substr(0, 5)) + "\n" +
-                   "mem: " + ((""+(800 - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
+                   "mem: " + ((""+(System.totalMemoryNumber - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
         if (space != null) {
             text += "\n\n"+
                     "velocity-iterations: " + velIterations + "\n" +

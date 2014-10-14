@@ -15,13 +15,21 @@ class Entity
     public var state : MESState;
     //public var cmpSig : de.polygonal.ds.BitVector;
     
-    public function new(state : MESState) 
+    public function new(state : MESState, id : Int) 
     {
         this.cmps = new StringMap<Cmp>();
         this.state = state;
+        this.id = id;
         //cmpSig = BitFields.zero;
     }
     
+    inline public function delete()
+    {
+        if (state != null) {
+            state.deleteEnt(this);
+        }
+    }
+
     public function getCmp<T:Cmp>(t:Class<T>) : T
     {
         return cast( cmps.get( Type.getClassName( t ) ) );
@@ -68,9 +76,10 @@ class Entity
         }
     }
     
-    public function delete()
+    @:op(a == b)
+    public function equals(rhs:Entity) : Bool
     {
-        state.deleteEnt(this);
+        return rhs.id == id;
     }
     
 }

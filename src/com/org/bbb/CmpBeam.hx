@@ -20,23 +20,26 @@ import nape.shape.Polygon;
 
 using com.org.bbb.Util;
 
-class CmpBeam extends CmpPhys
+class CmpBeam extends CmpBeamBase
 {
     public var body : Body;
     public var width : Float;
-    public var material : BuildMat;
     public var jointOffsets : Array<Vec2>;
     public var stressCHp : Float = GameConfig.beamStressHp;
     public var stressTHp : Float = GameConfig.beamStressHp;
     public var stressSHp : Float = GameConfig.beamStressHp;
     
-    public function new(body : Body, width : Float, material : BuildMat) 
+    public function new(p1 : Vec2, p2 : Vec2, body : Body, width : Float, material : BuildMat) 
     {
-        super();
+        super(p1, p2);
         this.body = body;
         this.width = width;
         this.jointOffsets = new Array();
         this.material = material;
+        
+        stressCHp *= Util.randomf(1, 8);
+        stressTHp *= Util.randomf(1, 8);
+        stressSHp *= Util.randomf(1, 8);
     }
     
     public function getWorldOffset(index : Int) : Vec2
@@ -46,17 +49,12 @@ class CmpBeam extends CmpPhys
         }
         return Vec2.get();
     }
-    
     override public function update()
     {
         var dt = entity.state.top.dt;
-        var trans = entity.getCmp(CmpTransform);
         
         var w = width;
         var h = material.height;
-        
-        trans.pos = body.localPointToWorld(Vec2.weak(-w * 0.5, -h * 0.5));
-        trans.rot = body.rotation;
         
         if (body == null) {
             return;
@@ -68,7 +66,8 @@ class CmpBeam extends CmpPhys
 
         if (stress.x > material.tensionBreak) { // Tension
             stressTHp -= dt;
-            if (stressTHp < 0 || true) {
+            if (stressTHp < 0) {
+                trace('break');
                 isBreaking = true;
                 splitType = SplitType.TENSION;
             }
@@ -78,30 +77,33 @@ class CmpBeam extends CmpPhys
         
         if (stress.x < -material.compressionBreak) {
             stressCHp -= dt;
-            if (stressCHp < 0 || true) {
+            if (stressCHp < 0) {
                 isBreaking = true;
                 splitType = SplitType.COMPRESSION;
             }
         } else if (stressTHp < GameConfig.beamStressHp) {
             stressCHp += dt;
         }
-        
+
+        // Shear only happens on vertical beams
         //if (Math.abs(stress.y) > 1000) {
             //stressSHp -= dt;
             //if (stressCHp < 0) {
-                //isBreaking = true;
                 //splitType = SplitType.SHEAR;
+                //
             //}
-        //} else if (stressSHp < GameConfig.stressHp) {
+        //} else if (stressSHp < GameConfig.beamStressHp) {
             //stressSHp += dt;
         //}
         
+        stress.dispose();
+
         if (isBreaking) {
             entity.state.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), entity, splitType) );
-            entity.state.deleteEnt(entity);
-            trace(splitType);
+
+            this.broken = true;
+            entity.delete();
         }
-        
     }
     
     override function set_space(space : Space) : Space

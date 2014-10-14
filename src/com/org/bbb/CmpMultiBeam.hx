@@ -33,49 +33,52 @@ enum SplitType
     COMPRESSION;
 }
  
-class CmpMultiBeam extends CmpPhys
+class CmpMultiBeam extends CmpBeamBase
 {
     public var compound : Compound;
-    public var material : BuildMat;
     
-    public static function createFromBeam(beamBody : Body, splitType : SplitType, brokenCons : PivotJoint) : Compound
+    public static function createFromBeam(cmpBeam : CmpBeam, splitType : SplitType, brokenCons : PivotJoint) : CmpMultiBeam
     {
+        var beamBody = cmpBeam.body;
         if (beamBody.shapes.length > 1) {
             trace("not sure how to split beam with 1+ shapes");
         }
         var c = new Compound();
         var space = beamBody.space;
         var bodySeg : Body;
-        var rectheight = 30;
-        var comtop = beamBody.localPointToWorld(Vec2.weak(0, -rectheight*0.7) );
-        var combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight * 0.7) );
+        var rectheight = cmpBeam.material.height*1.1;
+        var comtop = beamBody.localPointToWorld(Vec2.weak(0, -rectheight) );
+        var combot = beamBody.localPointToWorld(Vec2.weak(0, rectheight) );
         if (combot.y < comtop.y) {
             var tmp = combot;
             combot = comtop;
             comtop = tmp;
         }
-        //
-        //switch (splitType) {
-        //case TENSION:
-            //var off = Util.randomf( -30, 30);
-            //comtop = beamBody.localPointToWorld(Vec2.get(off, -rectheight*0.7) );
-            //comtop = beamBody.localPointToWorld(Vec2.get(off, rectheight * 0.7) );
-        //case COMPRESSION:
-            //var off = Util.randomf( -30, 30);
-            //combot = beamBody.localPointToWorld(Vec2.weak(off, -rectheight*0.7) );
-            //comtop = beamBody.localPointToWorld(Vec2.weak(off, rectheight * 0.7) );
+        var width = cmpBeam.width;
+        switch (splitType) {
+        case TENSION:
+            var off = beamBody.worldVectorToLocal(Vec2.weak(Util.randomf( -width * 0.1, width * 0.1), 0));
+            comtop.addeq(off);
+            combot.addeq(off);
+
+        case COMPRESSION:
+            var off1 = beamBody.worldVectorToLocal(Vec2.weak(Util.randomf( -width * 0.4, width * 0.4), 0));
+            var off2 = beamBody.worldVectorToLocal(Vec2.weak(Util.randomf( -width * 0.4, width * 0.4), 0));
+            comtop.addeq(off1);
+            combot.addeq(off2);
+
         //case SHEAR:
             ////var breakingPoint = brokenCons.body1.localPointToWorld(brokenCons.anchor1);
             //comtop = beamBody.localPointToWorld( Vec2.weak(0, -rectheight * 0.7) );
             //combot = beamBody.localPointToWorld( Vec2.weak(0, rectheight * 0.7) );
-        //default:
-        ////}
-            //var s = new Sprite();
-            //s.graphics.beginFill(0xFF00FF);
-            //s.graphics.drawCircle(comtop.x, comtop.y, 5);
-            //s.graphics.drawCircle(combot.x, combot.y, 5);
-            //s.graphics.endFill();
-            //Lib.current.stage.addChild(s);
+        default:
+        }
+            var s = new Sprite();
+            s.graphics.beginFill(0xFF00FF);
+            s.graphics.drawCircle(comtop.x, comtop.y, 5);
+            s.graphics.drawCircle(combot.x, combot.y, 5);
+            s.graphics.endFill();
+            Lib.current.stage.addChild(s);
         var ray : Ray = Ray.fromSegment(comtop, combot);
         var rayresult = space.rayMultiCast(ray, false, new InteractionFilter(GameConfig.cgSensor) );
         if (rayresult.length != 0) {
@@ -89,9 +92,9 @@ class CmpMultiBeam extends CmpPhys
                 throw "Errorzz couldn't break beam";
             }
             var geomPoly = new GeomPoly(polyToCut.worldVerts);
-            var segmentPolys = geomPoly.cut(comtop, combot, true, true);
+            var segmentPolys = geomPoly.cut(comtop, combot, false, false);
             var prev : Body = null;
-            segmentPolys.foreach(function (s) {
+            for (s in segmentPolys) {
                 var centroid : Vec2 = Vec2.get();
                 for (point in s.forwardIterator()) {
                     centroid.addeq(point);
@@ -107,30 +110,46 @@ class CmpMultiBeam extends CmpPhys
                 body.position = centroid;
                 body.rotation = beamBody.rotation;
                 body.compound = c;
+                
                 body.userData.width = width;
                 body.userData.height = beamBody.userData.height;
+                body.userData.matType = beamBody.userData.matType;
                 
                 if (prev != null) {
                     var body1 = prev;
                     var body2 = body;
                     
-                    var joint : PivotJoint = GameConfig.pivotJoint(JointType.MULTISTIFF);
-                    joint.body1 = body1;
-                    joint.body2 = body2;
-                    joint.anchor1 = body1.worldPointToLocal(comtop);
-                    joint.anchor2 = body2.worldPointToLocal(comtop);
-                    joint.compound = c;
+                    switch(splitType) {
+                    case TENSION:
+                        var joint : PivotJoint = GameConfig.pivotJoint(JointType.MULTISTIFF);
+                        joint.body1 = body1;
+                        joint.body2 = body2;
+                        joint.anchor1 = body1.worldPointToLocal(comtop);
+                        joint.anchor2 = body2.worldPointToLocal(comtop);
+                        joint.compound = c;
+                        
+                        var joint2 : PivotJoint = GameConfig.pivotJoint(JointType.MULTIELASTIC);
+                        joint2.body1 = body1;
+                        joint2.body2 = body2;
+                        joint2.anchor1 = body1.worldPointToLocal(combot);
+                        joint2.anchor2 = body2.worldPointToLocal(combot);
+                        joint2.compound = c;
+                    case COMPRESSION:
+                        var center = combot.add(comtop).mul(0.5);
+                        var joint2 : PivotJoint = GameConfig.pivotJoint(JointType.MULTIELASTIC);
+                        joint2.body1 = body1;
+                        joint2.body2 = body2;
+                        joint2.anchor1 = body1.worldPointToLocal(center);
+                        joint2.anchor2 = body2.worldPointToLocal(center);
+                        joint2.compound = c;
+                    default:
+                    }
                     
-                    var joint2 : PivotJoint = GameConfig.pivotJoint(JointType.MULTIELASTIC);
-                    joint2.body1 = body1;
-                    joint2.body2 = body2;
-                    joint2.anchor1 = body1.worldPointToLocal(combot);
-                    joint2.anchor2 = body2.worldPointToLocal(combot);
-                    joint2.compound = c;
+                    
+                    
                 }
                 prev = body;
-            });
-            
+            }
         } else {
             trace(comtop + "," + combot);
             throw "No ray intersection detected when trying to break beam " + beamBody.id + ", " + beamBody.rotation + ", " + beamBody.localPointToWorld(Vec2.get(100, 0));
@@ -138,7 +157,6 @@ class CmpMultiBeam extends CmpPhys
         /* If there are any existing joints attached to a beam, move them to new multi-beam */
         if (beamBody.space != null) {
             var iter = 0;
-            var maxiter = beamBody.constraints.length+1;
             var space = beamBody.space;
             c.space = space; // Temporarily add compound to space- a hack to do collision detection
             
@@ -151,49 +169,70 @@ class CmpMultiBeam extends CmpPhys
                 if (pj.body1 == beamBody) {
                     firstAnchor = true;
                     otheranchor = pj.anchor1;
+                } else if (pj.body2 != beamBody) {
+                    throw("WHAO");
                 }
-                
                 var anchorWorld = beamBody.localPointToWorld(otheranchor);
                 var newAnchorBody : Body = null;
-                var colbodies = Util.closestBodyToPoint(space, anchorWorld, new InteractionFilter(GameConfig.cgSensor), false, 10, 40);
                 
-                for (i in 0...colbodies.length) {
-                    var b = colbodies.at(i);
-                    if (b.compound == c) {
-                        newAnchorBody = b;
-                         if (firstAnchor) {
-                            pj.body1 = newAnchorBody;
-                            pj.anchor1 = newAnchorBody.worldPointToLocal(anchorWorld);
-                        } else {
-                            pj.body2 = newAnchorBody;
-                            pj.anchor2 = newAnchorBody.worldPointToLocal(anchorWorld);
-                        }
-                        break;
+                var minDT = Math.POSITIVE_INFINITY;
+                var index = -1;
+                for (i in 0...c.bodies.length) {
+                    var dt = c.bodies.at(i).position.sub(anchorWorld, true).lsq();
+                    if (dt < minDT) {
+                        minDT = dt;
+                        index = i;
                     }
                 }
+                
+                var cmpSharedJoint : CmpSharedJoint = null;
+                if (pj.body1.userData.sharedJoint != null) {
+                    cmpSharedJoint = pj.body1.userData.sharedJoint;
+                    firstAnchor = false;
+                } else if (pj.body2.userData.sharedJoint != null) {
+                    cmpSharedJoint = pj.body2.userData.sharedJoint;
+                    firstAnchor = true;
+                }
+
+                if (firstAnchor) {
+                    cmpSharedJoint.removeBody(pj.body1);
+                } else {
+                    cmpSharedJoint.removeBody(pj.body2);
+                }
+                if (index != -1) {
+                    newAnchorBody = c.bodies.at(index);
+                    cmpSharedJoint.addBody(newAnchorBody);
+                }
+                
                 if (newAnchorBody == null) {
                     trace("Error finding constraint for multibeam" + anchorWorld);
-                    colbodies.foreach(function(b) { trace("id: " + b.id); } );
-                    //#if debug
-                        //throw "Error finding constraint for multibeam" + anchorWorld ;
-                    //#end
-                    beamBody.constraints.foreach(function(cons) {
-                        if (cons.compound == null) {
-                            cons.active = false;
-                        }
-                    });
+                    
+                    for (b in c.space.bodies) {
+                        trace(b.id);
+                    }
+                    EntFactory.inst.state.getSystem(SysPhysics).paused = true;
                     break;
                 }
             }
+            
+            var ent : Entity = cmpBeam.entity;
+            var beams : Array<CmpBeamBase> = ent.getCmpsHavingAncestor(CmpBeamBase);
+            
+            if (beams[0] != null) {
+                for (sj in beams[0].sharedJoints) {
+                    sj.removeBody(beamBody);
+                }
+            }
+            
             c.space = null;
-            return c;
+            return new CmpMultiBeam(cmpBeam.p1, cmpBeam.p2, c);
         }
         return null;
     }
     
-    public function new(compound : Compound, material : BuildMat=null) 
+    public function new(p1 : Vec2, p2 : Vec2, compound : Compound, material : BuildMat=null) 
     {
-        super();
+        super(p1, p2);
         this.compound = compound;
         this.material = material;
         this.constraints = new List();

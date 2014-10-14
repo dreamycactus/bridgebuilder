@@ -27,7 +27,7 @@ class TransPan extends Transition
     override public function enter() : Void
     {
         bos.disableControl();
-        bns.disableControl();
+        //bns.disableControl();
         
         var nsSprite : Sprite = bns.mainSprite;
         nsSprite.scrollRect = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
@@ -48,7 +48,6 @@ class TransPan extends Transition
     override public function leave() : Void
     {
         bns.mainSprite.mask = null;
-        bns.enableControl();
         
         bos.deinit();
         top.changeState(newState);
