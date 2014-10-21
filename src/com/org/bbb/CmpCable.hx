@@ -4,7 +4,9 @@ import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.constraint.DistanceJoint;
+import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
+import nape.geom.Vec3;
 import nape.phys.Body;
 import nape.phys.Compound;
 import nape.shape.Polygon;
@@ -15,22 +17,29 @@ import nape.space.Space;
  * ...
  * @author 
  */
+
+using com.org.bbb.Util;
+ 
 class CmpCable extends CmpBeamBase
 {
     public var compound : Compound;
-    var cableMat : BuildMat;
     
     public function new(pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
     {
         super(pos1, pos2);
-        this.cableMat = cableMat;
+        this.material = cableMat;
         
         var dir = pos2.sub(pos1);
         var len = dir.length;
         dir = dir.normalise();
-        var segCount = Math.round(len / GameConfig.cableSegWidth);
         var prev : Body = null;
+        
         var segWidth = GameConfig.cableSegWidth;
+        if (len < 200) {
+            segWidth /= 2.0;
+        }
+        var segCount = Math.round(len / segWidth);
+
         var offset = segWidth * 0.5;
         var startPos = pos1.add(dir.mul(segWidth * 0.5) );
         
@@ -38,7 +47,7 @@ class CmpCable extends CmpBeamBase
         compound = new Compound();
         for (i in 0...segCount) {
             var body = new Body();
-            var shape : Shape = new Polygon(Polygon.box(segWidth, cableMat.height, true) );
+            var shape : Shape = new Polygon(Polygon.box(segWidth, material.height, true) );
             shape.filter.collisionGroup = GameConfig.cgCable;
             shape.filter.collisionMask = GameConfig.cmCable;
             body.shapes.add(shape);
@@ -48,8 +57,8 @@ class CmpCable extends CmpBeamBase
             
             if (prev != null) {
                 var pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
-                pj.maxForce = cableMat.tensionBreak;
-                pj.breakUnderForce = true;
+                pj.maxForce = 1e9;
+                //pj.breakUnderForce = true;
                 pj.body1 = prev;
                 pj.body2 = body;
                 pj.anchor1 = Vec2.weak(offset, 0);
@@ -63,6 +72,15 @@ class CmpCable extends CmpBeamBase
     
     override public function update() : Void
     {
+        if (broken) return;
+        
+        var mid = Std.int(compound.bodies.length / 2);
+        var stress : Vec3 = compound.bodies.at(mid).calculateBeamStress();
+        if (stress.x > material.tensionBreak) {
+            var rand = Std.random(compound.constraints.length);
+            compound.constraints.at(rand).compound = null;
+            broken = true;
+        }
     }
     
     public function getBody(i : Int) : Body
@@ -78,6 +96,12 @@ class CmpCable extends CmpBeamBase
         }
         return null;
     }
+    
+    override public function changeFilter(f : InteractionFilter) : Void
+    {
+        compound.visitBodies(function (b) { b.setShapeFilters(f); } );
+    }
+    
     override function set_space(space : Space) : Space
     {
         compound.space = space;

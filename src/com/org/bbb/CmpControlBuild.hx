@@ -1,9 +1,11 @@
 package com.org.bbb;
+import haxe.xml.Printer;
 import nape.constraint.ConstraintList;
 import nape.phys.BodyType;
 import nape.phys.Material;
 import openfl.geom.Point;
 import openfl.system.System;
+import ru.stablex.ui.widgets.Floating;
 import ru.stablex.ui.widgets.Radio;
 import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.MatType;
@@ -45,7 +47,7 @@ class CmpControlBuild extends CmpControl
     public var isDrawing : Bool = false;
     public var isDrag : Bool = false;
     public var isDeck : Bool = false;
-    public var isDeleteBeam : Bool = false;
+    public var beamDeleteMode : Bool = false;
     var startBody : Body;
     
     var inW : InputText;
@@ -65,6 +67,7 @@ class CmpControlBuild extends CmpControl
     public var isDraggingBox : Bool = false;
     public var isExpandingBox : Bool = false;
     public var isSpawn : Bool = false;
+    public var deckSelectMode = false;
 
     public var camera : Camera;
     var camBody : Body;
@@ -106,10 +109,11 @@ class CmpControlBuild extends CmpControl
             inX = cast(UIBuilder.get('inX'), InputText);
             inY = cast(UIBuilder.get('inY'), InputText);
             inLevelW = cast(UIBuilder.get('levelWidth'), InputText);
-            inLevelW.text = Std.string(level.width);
+            inLevelW.text = Std.string(level.width/ GameConfig.gridCellWidth) ;
             inLevelH = cast(UIBuilder.get('levelHeight'), InputText);
-            inLevelH.text = Std.string(level.height);
+            inLevelH.text = Std.string(level.height/ GameConfig.gridCellWidth);
             console = cast(UIBuilder.get('console'), Text);
+            cast(UIBuilder.get('build'), Floating).show();
         }
         regEvents();
         
@@ -132,8 +136,8 @@ class CmpControlBuild extends CmpControl
         }
         
         if (editMode) {
-            levelWidth = Std.parseFloat(inLevelW.text);
-            levelHeight = Std.parseFloat(inLevelH.text);
+            levelWidth = Std.parseFloat(inLevelW.text) * GameConfig.gridCellWidth;
+            levelHeight = Std.parseFloat(inLevelH.text)* GameConfig.gridCellWidth;
         }
         
         if (editMode) {
@@ -170,13 +174,13 @@ class CmpControlBuild extends CmpControl
                     
                 }
             }
-            setBox();
             setPos();
+            setBox();
         }
 
         prevMouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
         
-        console.text = "";
+        console.text = cmpGrid.getClosestCell(prevMouse) + '\n';
         var res = level.space.bodiesUnderPoint(prevMouse);
         res.foreach(function(b) {
             console.text += printBodyForces(b) + '\n';
@@ -221,19 +225,12 @@ class CmpControlBuild extends CmpControl
     
     public function createBox()
     {
-        var b = new Body(BodyType.STATIC);
-        b.shapes.add(new Polygon(Polygon.box(100, 100), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor)));
-        b.mass = 100;
-        b.position.setxy(stage.stageWidth * 0.5, stage.stageHeight * 0.5);
-        b.space = level.space;
+        state.insertEnt(EntFactory.inst.createAnchor(Vec2.get(300, 300), { w : 300, h : 300 }));
     }
     
     public function createSpawn()
     {
-        var spawnIcon = new Body(BodyType.STATIC);
-        spawnIcon.shapes.add(new Polygon(Polygon.box(30, 30), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmEditable)));
-        spawnIcon.position = Vec2.get(300, 300);
-        spawnIcon.space = level.space;
+        state.insertEnt(EntFactory.inst.createSpawn(Vec2.get(300, 300), 1, 200, 30));
     }
     
     function beamDown(_) 
@@ -242,7 +239,7 @@ class CmpControlBuild extends CmpControl
         var cp = cmpGrid.getClosestCell(mp);
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
         
-        if (isDeleteBeam) {
+        if (beamDeleteMode || deckSelectMode) {
             spawn1 = mp;
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
         } else {
@@ -254,9 +251,10 @@ class CmpControlBuild extends CmpControl
         isDrawing = true;
         /* Prefer to join to shared joint if possible */
         var sharedJointFilter = GameConfig.cgSharedJoint;
-        if (isDeleteBeam) {
+        if (beamDeleteMode||deckSelectMode) {
             sharedJointFilter = ~1;
         }
+        
         for (b in bb) {
             if (b.shapes.at(0).filter.collisionGroup&cFilter != 0) {
                 startBody = b;
@@ -294,11 +292,11 @@ class CmpControlBuild extends CmpControl
         
         var validLine = lineChecker.isValidLine(spawn1, spawn2);
 
-        if ( !isDeleteBeam && ((cp1.x == cp2.x && cp1.y == cp2.y) || startBody == null || !validLine) ) {
+        if ( (!beamDeleteMode && !deckSelectMode) && ((cp1.x == cp2.x && cp1.y == cp2.y) || startBody == null || !validLine) ) {
             return;
         }
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
-        if (isDeleteBeam) {
+        if (beamDeleteMode || deckSelectMode) {
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
             spawn2 = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         }
@@ -307,7 +305,7 @@ class CmpControlBuild extends CmpControl
         var endBody : Body = null;
         var otherBody : Body = null;
         
-        if (isDeleteBeam && startBody != null) {
+        if (beamDeleteMode && startBody != null) {
             var ent : Entity = startBody.userData.entity;
             if (ent != null && bb.has(startBody)) {
                 var cmpBeam = ent.getCmpsHavingAncestor(CmpBeamBase)[0];
@@ -317,6 +315,15 @@ class CmpControlBuild extends CmpControl
                 state.deleteEnt(startBody.userData.entity);
                 startBody = null;
             }
+            return;
+        }
+        if (deckSelectMode && startBody != null) {
+            var ent : Entity = startBody.userData.entity;
+            var rends = ent.getCmpsHavingAncestor(CmpRender);
+            if (rends.length > 0)
+                rends[0].tintColour(2.0, 2.0, 0.0, 1.0);
+            var beamz = ent.getCmpsHavingAncestor(CmpBeamBase);
+            beamz[0].changeFilter(new InteractionFilter(GameConfig.cgDeck, GameConfig.cmDeck));
             return;
         }
         
@@ -390,8 +397,6 @@ class CmpControlBuild extends CmpControl
             startBody.userData.sharedJoint.addBody(beamStartBody);
         }
         
-        trace(builtBeams.length);
-
         spawn1 = null;
         spawn2 = null;
         startBody = null;
@@ -468,23 +473,25 @@ class CmpControlBuild extends CmpControl
         }
         
     }
-    public function loadLevelFromXml(state : MESState)
+    public function loadLevelFromXml(state : StateBridgeLevel)
     {
+        if (state == null) { state = new StateBridgeLevel(top); }
         var loadText = cast(UIBuilder.get('load'), InputText).text;
-        if (state == null) { state = entity.state; }
-        cast(state, StateBridgeLevel).level = CmpLevel.genLevelFromString(state, loadText);
+        var l = CmpLevel.genLevelFromString(state, loadText);
+        
+        top.changeState(new StateTransPan(top, cast(top.state), StateBridgeLevel.createFromLevel(state, top, l)));
     }
     
     public function generateLevelXML()
     {
         var xml = level.generateLevelXML(levelWidth, levelHeight);
-        cast(UIBuilder.get('gen'), InputText).text = xml.toString();
+        cast(UIBuilder.get('load'), InputText).text = haxe.xml.Printer.print(xml);
     }
     
     public function setPos()
     {
-        var x = Std.parseFloat(inX.text);
-        var y = Std.parseFloat(inY.text);
+        var x = Std.int(Std.parseFloat(inX.text)*100) / 100.0;
+        var y = Std.int(Std.parseFloat(inY.text)*100) / 100.0;
         
         if (Math.isNaN(x)) {
             x = -10000;
@@ -502,8 +509,8 @@ class CmpControlBuild extends CmpControl
     
     public function setBox()
     {
-        var w = Std.parseFloat(inW.text);
-        var h = Std.parseFloat(inH.text);
+        var w = Std.int(Std.parseFloat(inW.text) * 100) / 100.0;
+        var h = Std.int(Std.parseFloat(inH.text) * 100) / 100.0;
         
         if (Math.isNaN(w) || w < 1) {
             w = 1;
@@ -516,9 +523,16 @@ class CmpControlBuild extends CmpControl
             lastSelectedBody.type = BodyType.DYNAMIC;
             var newShape = null;
             if (!isSpawn) {
+                var oldHeight = lastSelectedBody.bounds.height;
+                var oldWidth = lastSelectedBody.bounds.width;
                 newShape = new Polygon( Polygon.box(w, h, true)
                                       , null
                                       , new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor));
+
+                var pos = lastSelectedBody.position;
+                pos.addeq(Vec2.weak((w - oldWidth) * 0.5, (h - oldHeight) * 0.5));
+                inX.text = cast(pos.x);
+                inY.text = cast(pos.y);
             } else {
                 newShape = cast(lastSelectedBody.shapes.at(0).copy());
             }
@@ -549,8 +563,7 @@ class CmpControlBuild extends CmpControl
         } else if (stage.mouseY > GameConfig.stageHeight * (1 - GameConfig.panBorder)) {
             dy = -GameConfig.panRate;
         }
-        
-        camera.pos = camera.pos.add(Vec2.weak(dx, dy));
+        camera.dragCamera(Vec2.get(dx, dy));
     }
     
     public function restore()
@@ -586,6 +599,7 @@ class CmpControlBuild extends CmpControl
         state.getSystem(SysLevelDirector).runExecution(sys.paused);
 
         sys.paused = !sys.paused;
+        deckSelectMode = !sys.paused;
        
     }
     
@@ -593,20 +607,45 @@ class CmpControlBuild extends CmpControl
     public function nextLevel()
     {
         var s1 = StateBridgeLevel.createLevelState(top, "levels/b" + (level.id + 1) + ".xml");
-        top.changeState(new TransPan(top, cast(top.state), cast(s1)), true);
+        top.changeState(new StateTransPan(top, cast(top.state), cast(s1)), true);
+    }
+    
+    public function levelSelect()
+    {
+        cast(UIBuilder.get('levelEdit'), Floating).show();
+        cast(UIBuilder.get('build'), Floating).show();
+        if (!top.transitioning) {
+            top.changeState(new StateTransPan(top, cast(top.state), new StateLevelSelect(top)), true);
+        }
+    }
+    
+    function deleteLastSelected()
+    {
+        if (lastSelectedBody != null) {
+            state.deleteEnt(lastSelectedBody.userData.entity);
+        }
     }
     
     function set_editMode(m : Bool) : Bool
     {
         this.editMode = m;
         if (m) {
+            cast(UIBuilder.get('levelEdit'), Floating).show();
+            cast(UIBuilder.get('build'), Floating).hide();
+        } else {
+            cast(UIBuilder.get('levelEdit'), Floating).hide();
+            cast(UIBuilder.get('build'), Floating).show();
+        }
+        camera.isUnlocked = editMode;
+        if (m) {
             unregEvents();
             stage.addEventListener(MouseEvent.MOUSE_DOWN, dragBox);
             stage.addEventListener(MouseEvent.MOUSE_UP, unDragBox);
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, expandBox);
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, unExpandBox);
+            stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
             
-            cmpGrid.offset = Vec2.get(0, GameConfig.gridCellWidth-GameConfig.matDeck.height*0.5);
+            cmpGrid.offset = Vec2.get(0, (GameConfig.gridCellWidth-GameConfig.matDeck.height)*0.5);
         } else {
             regEvents();
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, dragBox);
@@ -621,15 +660,20 @@ class CmpControlBuild extends CmpControl
     
     function dragBox(_)
     {
+        isDrag = false;
         selectBody();
         if (selectedBody != null) {
             isDraggingBox = true;
+        } else {
+            isDrag = true;
         }
     }
     
     function unDragBox(_)
     {
         isDraggingBox = false;
+        isDrag = false;
+        
     }
     
     function expandBox(_)
@@ -647,14 +691,52 @@ class CmpControlBuild extends CmpControl
     
     function set_material(m : BuildMat) : BuildMat
     {
-        isDeleteBeam = false;
+        beamDeleteMode = false;
         material = m;
         return m;
     }
+    
     function keyDown(ev:KeyboardEvent) 
     {
         if (ev.keyCode == Keyboard.SPACE ) {
             togglePause();
+        } else if (ev.keyCode == Keyboard.PAGE_UP) {
+            camera.zoom += 0.1;
+        } else if (ev.keyCode == Keyboard.PAGE_DOWN) {
+            camera.zoom -= 0.1;
         }
+        
+        if (lastSelectedBody == null) return;
+        
+        var w = Std.parseFloat(inW.text);
+        var h = Std.parseFloat(inH.text);
+        var x = Std.parseFloat(inX.text);
+        var y = Std.parseFloat(inY.text);
+        var rate = 1.0;
+        if (!ev.shiftKey) {
+            rate = 7.0;
+        }
+
+        if (ev.keyCode == Keyboard.Q) {
+            inW.text = cast(w-rate);
+        } else if (ev.keyCode == Keyboard.W) {
+            inW.text = cast(w+rate);
+        } else if (ev.keyCode == Keyboard.A) {
+            inH.text = cast(h-rate);
+        } else if (ev.keyCode == Keyboard.S) {
+            inH.text = cast(h+rate);
+        }
+        
+        if (ev.keyCode == Keyboard.UP) {
+            inY.text = cast(y-rate);
+        } else if (ev.keyCode == Keyboard.DOWN) {
+            inY.text = cast(y+rate);
+        } else if (ev.keyCode == Keyboard.LEFT) {
+            inX.text = cast(x-rate);
+        } else if (ev.keyCode == Keyboard.RIGHT) {
+            inX.text = cast(x+rate);
+        }
+        setPos();        
+        setBox();
     }
 }

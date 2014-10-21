@@ -8,6 +8,7 @@ import com.org.mes.Cmp;
 import flash.display.Stage;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
+import openfl.geom.ColorTransform;
 
 class CmpRender extends Cmp
 {
@@ -34,5 +35,13 @@ class CmpRender extends Cmp
     {
         if (sprite == null) { return; }
         scene.removeChild(sprite);
+    }
+    
+    public function tintColour(mr : Float, mg : Float, mb : Float, ma : Float) : Void
+    {
+        if (sprite != null) {
+            var col = new ColorTransform(mr, mg, mb, ma);
+            sprite.transform.colorTransform = col;
+        }
     }
 }

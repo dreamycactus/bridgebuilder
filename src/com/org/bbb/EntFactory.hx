@@ -8,8 +8,10 @@ import com.org.mes.MESState;
 import com.org.mes.Top;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
+import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 import nape.phys.Body;
+import nape.phys.BodyType;
 import nape.phys.Compound;
 import nape.phys.Material;
 import nape.shape.Polygon;
@@ -63,7 +65,6 @@ class EntFactory
                 assetPath = "img/beam.png";
         }
         var cmprend = new CmpRenderMultiBeam([{bitmap : GfxFactory.inst.createBeamBitmap(assetPath, width), body : body} ], offset);
-        
         if (pos != null) {
             body.position = pos;
         }
@@ -85,11 +86,20 @@ class EntFactory
         return e;
     }    
     
+    public function createCable(p1 : Vec2, p2 : Vec2, material : BuildMat) : Entity
+    {
+        var cab = state.createEnt("cc");
+        var cmp = new CmpCable(p1, p2, material);
+        cab.attachCmp(cmp);
+        return cab;
+    }
+    
     public function createMultiBeamEnt(pos : Vec2, entity : Entity, splitType : SplitType, name : String = "") : Entity
     {
         var e = state.createEnt(name);
         var oldCmpBeam = entity.getCmp(CmpBeam);
         var cmpbeam = CmpMultiBeam.createFromBeam(oldCmpBeam, splitType, null);
+        if (cmpbeam == null) return null;
         var pairs : Array<BodyBitmap> = new Array();
         
         var oldrender = entity.getCmp(CmpRenderMultiBeam);
@@ -165,6 +175,39 @@ class EntFactory
         e.attachCmp(cc);
         
         return e;
+    }
+    
+    public function createSpawn(pos : Vec2, dir : Int, period : Float, count : Int) : Entity
+    {
+        var spawnIcon = new Body(BodyType.KINEMATIC, pos);
+        spawnIcon.shapes.add(new Polygon(Polygon.regular(20, 20, 3, 0.0), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmEditable)));
+        if (dir == -1) {
+            spawnIcon.rotation = Math.PI;
+        }
+        var spawn = state.createEnt();
+        var cmpSpawn = new CmpSpawn(pos, dir, 0, spawnIcon, count, period);
+        spawn.attachCmp(cmpSpawn);
+        spawnIcon.userData.entity = spawn;
+        
+        return spawn;
+    }
+    
+    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}) : Entity
+    {
+        var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.h * 0.5), GameConfig.gridCellWidth);
+        
+        pos.y = gridMultiple + tdim.h * 0.5 +(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5;
+        //pos.addeq(Vec2.get(0, -(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5));
+
+        var anc = new Body(BodyType.STATIC);
+        anc.shapes.add( new Polygon(Polygon.box(tdim.w, tdim.h), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor) ) );
+        anc.shapes.at(0).filter.collisionGroup = GameConfig.cgAnchor;
+        anc.shapes.at(0).filter.collisionMask = GameConfig.cmAnchor;
+        anc.position = pos;
+        var ent = state.createEnt();
+        ent.attachCmp(new CmpAnchor(anc));
+        anc.userData.entity = ent;
+        return ent;
     }
     
     

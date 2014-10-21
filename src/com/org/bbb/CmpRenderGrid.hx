@@ -30,15 +30,23 @@ class CmpRenderGrid extends CmpRender
         var oy = cmpGrid.offset.y;
 
         g.clear();
-        g.lineStyle(lineThickness, lineColour, lineAlpha);
         g.beginFill(0xFFFFFF, 1.0);
         for (x in 0...cmpGrid.columns) {
-            g.moveTo(x * cellsz+ox, oy);
+            g.moveTo(x * cellsz + ox, oy);
+            g.lineStyle(lineThickness, lineColour, lineAlpha);
+            if (x % (cmpGrid.cellCounts[0] - 1) == 0) {
+                //continue;
+                g.lineStyle(lineThickness * 6, lineColour, lineAlpha);
+            }
             g.lineTo(x * cellsz+ox, h+oy);      
         }
         
         for (y in 0...cmpGrid.rows) {
-            g.moveTo(ox, y * cellsz+oy);
+            g.moveTo(ox, y * cellsz + oy);
+            g.lineStyle(lineThickness, lineColour, lineAlpha);
+            if (y % (cmpGrid.cellCounts[0] - 1) == 0) {
+                g.lineStyle(lineThickness * 6, lineColour, lineAlpha);
+            }
             g.lineTo(w+ox, y * cellsz+oy);
         }
         g.endFill();

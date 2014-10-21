@@ -45,14 +45,13 @@ class SysObjective extends System
             }
             if (c.toTerminate) {
                 flags.set(c.flagName, c.met());
-                trace("winz $c");
                 c.entity.delete();
                 done = true;
                 active = false;
             }
         }
         if (done) {
-            state.top.changeState(new TransPan(state.top, cast(state), new StateLevelSelect(state.top)));
+            state.top.changeState(new StateTransPan(state.top, cast(state), new StateLevelSelect(state.top)));
         }
     }
     

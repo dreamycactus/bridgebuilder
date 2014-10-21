@@ -58,7 +58,15 @@ class StateBridgeLevel extends BBBState
 
     public static function createLevelState(top : Top, levelPath : String) : BBBState
     {
-        var s1 = new StateBridgeLevel(top);
+        var state = new StateBridgeLevel(top);
+        EntFactory.inst.state = state;
+        var cl = CmpLevel.loadLevelXml(state, levelPath);
+        return createFromLevel(state, top, cl);
+    }
+    
+    public static function createFromLevel(s1 : StateBridgeLevel, top : Top, cl : CmpLevel) : BBBState
+    {
+        if (s1 == null) { s1 = new StateBridgeLevel(top); }
         var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage)
                     , new SysControl(s1, Lib.current.stage), new SysRuntimeOverlord(s1), new SysObjective(s1)
                     , new SysLevelDirector(s1, null)];
@@ -68,13 +76,12 @@ class StateBridgeLevel extends BBBState
         EntFactory.inst.state = s1;
         
         var level = s1.createEnt();
-        var cl = CmpLevel.loadLevelXml(s1, levelPath);
         level.attachCmp(cl);
         s1.getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
         s1.getSystem(SysRender).camera.zoom = -1;
         s1.insertEnt(level);
         
-        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, GameConfig.gridCellWidth, [4]);
+        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, GameConfig.gridCellWidth, [7]);
         var cmpGrid = grid.getCmp(CmpGrid);
         s1.insertEnt(grid);
         s1.cmpGrid = cmpGrid;

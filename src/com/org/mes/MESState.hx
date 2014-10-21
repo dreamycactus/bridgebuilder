@@ -6,6 +6,7 @@ class MESState
     public var sys : Array<System>;
     public var ents : List<Entity>;
     public var top : Top;
+    public var isTransitioning : Bool = false;
     var index = 0;
     
     public function new(top : Top) 
@@ -54,9 +55,11 @@ class MESState
     public function insertEnt(e : Entity)
     {
         ents.add(e);
-        if (e.state == null) {
-            trace("OK");
+        if (e.state != null && e.state != this) {
+            trace('overwriting entity ${e.id} state ${e.state} with ${this}');
         }
+        e.state = this;
+        
         for (s in sys) {
             s.onInserted(e);
         }

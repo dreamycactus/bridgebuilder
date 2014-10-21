@@ -1,6 +1,6 @@
-<root w="18" h="12">
-    <anchor x="16" y="2" w="6" h="4"/>
-    <anchor x="1" y="2" w="6" h="4"/>
-    <spawn x="3" y="4" dir="1" period="2000" count="30"/>
-    <end x="16" y="5"/>
+<root w="23" h="12">
+    <anchor x="17" y="5" w="6" h="7"/>
+    <anchor x="-2" y="5" w="8" h="7"/>
+    <spawn x="3" y="6" dir="1" period="2000" count="30"/>
+    <end x="19" y="5"/>
 </root>

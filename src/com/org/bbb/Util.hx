@@ -168,10 +168,13 @@ class Util
     public static function zoomInAtPoint(sprite : Sprite, x : Float, y : Float , scale : Float)
     {
         var mat = new Matrix();
-        mat.translate(-x,-y);
+        //mat.translate(-x,-y);
         mat.scale(scale,scale);
-        mat.translate(x,y);
-        sprite.transform.matrix=mat;
+        //mat.translate(x,y);
+        mat.tx = x;
+        mat.ty = y;
+        sprite.transform.matrix = mat;
+        
         
     }
     // Bubble sort.. Insert sort would be better, prolly... maybe... not sure.
@@ -244,5 +247,11 @@ class Util
             cur = cur[1];
         }
         return list;
+    }
+    
+    public static function fdec(v : Float, dec : Int) : Float
+    {
+        var pw = Math.pow(10, dec);
+        return Std.int(v * pw) / pw;
     }
 }

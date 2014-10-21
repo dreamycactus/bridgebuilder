@@ -1,4 +1,5 @@
 package com.org.bbb;
+import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.space.Space;
 
@@ -13,6 +14,11 @@ class CmpAnchor extends CmpPhys
     {
         super();
         this.body = body;
+    }
+    
+    public function getTop() : Float
+    {
+        return body.bounds.y;
     }
     
     override function get_space() : Space { return body.space;  }

@@ -67,7 +67,6 @@ class CmpBeam extends CmpBeamBase
         if (stress.x > material.tensionBreak) { // Tension
             stressTHp -= dt;
             if (stressTHp < 0) {
-                trace('break');
                 isBreaking = true;
                 splitType = SplitType.TENSION;
             }
@@ -99,11 +98,19 @@ class CmpBeam extends CmpBeamBase
         stress.dispose();
 
         if (isBreaking) {
-            entity.state.insertEnt(EntFactory.inst.createMultiBeamEnt(Vec2.get(), entity, splitType) );
+            var cmpMulti = EntFactory.inst.createMultiBeamEnt(Vec2.get(), entity, splitType);
+            if (cmpMulti != null) {
+                entity.state.insertEnt(cmpMulti);
+            }
 
             this.broken = true;
             entity.delete();
         }
+    }
+    
+    override public function changeFilter(f : InteractionFilter) : Void
+    {
+        body.setShapeFilters(f);
     }
     
     override function set_space(space : Space) : Space

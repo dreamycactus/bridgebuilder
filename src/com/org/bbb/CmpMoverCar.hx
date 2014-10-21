@@ -60,8 +60,8 @@ class CmpMoverCar extends CmpMover
         motorFront = new MotorJoint(null, fw, 0);
         motorFront.compound = compound;
         
-        //motorBack = new MotorJoint(null, bw, 0);
-        //motorBack.compound = compound;
+        motorBack = new MotorJoint(null, bw, 0);
+        motorBack.compound = compound;
     }
     
     override function update()
@@ -72,7 +72,7 @@ class CmpMoverCar extends CmpMover
     {
         if (space != null) {
             motorFront.body1 = space.world;
-            //motorBack.body1 = space.world;
+            motorBack.body1 = space.world;
         }
         compound.space = space;
         return space;

@@ -11,7 +11,7 @@ import openfl.Lib;
  * ...
  * @author 
  */
-class TransPan extends Transition
+class StateTransPan extends Transition
 {
     public var bos : BBBState;
     public var bns : BBBState;
@@ -26,6 +26,7 @@ class TransPan extends Transition
         
     override public function enter() : Void
     {
+        super.enter();
         bos.disableControl();
         //bns.disableControl();
         
@@ -33,9 +34,9 @@ class TransPan extends Transition
         nsSprite.scrollRect = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
         nsSprite.x -= Lib.current.stage.stageWidth;
         
-        Actuate.tween(nsSprite, 3, { x : 0 } ).onComplete(leave);
+        Actuate.tween(nsSprite, 1, { x : 0 } ).onComplete(leave);
         Actuate.tween(bos.mainSprite,
-                      4,
+                      1,
                       { x : Lib.current.stage.stageWidth, alpha : 0 } );
     }
     
@@ -47,6 +48,9 @@ class TransPan extends Transition
     
     override public function leave() : Void
     {
+        //super.leave();
+        isTransitioning = false;
+        isDone = true;
         bns.mainSprite.mask = null;
         
         bos.deinit();

@@ -22,7 +22,7 @@ class CmpObjectiveAllPass extends CmpObjective
     
     override public function met()
     {
-        var res = currentArrivedCount == totalArrivedCount;
+        var res = currentArrivedCount == totalArrivedCount && totalArrivedCount != 0;
         if (res) {
             toTerminate = true;
         }

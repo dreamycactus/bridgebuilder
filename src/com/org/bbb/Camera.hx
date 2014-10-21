@@ -17,7 +17,7 @@ class Camera
     public var pos : Vec2;
     public var vel : Vec2;
     @:isVar public var dragBounds(default, set_dragBounds) : Bounds;
-
+    public var isUnlocked : Bool = false;
     public function new() 
     {
         pos = Vec2.get();
@@ -29,10 +29,12 @@ class Camera
     
     public function update()
     {
-        sprite.zoomInAtPoint(sprite.width/2, sprite.height/2, zoom);
-
-        sprite.x = pos.x;
-        sprite.y = pos.y;
+        sprite.zoomInAtPoint(pos.x, pos.y, zoom);
+        pos.x = sprite.transform.matrix.tx;
+        pos.y = sprite.transform.matrix.ty;
+        clampPos();
+        //sprite.x = pos.x;
+        //sprite.y = pos.y;
         
         //sprite.transform.matrix.tx = pos.x;
         //sprite.transform.matrix.ty = pos.y;
@@ -44,11 +46,7 @@ class Camera
             delta = delta.normalise().mul(20);
         }
         pos.addeq(delta);
-        if (dragBounds != null) {
-            var elasticBorder = GameConfig.cameraElasticEdge * dragBounds.width;
-            pos.x = Util.clampf(pos.x, Math.min(-dragBounds.width / zoom + GameConfig.stageWidth, 0),0);
-            pos.y = Util.clampf(pos.y, Math.min(-dragBounds.height / zoom + GameConfig.stageHeight, 0),0);
-        }
+        clampPos();
     }
     
     public function screenToWorld(v : Vec2) : Vec2
@@ -64,8 +62,9 @@ class Camera
     public function set_zoom(z : Float) : Float
     {
         zoom = z;
-        if (dragBounds != null) {
-            zoom = Util.clampf(z, Math.max(GameConfig.stageWidth/dragBounds.width, GameConfig.stageHeight/dragBounds.height), Math.min(GameConfig.stageWidth/500, GameConfig.stageHeight/500));
+        if (dragBounds != null && !isUnlocked) {
+            zoom = Util.clampf(z, Math.max(GameConfig.stageWidth / dragBounds.width, GameConfig.stageHeight / dragBounds.height)
+                                , Math.min(GameConfig.stageWidth/200, GameConfig.stageHeight/200));
         }
         return z;
     }
@@ -75,6 +74,15 @@ class Camera
         this.dragBounds = db;
         zoom = zoom;
         return db;
+    }
+    
+    function clampPos()
+    {
+        if (dragBounds != null && !isUnlocked) {
+            var elasticBorder = 0; // GameConfig.cameraElasticEdge * dragBounds.width;
+            pos.x = Util.clampf(pos.x, -Math.abs(dragBounds.width*zoom - GameConfig.stageWidth),0);
+            pos.y = Util.clampf(pos.y, -Math.abs(dragBounds.height*zoom - GameConfig.stageHeight), 0);
+        }
     }
     
 }

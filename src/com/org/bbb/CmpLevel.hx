@@ -37,51 +37,30 @@ class CmpLevel extends Cmp
         var dim = level.worldDim( Std.parseFloat(root.get("w")),  Std.parseFloat(root.get("h"))  );
         level.width = dim.w;
         level.height = dim.h;
-        var gridOffset = Vec2.get(0, GameConfig.gridCellWidth+GameConfig.matDeck.height*0.5);
+        var gridOffset = Vec2.get(0, -(GameConfig.gridCellWidth-GameConfig.matDeck.height)*0.5);
         for (e in root) {
             if (e.nodeType == Xml.PCData) {
                 continue;
             }
             switch(e.nodeName.toLowerCase()) {
             case "anchor":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")));
-                var dim = level.worldDim( Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h"))  );
-                var gridMultiple = Std.int(pos.y/GameConfig.gridCellWidth);
-                pos.y =   (gridMultiple-0.5) * GameConfig.gridCellWidth
-                        + dim.h * 0.5
-                        - GameConfig.matDeck.height * 0.5;
+                var tdim = level.worldDim(Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h"))  );
+                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), tdim);
 
-                var anc = new Body(BodyType.STATIC);
-                anc.shapes.add( new Polygon(Polygon.box(dim.w, dim.h), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor) ) );
-                anc.shapes.at(0).filter.collisionGroup = GameConfig.cgAnchor;
-                anc.shapes.at(0).filter.collisionMask = GameConfig.cmAnchor;
-                anc.position = pos;
-                var ent = state.createEnt();
-                ent.attachCmp(new CmpAnchor(anc));
-                anc.userData.entity = ent;
+                var ent = EntFactory.inst.createAnchor(pos, tdim);
                 level.ents.push(ent);
                 
             case "spawn":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")));
+                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), {w : 1, h : 1});
                 var dir = Std.parseInt(e.get("dir"));
                 var period = Std.parseFloat(e.get("period"));
                 var count = Std.parseInt(e.get("count"));
-                trace(Std.parseFloat(e.get("x")));
-                var spawnIcon = new Body(BodyType.KINEMATIC );
-                spawnIcon.shapes.add(new Polygon(Polygon.regular(20, 20, 3, 0.0), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmEditable)));
-                spawnIcon.position = pos.add(gridOffset);
-                if (dir == -1) {
-                    spawnIcon.rotation = Math.PI;
-                }
-                var spawn = state.createEnt();
-                var cmpSpawn = new CmpSpawn(pos, dir, 0, spawnIcon, count, period);
-                spawn.attachCmp(cmpSpawn);
-                spawnIcon.userData.entity = spawn;
-                level.spawns.push(cmpSpawn);
+                var spawn = EntFactory.inst.createSpawn(pos.addeq(gridOffset), dir, period, count);
+                level.spawns.push(spawn.getCmp(CmpSpawn));
                 level.ents.push(spawn);
                 
             case "end":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")));
+                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), {w : 200, h : 100});
                 var end = state.createEnt();
                 end.attachCmp(new CmpEnd(pos.add(gridOffset)));
                 level.ents.push(end);
@@ -92,6 +71,8 @@ class CmpLevel extends Cmp
         }
         return level;
     }
+    
+
     
     public static function loadLevelXml(state : MESState, xmlAssetPath : String) : CmpLevel
     {
@@ -119,30 +100,31 @@ class CmpLevel extends Cmp
                 case GameConfig.cgAnchor:
                     var bounds = b.bounds;
                     var anchor = Xml.createElement('anchor');
-                    var gridPos = gridCoords(b.position.x, b.position.y);
-                    var gridDim = gridDim(bounds.width, bounds.height);
-                    anchor.set("x", cast(gridPos.x));
-                    anchor.set("y", cast(gridPos.y));
-                    anchor.set("w", cast(gridDim.w));
-                    anchor.set("h", cast(gridDim.h));
+                    var gd = gridDim(bounds.width, bounds.height);
+                    var gridPos = gridCoords(b.position.x, b.position.y, gd);
+                    anchor.set("x", cast(Util.fdec(gridPos.x, 2)));
+                    anchor.set("y", cast(Util.fdec(gridPos.y, 2)));
+                    anchor.set("w", cast(Util.fdec(gd.w, 2)));
+                    anchor.set("h", cast(Util.fdec(gd.h, 2)));
                     xml.addChild(anchor);
                 case GameConfig.cgSpawn:
                     var spawn = Xml.createElement('spawn');
-                    var gridPos = gridCoords(b.position.x, b.position.y);
-                    spawn.set("x", cast(gridPos.x));
-                    spawn.set("y", cast(gridPos.y));
+                    var gridPos = gridCoords(b.position.x, b.position.y, {w : 0, h : 0});
+                    spawn.set("x", cast(Util.fdec(gridPos.x, 2)));
+                    spawn.set("y", cast(Util.fdec(gridPos.y, 2)));
                     if (b.rotation < 1) {
                         spawn.set("dir", "1");
                     } else {
                         spawn.set("dir", "-1");
                     }
                     spawn.set("period", "2000");
+                    spawn.set("count", "30");
                     xml.addChild(spawn);
                 case GameConfig.cgEnd:
                     var end = Xml.createElement('end');
-                    var gridPos = gridCoords(b.position.x, b.position.y);
-                    end.set("x", cast(gridPos.x));
-                    end.set("y", cast(gridPos.y));
+                    var gridPos = gridCoords(b.position.x, b.position.y, {w : 0, h : 0});
+                    end.set("x", cast(Util.fdec(gridPos.x, 2)));
+                    end.set("y", cast(Util.fdec(gridPos.y, 2)));
                     xml.addChild(end);
                 }
             }
@@ -157,9 +139,9 @@ class CmpLevel extends Cmp
         }
     }
     
-    function worldCoords(x : Float, y : Float) : Vec2
+    function worldCoords(x : Float, y : Float, dim : {w : Float, h : Float}) : Vec2
     {
-        var v = new Vec2(x * GameConfig.gridCellWidth, height - y * GameConfig.gridCellWidth);
+        var v = new Vec2(x * GameConfig.gridCellWidth + dim.w * 0.5, height - (y * GameConfig.gridCellWidth - dim.h * 0.5));
         return v;
     }
     
@@ -168,14 +150,14 @@ class CmpLevel extends Cmp
         return { w : x * GameConfig.gridCellWidth, h : y * GameConfig.gridCellWidth };
     }
     
-    function gridCoords(xx : Float, yy : Float) : { x : Float, y : Float }
+    function gridCoords(xx : Float, yy : Float, dim : {w : Float, h : Float}) : { x : Float, y : Float }
     {
-        return { x: xx / GameConfig.gridCellWidth, y: (height - yy) / GameConfig.gridCellWidth };
+        return { x: (xx) / GameConfig.gridCellWidth - dim.w * 0.5 , y: (height - yy) / GameConfig.gridCellWidth + dim.h * 0.5   };
     }
     
-    function gridDim(x : Float, y : Float) : { w : Float, h : Float }
+    function gridDim(w : Float, h : Float) : { w : Float, h : Float }
     {
-        return { w : x / GameConfig.gridCellWidth, h : y / GameConfig.gridCellWidth}
+        return { w : w / GameConfig.gridCellWidth, h : h / GameConfig.gridCellWidth}
     }
     
 }

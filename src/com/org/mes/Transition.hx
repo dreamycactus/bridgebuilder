@@ -19,6 +19,7 @@ class Transition extends MESState
     }
     public function enter() : Void
     {
+        isTransitioning = true;
     }
     
     override public function update() : Void
@@ -30,5 +31,7 @@ class Transition extends MESState
     {
         oldState.deinit();
         top.changeState(newState);
+        isTransitioning = false;
+        isDone = true;
     }
 }

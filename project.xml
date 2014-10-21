@@ -9,7 +9,7 @@
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
     <app swf-version="11.8" /> 
 	
-	<window background="#222222" />
+	<window background="#073642" />
     <window width="0" height="0" orientation="landscape" unless="flash" />
     <window width="1024" height="576" />
 	<!--<window width="0" height="0" unless="flash" />-->
@@ -31,6 +31,7 @@
 	<!-- optimize output -->
     <haxeflag name="-dce std" />
     <haxeflag name="--no-opt " if="flash" />
+    <haxeflag name="--no-traces " unless="debug" />
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
     <haxedef name="NAPE_NO_INLINE" if="neko" />

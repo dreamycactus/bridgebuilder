@@ -17,7 +17,7 @@ class Top
     public var dt : Float;
     //public var entCount(get_entCount, null) : Int;
     
-    public var transitioning : Bool = false;
+    public var transitioning(get_transitioning, null) : Bool = false;
     public var transition : Transition;
     
     public function new() 
@@ -32,8 +32,10 @@ class Top
         if (!isTransition && state != null) {
             state.deinit();
         }
-        state = newState;
-        state.init();
+        if (state == null || !state.isTransitioning) {
+            state = newState;
+            state.init();
+        }
     }
     
     public function update(dt : Float)
@@ -44,5 +46,10 @@ class Top
     }
     
     //public function get_entCount() { return ents.length; }
-
+    function get_transitioning() : Bool
+    {
+        if (state == null) { return false; }
+        if (state.isTransitioning) { return true; }
+        return false;
+    }
 }

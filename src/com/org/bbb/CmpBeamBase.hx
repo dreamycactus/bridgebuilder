@@ -1,6 +1,7 @@
 package com.org.bbb;
 import com.org.bbb.GameConfig.BuildMat;
 import com.org.mes.Entity;
+import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 
 /**
@@ -22,11 +23,15 @@ class CmpBeamBase extends CmpPhys
         this.p2 = p2;
     }
     
-    public function notifySharedJoints()
+    public function notifySharedJoints(): Void
     {
         for (s in sharedJoints) {
             s.deleteNull();
         }
+    }
+    
+    public function changeFilter(f : InteractionFilter) : Void
+    {
     }
 
 }

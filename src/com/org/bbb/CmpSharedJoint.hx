@@ -19,6 +19,7 @@ class CmpSharedJoint extends CmpPhys
 {   
     public var body : Body;
     @:isVar public var bodies(default, default) : Array<Body>;
+    public var isAnchored = false;
     
     public function new(pos : Vec2, startingBodies : Array<Body> = null) 
     {
@@ -49,10 +50,19 @@ class CmpSharedJoint extends CmpPhys
     {
         bodies = bodies.filter(function (b) { return b.space != null || b.compound != null; } );
         joints = joints.filter(function(j) { 
-            var pj = cast(j, PivotJoint);
-            var shouldDelete = pj.body1.space == null || pj.body2.space == null;
-            if (shouldDelete) {
-                pj.space = null;
+            var shouldDelete = false;
+            if (Std.is(j, PivotJoint)) {
+                var pj = cast(j, PivotJoint);
+                shouldDelete = pj.body1.space == null || pj.body2.space == null;
+                if (shouldDelete) {
+                    pj.space = null;
+                }
+            } else {
+                var pj = cast(j, WeldJoint);
+                shouldDelete = pj.body1.space == null || pj.body2.space == null;
+                if (shouldDelete) {
+                    pj.space = null;
+                }
             }
             return !shouldDelete;
         });
@@ -71,17 +81,32 @@ class CmpSharedJoint extends CmpPhys
     
     public function addBody(b : Body) 
     {
+        var isAnchorBody = b.shapes.at(0).filter.collisionGroup;
         if (!bodies.has(b) && b != body && b != null) {
-            bodies.push(b);
-            if (b.userData.attachedSJ == null) {
-                b.userData.attachedSJ = new Array<CmpSharedJoint>();
+            if (!isAnchored && isAnchorBody == GameConfig.cgAnchor) {
+                isAnchored = true;
+                
             }
-            b.userData.attachedSJ.push(this);
+            bodies.push(b);
             var beamEnt : Entity = b.userData.entity;
-            if(beamEnt != null) {
+            
+            if (beamEnt != null) {
+                ents.push(beamEnt);
                 var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
+
                 for (beam in beams) {
                     beam.sharedJoints.push(this);
+                }
+                if ((beams.length > 0 && beams[0].material.isRigid && isAnchored)||isAnchorBody == GameConfig.cgAnchor) {
+                    var j = GameConfig.getWeldJoint();
+                    j.body1 = b;
+                    j.body2 = body;
+                    /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */
+                    j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true), true);
+                    j.anchor2 = Vec2.get();
+                    j.space = body.space;
+                    joints.push(j);
+                    return;
                 }
             }
             var j = GameConfig.pivotJoint(JointType.SHARED);
@@ -93,11 +118,6 @@ class CmpSharedJoint extends CmpPhys
             j.space = body.space;
             joints.push(j);
             
-            if (b.userData.entity != null) {
-                ents.push(b.userData.entity);
-            }
-        } else {
-            trace("fail shared joint");
         }
     }
     
@@ -108,13 +128,14 @@ class CmpSharedJoint extends CmpPhys
                 b.userData.attachedSJ.remove(this);
             }
             for (j in joints) {
-                var pj : PivotJoint = cast(j);
                 var remove = false;
-                if (pj.body1 == b || pj.body2 == b) {
-                    remove = true;
-                }
+                j.visitBodies(function (body) { 
+                    if (b == body)
+                        remove = true;
+                }); 
+                
                 if (remove) {
-                    pj.space = null;
+                    j.space = null;
                     joints.remove(j);
                 }
                 

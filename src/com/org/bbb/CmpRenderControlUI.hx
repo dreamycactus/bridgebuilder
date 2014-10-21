@@ -10,9 +10,9 @@ import ru.stablex.ui.widgets.Widget;
  */
 class CmpRenderControlUI extends CmpRender
 {
-    public static var uiBuild : Dynamic -> Widget;
+    public var uiBuild : Dynamic -> Widget;
     var buildControl : CmpControlBuild;
-    public static var uiInstance : Sprite;
+    public var uiInstance : Sprite;
     var width : Float;
     var height : Float;
     
@@ -27,10 +27,15 @@ class CmpRenderControlUI extends CmpRender
     override public function addToScene(scene : DisplayObjectContainer) : Void 
     {
         super.addToScene(scene);
+        var rw = UIBuilder.get('rootWidget');
+        
+        if (rw != null) {
+            rw.free(true);
+        }
         uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
-            uiInstance = uiBuild({
-                controlBuild : buildControl
-            });
+        uiInstance = uiBuild({
+            controlBuild : buildControl
+        });
         sprite.addChild(uiInstance);
         var rw = UIBuilder.get('rootWidget');
         rw.resize(width, height);
@@ -40,8 +45,10 @@ class CmpRenderControlUI extends CmpRender
     override public function removeFromScene(scene : DisplayObjectContainer) : Void 
     {
         super.addToScene(scene);
-        sprite.removeChild(uiInstance);
-        UIBuilder.get('rootWidget').free(true);
+        if (uiInstance.parent == sprite) {
+            sprite.removeChild(uiInstance);
+            UIBuilder.get('rootWidget').free(true);
+        }
     }
     
 }

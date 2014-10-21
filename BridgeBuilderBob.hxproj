@@ -11,7 +11,7 @@
     <movie version="3" />
     <movie minorVersion="0" />
     <movie platform="NME" />
-    <movie background="222222" />
+    <movie background="073642" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -31,7 +31,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--no-output&#xA;-dce std&#xA;-swf-version 11.8" />
+    <option additional="--no-output&#xA;-dce std&#xA;--no-opt &#xA;-swf-version 11.8" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

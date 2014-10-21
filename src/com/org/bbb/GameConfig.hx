@@ -5,7 +5,9 @@ import com.org.mes.CmpManager;
 import com.org.mes.MESState;
 import com.org.mes.Top;
 import nape.callbacks.CbType;
+import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
+import nape.constraint.WeldJoint;
 import nape.geom.Vec2;
 import nape.shape.Circle;
 import nape.shape.Polygon;
@@ -27,6 +29,7 @@ typedef BuildMat =
     var height : Float;
     var maxLength : Int;
     var cost : Float;
+    var isRigid : Bool;
 };
 
 enum MatType { BEAM; CABLE; DECK; WOOD; CONCRETE; }
@@ -44,9 +47,9 @@ enum JointType
 
 class GameConfig
 {
-    public static var camDragCoeff = 3;
+    public static var camDragCoeff = 5;
     
-    public static var cableSegWidth = 50;
+    public static var cableSegWidth = 50.0;
     public static var beamStressHp = 200;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
@@ -54,7 +57,7 @@ class GameConfig
     public static var spawnCDCar = 2000;
     public static var carSpeed = 20;
     
-    public static var gridCellWidth = 50;
+    public static var gridCellWidth = 40;
     public static var maxBeamCells = 6;
     
     public static var panBorder = 0.1;
@@ -69,7 +72,7 @@ class GameConfig
     public static var cgLoad        = 32;
     public static var cgCable       = 64;
     public static var cgSensor      = (1<<11);
-    public static var cgEnd    = 256;
+    public static var cgEnd         = 256;
     public static var cgSpawn       = 512;
     
     public static var cmSharedJoint = ~(cgBeam|cgDeck|cgSharedJoint|cgAnchor|cgLoad);
@@ -85,11 +88,24 @@ class GameConfig
     public static var cbTruck = new CbType();
     public static var cbEnd = new CbType();
     
-    public static var matWood : BuildMat = { name : "wood", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 700, compressionBreak : 500, height : 20, maxLength : 6, cost : 2 };
-    public static var matConcrete : BuildMat = { name : "concrete", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 500, compressionBreak : 4000, height : 20, maxLength : 6, cost : 3 };
-    public static var matSteel : BuildMat = { name : "steel", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 1000, compressionBreak : 1000, height : 20, maxLength : 6, cost : 4 };
-    public static var matDeck : BuildMat = { name : "deck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 1000, compressionBreak : 1000, height : 20, maxLength : 6, cost : 4 };
-    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1e5, compressionBreak : -1, height : 15, maxLength : 30, cost : 1 };
+    public static var matWood : BuildMat = {  name : "wood", matType : MatType.BEAM, momentBreak : 0
+                                            , tensionBreak : 300, compressionBreak : 300, height : 20
+                                            , maxLength : 7, cost : 2, isRigid : false };
+    public static var matConcrete : BuildMat = { name : "concrete", matType : MatType.BEAM, momentBreak : 0
+                                               , tensionBreak : 400, compressionBreak : 2000, height : 20
+                                               , maxLength : 7, cost : 3, isRigid : true };
+    public static var matSteel : BuildMat = { name : "steel", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 470
+                                            , compressionBreak : 470, height : 20, maxLength : 7, cost : 4
+                                            , isRigid : false };
+    public static var matDeck : BuildMat = { name : "deck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 470
+                                           , compressionBreak : 470, height : 20, maxLength : 7, cost : 4
+                                           ,  isRigid : false };
+    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1000
+                                            , compressionBreak : -1, height : 10, maxLength : 30, cost : 1
+                                            , isRigid : false};
+    public static var matSuperCable : BuildMat = { name : "supercable", matType : MatType.CABLE, momentBreak : 0
+                                                 , tensionBreak : 2e5, compressionBreak : -1, height : 20, maxLength : 30, cost : 1
+                                                 , isRigid : false };
 
     public static var stageWidth;
     public static var stageHeight;
@@ -131,7 +147,7 @@ class GameConfig
         switch(type)
         {
         case BEAM:
-            ret.stiff = true;
+            //ret.stiff = true;
             //ret.damping = 30;
             ret.frequency = 10;
             
@@ -144,26 +160,18 @@ class GameConfig
             ret.ignore = true;
             ret.breakUnderError = true;
             //ret.maxError = 1e4;
-            ret.breakUnderForce = false;
+            ret.breakUnderForce = true;
             ret.maxForce = 1e9;
         case MULTIELASTIC:
             ret.stiff = false;
             ret.ignore = true;
             ret.breakUnderError = true;
             //ret.maxError = 1e4;
-            ret.breakUnderForce = false;
+            ret.breakUnderForce = true;
             ret.maxForce = 1e9;
             
-        case ANCHOR:
-            ret.frequency = 20;
-            ret.damping = 10;
-            //ret.stiff = true;
-            //ret.breakUnderError = true;
-            //ret.maxError = 1e9;
-            //ret.breakUnderForce = true;
-            //ret.maxForce = 1e6;
         case SHARED:
-            ret.stiff = true;
+            //ret.stiff = true;
         case CABLEEND:
             ret.stiff = true;
             ret.maxForce = 1e9;
@@ -173,6 +181,17 @@ class GameConfig
         default:
         }
         return ret;
+    }
+    
+    public static function getWeldJoint() : WeldJoint
+    {
+            var ret = new WeldJoint(null, null, Vec2.weak(), Vec2.weak());
+            ret.stiff = true;
+            //ret.breakUnderError = true;
+            //ret.maxError = 1e9;
+            //ret.breakUnderForce = true;
+            ret.maxForce = 1e40;
+            return ret;
     }
     
     public static function sharedJointShape()

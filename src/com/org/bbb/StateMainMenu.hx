@@ -60,7 +60,7 @@ class StateMainMenu extends BBBState
     
     function startLevel(_)
     {
-        top.changeState(new TransPan(top, this, GameConfig.createLevelState(top, "levels/b1.xml")));
+        top.changeState(new StateTransPan(top, this, GameConfig.createLevelState(top, "levels/b1.xml")));
     }
     
     public override function deinit()
