@@ -1,8 +1,10 @@
 <root>
     <level name="" path="levels/b1.xml"/>
     <level name="" path="levels/b2.xml"/>
+    <level name="" path="levels/b2.5.xml"/>
     <level name="" path="levels/b3.xml"/>
     <level name="" path="levels/b4.xml"/>
+    <level name="" path="levels/b5.xml"/>
     <!--<level name="" path="levels/bp.xml"/>-->
     <level name="" path="levels/btest.xml"/>
 </root>

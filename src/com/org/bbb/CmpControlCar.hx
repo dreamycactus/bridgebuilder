@@ -25,8 +25,9 @@ class CmpControlCar extends CmpControl
     
     function set_speed(s : Float) : Float
     {
-        mover.motorFront.rate = s;
+        mover.motorFront.rate = 0.1;
         mover.motorBack.rate = s;
+        mover.motorFront.active = false;
         return s;
     }
 }

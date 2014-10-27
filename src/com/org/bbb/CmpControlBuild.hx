@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.BuildMat.MatType;
 import haxe.xml.Printer;
 import nape.constraint.ConstraintList;
 import nape.phys.BodyType;
@@ -7,9 +8,6 @@ import openfl.geom.Point;
 import openfl.system.System;
 import ru.stablex.ui.widgets.Floating;
 import ru.stablex.ui.widgets.Radio;
-import com.org.bbb.GameConfig.BuildMat;
-import com.org.bbb.GameConfig.MatType;
-import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -117,7 +115,7 @@ class CmpControlBuild extends CmpControl
         }
         regEvents();
         
-        material = GameConfig.matDeck;
+        material = GameConfig.matSteel;
         this.camBody.inertia = 50; 
 
         camera = state.getSystem(SysRender).camera;
@@ -334,26 +332,34 @@ class CmpControlBuild extends CmpControl
                 otherBody = b;
             }
         }
+        if (startBody == otherBody) {
+            return;
+        }
         var genBody : { body : Body, ent : Entity } = null;
         var beamStartBody : Body = null;
         var lastBody : Body = null;
         var beamEnt : Entity = null;
         
         buildHistory.snapAndPush(builtBeams, lineChecker.copy());
-
+        
+        var sharedJoint : CmpSharedJoint = startBody.userData.sharedJoint;
+        if (sharedJoint == null) {
+            var e = EntFactory.inst.createSharedJoint(spawn1, [startBody]);
+            sharedJoint = e.getCmp(CmpSharedJoint);
+            state.insertEnt(e);
+            builtBeams.push(e);
+        }
+        
         if (endBody == null) {
             var e = EntFactory.inst.createSharedJoint(spawn2, [otherBody]);
             state.insertEnt(e);
             builtBeams.push(e);
             endBody = e.getCmp(CmpSharedJoint).body;
         }
+        var sharedJoint2 = endBody.userData.sharedJoint;
 
+        var cmp : CmpCable = null;
         switch(material.matType) {
-        case MatType.DECK:
-            genBody = genBeam(endBody, otherBody, new InteractionFilter(GameConfig.cgDeck, GameConfig.cmDeck));
-            lastBody = genBody.body;
-            beamStartBody = lastBody;
-            beamEnt = genBody.ent;
         case MatType.BEAM:
             genBody = genBeam(endBody, otherBody, new InteractionFilter(GameConfig.cgBeam, GameConfig.cmBeam));
             lastBody = genBody.body;
@@ -361,12 +367,14 @@ class CmpControlBuild extends CmpControl
             beamEnt = genBody.ent;
         case MatType.CABLE:
             var cab = state.createEnt("cc");
-            var cmp = new CmpCable(spawn1, spawn2, GameConfig.matCable);
+            cmp = new CmpCable(spawn1, spawn2, material);
             cab.attachCmp(cmp);
             state.insertEnt(cab);
             beamEnt = cab;
-            lastBody = cmp.getBody(cmp.compound.bodies.length - 1);
-            beamStartBody = cmp.getBody(0);
+            cmp.sj1 = sharedJoint;
+            cmp.sj2 = sharedJoint2;
+            lastBody = cmp.last;
+            beamStartBody = cmp.first;
             // Swap
             var dp = spawn1.sub(lastBody.position);
             var dp2 = spawn1.sub(beamStartBody.position);
@@ -379,24 +387,80 @@ class CmpControlBuild extends CmpControl
         default:
         }
         
+        if (beamEnt != null) {
+            builtBeams.push(beamEnt);
+        }
         lineChecker.addLine(spawn1, spawn2);
         
         if (endBody.userData.sharedJoint != null) {
             endBody.userData.sharedJoint.addBody(lastBody);
         }
+            
+        sharedJoint.addBody(beamStartBody);
         
-        if (beamEnt != null) {
-            builtBeams.push(beamEnt);
+        // Add extra bolt for foundation pillar
+        if (material.matType != MatType.CABLE && sharedJoint.isAnchored) {
+            var pl = Util.parametricEqn(spawn1, spawn2);
+            var xx = { min : pl.b, max : pl.a + pl.b };
+            var yy = { min : pl.d, max : pl.c + pl.d };
+            if (Math.abs(pl.c) < 0.5) {
+                
+            } else {
+                var bbb = [xx, yy];
+                var anchor = sharedJoint.getAnchor();
+                var bounds = anchor.bounds;
+                var boundValues = [(bounds.x - pl.b) / pl.a, (bounds.x + bounds.width - pl.b) / pl.a
+                                 , (bounds.y - pl.d) / pl.c, (bounds.y + bounds.height - pl.d) / pl.c];
+                if (boundValues[0] > boundValues[1]) {
+                    var tmp = boundValues[0];
+                    boundValues[0] = boundValues[1];
+                    boundValues[1] = tmp;
+                }
+                if (boundValues[2] > boundValues[3]) {
+                    var tmp = boundValues[2];
+                    boundValues[2] = boundValues[3];
+                    boundValues[3] = tmp;
+                }
+                trace(boundValues);
+                var resIndex = -1;
+                for (i in 0...boundValues.length) {
+                    var bv = boundValues[i];
+                    if (bv >= boundValues[0] && bv <= boundValues[1]
+                     && bv >= boundValues[2] && bv <= boundValues[3]
+                     && bv >= 0.0 && bv <= 1.0) {
+                        resIndex = i;
+                        break;
+                    }
+                }
+                if (resIndex != -1) {
+                    var t = boundValues[resIndex];
+                    var p1 = Vec2.get(pl.a * t + pl.b, pl.c * t + pl.d);
+                    var pfinal = cmpGrid.getClosestCellPos(p1);
+                    var findAnchor = level.space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
+                    var i = 0;
+                    var makeFoundation = true;
+                    while (!findAnchor.has(anchor)) {
+                        t -= 0.14;
+                        p1 = Vec2.get(pl.a * t + pl.b, pl.c * t + pl.d);
+                        pfinal = cmpGrid.getClosestCellPos(p1);
+                        findAnchor = level.space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
+                        if (i++ > 1) {
+                            makeFoundation = false;
+                            break;
+                        }
+                    }
+                    
+                    // if we found a UNUSED spot for anchoring to surface
+                    if (makeFoundation && sharedJoint.body.position.sub(pfinal).lsq() > 2) {
+                        var e = EntFactory.inst.createSharedJoint(pfinal, [anchor, beamStartBody]);
+                        state.insertEnt(e);
+                        builtBeams.push(e);
+                    }
+                }
+            }
+
         }
-        
-        if (startBody.userData.sharedJoint == null) {
-            var e = EntFactory.inst.createSharedJoint( spawn1, [startBody, beamStartBody]);
-            state.insertEnt(e);
-            builtBeams.push(e);
-        } else {
-            startBody.userData.sharedJoint.addBody(beamStartBody);
-        }
-        
+  
         spawn1 = null;
         spawn2 = null;
         startBody = null;
@@ -416,7 +480,6 @@ class CmpControlBuild extends CmpControl
         var ent = EntFactory.inst.createBeamEnt(spawn1, spawn2, center, body, spawn1.sub(spawn2).length + 10, material, "bob");
         state.insertEnt(ent);
         
-
         body.userData.entity = ent;
         if (startBody.userData.sharedJoint != null) {
             startBody.userData.sharedJoint.addBody(body);
@@ -475,8 +538,15 @@ class CmpControlBuild extends CmpControl
     }
     public function loadLevelFromXml(state : StateBridgeLevel)
     {
-        if (state == null) { state = new StateBridgeLevel(top); }
         var loadText = cast(UIBuilder.get('load'), InputText).text;
+        cast(UIBuilder.get('levelEdit'), Floating).hide();
+        cast(UIBuilder.get('build'), Floating).hide();
+        UIBuilder.get('rootWidget').free(true);
+        UIBuilder.get('build').free(true);
+        UIBuilder.get('levelEdit').free(true);
+
+        if (state == null) { state = new StateBridgeLevel(top); }
+        
         var l = CmpLevel.genLevelFromString(state, loadText);
         
         top.changeState(new StateTransPan(top, cast(top.state), StateBridgeLevel.createFromLevel(state, top, l)));
@@ -645,7 +715,7 @@ class CmpControlBuild extends CmpControl
             stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, unExpandBox);
             stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
             
-            cmpGrid.offset = Vec2.get(0, (GameConfig.gridCellWidth-GameConfig.matDeck.height)*0.5);
+            cmpGrid.offset = Vec2.get(0, (GameConfig.gridCellWidth-GameConfig.matSteel.height)*0.5);
         } else {
             regEvents();
             stage.removeEventListener(MouseEvent.MOUSE_DOWN, dragBox);
@@ -678,10 +748,17 @@ class CmpControlBuild extends CmpControl
     
     function expandBox(_)
     {
-        selectBody();
-        if (selectedBody != null) {
-            isExpandingBox = true;
+        var bbs = level.space.bodiesUnderPoint(prevMouse, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgSharedJoint));
+        if (bbs.length > 0) {
+            var ent : Entity = bbs.at(0).userData.entity;
+            if (ent != null) {
+                ent.getCmp(CmpSharedJoint).isRolling = true;
+            }
         }
+        //selectBody();
+        //if (selectedBody != null) {
+            //isExpandingBox = true;
+        //}
     }
     
     function unExpandBox(_)

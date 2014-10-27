@@ -254,4 +254,23 @@ class Util
         var pw = Math.pow(10, dec);
         return Std.int(v * pw) / pw;
     }
+    
+    
+    // x = at + b, y = ct + d.
+    public static function parametricEqn(p1 : Vec2, p2 : Vec2) : { a : Float, b : Float, c : Float, d : Float } 
+    {
+        var a = p2.x - p1.x;
+        var b = p1.x;
+        var c = p2.y - p1.y;
+        var d = p1.y;
+        return { a : a, b : b, c : c, d : d };
+    }
+    
+    public static function sign(v : Float) : Int {
+        if (v < 0) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
 }

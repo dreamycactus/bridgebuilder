@@ -1,5 +1,5 @@
 package com.org.bbb;
-import com.org.bbb.GameConfig.MatType;
+import com.org.bbb.BuildMat.MatType;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.System;

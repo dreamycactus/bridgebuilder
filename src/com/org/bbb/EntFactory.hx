@@ -1,7 +1,6 @@
 package com.org.bbb;
 import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
-import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -196,7 +195,7 @@ class EntFactory
     {
         var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.h * 0.5), GameConfig.gridCellWidth);
         
-        pos.y = gridMultiple + tdim.h * 0.5 +(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5;
+        pos.y = gridMultiple + tdim.h * 0.5 +(GameConfig.gridCellWidth - GameConfig.matSteel.height) * 0.5;
         //pos.addeq(Vec2.get(0, -(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5));
 
         var anc = new Body(BodyType.STATIC);

@@ -37,7 +37,7 @@ class CmpLevel extends Cmp
         var dim = level.worldDim( Std.parseFloat(root.get("w")),  Std.parseFloat(root.get("h"))  );
         level.width = dim.w;
         level.height = dim.h;
-        var gridOffset = Vec2.get(0, -(GameConfig.gridCellWidth-GameConfig.matDeck.height)*0.5);
+        var gridOffset = Vec2.get(0, -(GameConfig.gridCellWidth-GameConfig.matSteel.height)*0.5);
         for (e in root) {
             if (e.nodeType == Xml.PCData) {
                 continue;

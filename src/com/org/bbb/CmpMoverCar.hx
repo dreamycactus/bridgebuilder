@@ -33,7 +33,10 @@ class CmpMoverCar extends CmpMover
         this.compound = new Compound();
         
         body = new Body(); // Chassis
-        body.shapes.add( new Polygon(Polygon.box(50, 20), null, new InteractionFilter(GameConfig.cgLoad)) );
+        var p = Polygon.box(50, 20);
+        p[3].x += 10;
+        p[2].x -= 10;
+        body.shapes.add( new Polygon( p, null, new InteractionFilter(GameConfig.cgLoad)));
         body.shapes.at(0).material = Material.steel();
         body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
@@ -41,19 +44,19 @@ class CmpMoverCar extends CmpMover
         
         var fw = new Body(); // Front wheel
         fw.shapes.add( new Circle(10, null, null, new InteractionFilter(GameConfig.cgLoad)) );
-        fw.position = pos.add(Vec2.weak( -20, 7));
+        fw.position = pos.add(Vec2.weak( 15, 7));
         fw.compound = compound;
         
         var bw = new Body(); // Front wheel
-        bw.shapes.add( new Circle(10, null, null, new InteractionFilter(GameConfig.cgLoad)) );
-        bw.position = pos.add(Vec2.weak( 20, 7));
+        bw.shapes.add(new Circle(10, null, null, new InteractionFilter(GameConfig.cgLoad)) );
+        bw.position = pos.add(Vec2.weak(-15, 7));
         bw.compound = compound;
         
-        var fwj = new PivotJoint(body, fw, Vec2.weak( -20, 7), Vec2.weak());
+        var fwj = new PivotJoint(body, fw, Vec2.weak(15, 7), Vec2.weak());
         fwj.ignore = true;
         fwj.compound = compound;
         
-        var bwj = new PivotJoint(body, bw, Vec2.weak( 20, 7), Vec2.weak());
+        var bwj = new PivotJoint(body, bw, Vec2.weak(-15, 7), Vec2.weak());
         bwj.ignore = true;
         bwj.compound = compound;
         
@@ -66,6 +69,12 @@ class CmpMoverCar extends CmpMover
     
     override function update()
     {
+        if (body.rotation > Math.PI / 6) {
+            body.rotation = Math.PI / 6;
+        }
+        if (body.rotation < -Math.PI / 6) {
+            body.rotation = -Math.PI / 6;
+        }
     }
     
     override function set_space(space : Space) : Space

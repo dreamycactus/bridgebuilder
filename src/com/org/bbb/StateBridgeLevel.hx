@@ -1,7 +1,6 @@
 package com.org.bbb;
 
 import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.JointType;
 import com.org.bbb.Template.TemplateParams;
 import com.org.mes.Cmp;
@@ -37,10 +36,6 @@ import nape.shape.Polygon;
 
 using com.org.bbb.Util;
 
-/**
- * ...
- * @author 
- */
 class StateBridgeLevel extends BBBState
 {
     var joint : Constraint;
@@ -48,6 +43,7 @@ class StateBridgeLevel extends BBBState
     var grid : Entity;
     public var cmpGrid : CmpGrid;
     public var cmpControl : CmpControlBuild;
+    public var controllerEnt : Entity;
     var uiSprite : Sprite;
     var textField : TextField;
     var inited = false;
@@ -102,7 +98,7 @@ class StateBridgeLevel extends BBBState
         controllerEnt.attachCmp(cmpControl);
         controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
         controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, GameConfig.stageWidth, GameConfig.stageHeight) );
-
+        s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
         
         var eobj = s1.createEnt();
@@ -136,6 +132,7 @@ class StateBridgeLevel extends BBBState
     override public function disableControl() : Void
     {
         getSystem(SysControl).active = false;
+        controllerEnt.delete();
     }
     
     override public function enableControl() : Void

@@ -47,8 +47,10 @@ class CmpRenderControlUI extends CmpRender
         super.addToScene(scene);
         if (uiInstance.parent == sprite) {
             sprite.removeChild(uiInstance);
-            UIBuilder.get('rootWidget').free(true);
+            var rw = UIBuilder.get('rootWidget');
+            if (rw != null) {
+                rw.free(true);
+            }
         }
     }
-    
 }

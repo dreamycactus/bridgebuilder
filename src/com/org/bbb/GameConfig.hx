@@ -1,5 +1,6 @@
 package com.org.bbb;
 
+import com.org.bbb.BuildMat;
 import com.org.mes.Cmp;
 import com.org.mes.CmpManager;
 import com.org.mes.MESState;
@@ -9,6 +10,7 @@ import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
 import nape.geom.Vec2;
+import nape.phys.Material;
 import nape.shape.Circle;
 import nape.shape.Polygon;
 import openfl.Assets;
@@ -17,22 +19,6 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-
-
-typedef BuildMat =
-{
-    var name : String;
-    var matType : MatType;
-    var momentBreak  : Float;
-    var tensionBreak : Float;
-    var compressionBreak :Float;
-    var height : Float;
-    var maxLength : Int;
-    var cost : Float;
-    var isRigid : Bool;
-};
-
-enum MatType { BEAM; CABLE; DECK; WOOD; CONCRETE; }
 
 enum JointType
 {
@@ -50,10 +36,13 @@ class GameConfig
     public static var camDragCoeff = 5;
     
     public static var cableSegWidth = 50.0;
-    public static var beamStressHp = 200;
+    public static var beamStressHp = 600;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
     public static var multiBeamJointDecay = 9e4;
+    public static var distanceJointMin = 0;
+    public static var distanceJointMax = 40;
+    
     public static var spawnCDCar = 2000;
     public static var carSpeed = 20;
     
@@ -88,25 +77,28 @@ class GameConfig
     public static var cbTruck = new CbType();
     public static var cbEnd = new CbType();
     
-    public static var matWood : BuildMat = {  name : "wood", matType : MatType.BEAM, momentBreak : 0
-                                            , tensionBreak : 300, compressionBreak : 300, height : 20
-                                            , maxLength : 7, cost : 2, isRigid : false };
-    public static var matConcrete : BuildMat = { name : "concrete", matType : MatType.BEAM, momentBreak : 0
-                                               , tensionBreak : 400, compressionBreak : 2000, height : 20
-                                               , maxLength : 7, cost : 3, isRigid : true };
-    public static var matSteel : BuildMat = { name : "steel", matType : MatType.BEAM, momentBreak : 0, tensionBreak : 470
-                                            , compressionBreak : 470, height : 20, maxLength : 7, cost : 4
-                                            , isRigid : false };
-    public static var matDeck : BuildMat = { name : "deck", matType : MatType.DECK, momentBreak : 0, tensionBreak : 470
-                                           , compressionBreak : 470, height : 20, maxLength : 7, cost : 4
-                                           ,  isRigid : false };
-    public static var matCable : BuildMat = { name : "cable", matType : MatType.CABLE, momentBreak : 0, tensionBreak : 1000
-                                            , compressionBreak : -1, height : 10, maxLength : 30, cost : 1
-                                            , isRigid : false};
-    public static var matSuperCable : BuildMat = { name : "supercable", matType : MatType.CABLE, momentBreak : 0
-                                                 , tensionBreak : 2e5, compressionBreak : -1, height : 20, maxLength : 30, cost : 1
-                                                 , isRigid : false };
+    public static var matWood : BuildMat = new BuildMat("wood", MatType.BEAM, materialWood, 0
+                                            , 300, 300, 888, 20
+                                            , 7,2, false);
+    public static var matConcrete : BuildMat = new BuildMat("concrete", MatType.BEAM, materialConcrete, 0
+                                               , 400, 2000, 888, 20
+                                               , 7,3, true );
+    public static var matSteel: BuildMat =new BuildMat("steel", MatType.BEAM, materialSteel, 0, 550
+                                            , 550, 888, 20, 7,4
+                                            , false );
+    public static var matCable : BuildMat = new BuildMat("cable", MatType.CABLE, materialCable, 0, 1000
+                                            , -1, 888, 10, 30,1
+                                            , false);
+    public static var matSuperCable : BuildMat = new BuildMat("supercable", MatType.CABLE,materialSuperCable, 0
+                                                 , 2e5, -1, 888, 20, 30,1
+                                                 , false );
 
+    static var materialSteel = new Material();
+    static var materialWood = new Material();
+    static var materialConcrete = new Material();
+    static var materialCable = new Material(0,1,2,0.0001);
+    static var materialSuperCable = new Material();
+    
     public static var stageWidth;
     public static var stageHeight;
     
@@ -172,12 +164,15 @@ class GameConfig
             
         case SHARED:
             //ret.stiff = true;
+            ret.maxForce = 1e7;
+            ret.breakUnderForce = true;
+            //ret.frequency = 40;
         case CABLEEND:
             ret.stiff = true;
             ret.maxForce = 1e9;
         case CABLELINK:
             ret.stiff = true;
-            ret.maxForce = 1e6;
+            ret.maxForce = 1e9;
         default:
         }
         return ret;

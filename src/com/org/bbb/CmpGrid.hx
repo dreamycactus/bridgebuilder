@@ -59,6 +59,12 @@ class CmpGrid extends Cmp
                 , y : Std.int(Util.roundDown(Std.int(v.y), Std.int(cellSize)) / cellSize) };
     }
     
+    public function getClosestCellPos(v : Vec2) : Vec2
+    {
+        var res = getClosestCell(v);
+        return getCellPos(res.x, res.y);
+    }
+    
     public function getCellPos(x : Int, y : Int) : Vec2
     {
         return Vec2.get(x, y).mul(cellSize).add( Vec2.weak(cellSize * 0.5, cellSize * 0.5) );

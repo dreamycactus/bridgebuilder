@@ -1,9 +1,10 @@
 package com.org.bbb;
-import com.org.bbb.GameConfig.BuildMat;
+import com.org.bbb.BuildMat;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.constraint.DistanceJoint;
+import nape.constraint.PivotJoint;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 import nape.geom.Vec3;
@@ -11,6 +12,7 @@ import nape.phys.Body;
 import nape.phys.Compound;
 import nape.shape.Polygon;
 import nape.shape.Shape;
+import nape.shape.ShapeList;
 import nape.space.Space;
 
 /**
@@ -23,14 +25,71 @@ using com.org.bbb.Util;
 class CmpCable extends CmpBeamBase
 {
     public var compound : Compound;
+    public var tightness : Float = 1.0;
+    public var firstBuild = true;
+    
+    public var first : Body;
+    public var last : Body;
+    
+    var prevLen : Float = Math.POSITIVE_INFINITY;
+    var lastTension : Float =-1;
     
     public function new(pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
     {
         super(pos1, pos2);
         this.material = cableMat;
+        tightness = 1.0;
+        rebuild();
         
-        var dir = pos2.sub(pos1);
+        compound = new Compound();
+        first = new Body(null, pos1);
+        first.shapes.add(new Polygon(Polygon.box(30, material.height, true), material.material
+                                        , new InteractionFilter(GameConfig.cgCable, GameConfig.cmCable)));
+        first.compound = compound;
+        last = new Body(null, pos2);
+        last.shapes.add(new Polygon(Polygon.box(30, material.height, true), material.material
+                                        , new InteractionFilter(GameConfig.cgCable, GameConfig.cmCable)));
+        last.compound = compound;
+        
+    }
+    
+    override public function update() : Void
+    {
+        if (broken) return;
+        if (compound.bodies.length < 1) { return; }
+        var mid = Std.int(compound.bodies.length / 2);
+        var stress : Vec3 = compound.bodies.at(mid).calculateBeamStress();
+        if (stress.x > material.tensionBreak) {
+            var rand = Std.random(compound.constraints.length);
+            compound.constraints.at(rand).compound = null;
+            broken = true;
+        }
+        if (stress.x > 5 && stress.x < 100 && tightness > 0.4) {
+            //tightness -= 0.1;
+            rebuild();
+        }
+        lastTension = stress.x;
+    }
+    
+    public function rebuild()
+    {
+        if (sj1 == null || sj2 == null) { return; }
+        if (sj1.body.position.sub(p1, true).lsq() > sj2.body.position.sub(p1, true).lsq()) {
+            var tmp = sj1;
+            sj1 = sj2;
+            sj2 = tmp;
+        }
+        var p1 = sj1.body.position;
+        var p2 = sj2.body.position;
+        
+        var dir = p2.sub(p1);
+        if (firstBuild) {
+            prevLen = dir.length;
+        }
         var len = dir.length;
+        if (lastTension < 100) {
+            len = Math.min(dir.length, prevLen);
+        }
         dir = dir.normalise();
         var prev : Body = null;
         
@@ -39,48 +98,59 @@ class CmpCable extends CmpBeamBase
             segWidth /= 2.0;
         }
         var segCount = Math.round(len / segWidth);
+        if (!firstBuild) {
+            segCount = compound.bodies.length;
+            segWidth = len / segCount;
+        }
 
         var offset = segWidth * 0.5;
-        var startPos = pos1.add(dir.mul(segWidth * 0.5) );
+        var startPos = p1.add(dir.mul(segWidth * 0.5) );
         
-        var l = pos1.sub(pos2).length;
-        compound = new Compound();
+        var l = p1.sub(p2).length;
+        
         for (i in 0...segCount) {
-            var body = new Body();
-            var shape : Shape = new Polygon(Polygon.box(segWidth, material.height, true) );
+            var body : Body = null;
+            if (firstBuild) {
+                body = new Body();
+            } else {
+                body = compound.bodies.at(i);
+            }
+            if (i == 0) {
+                body = first;
+            } else if (i == segCount - 1) {
+               body = last;
+            }
+            body.shapes.clear();
+            var shape : Shape = new Polygon(Polygon.box(segWidth*tightness, material.height, true) );
             shape.filter.collisionGroup = GameConfig.cgCable;
             shape.filter.collisionMask = GameConfig.cmCable;
             body.shapes.add(shape);
-            body.position = startPos.add(dir.mul(i * segWidth)); 
-            body.rotation = dir.angle;
-            body.compound = compound;
-            
-            if (prev != null) {
-                var pj = GameConfig.pivotJoint(JointType.MULTISTIFF);
-                pj.maxForce = 1e9;
-                //pj.breakUnderForce = true;
-                pj.body1 = prev;
-                pj.body2 = body;
-                pj.anchor1 = Vec2.weak(offset, 0);
-                pj.anchor2 = Vec2.weak( -offset, 0);
-                pj.compound = compound;
+            if (firstBuild) {
+                body.position = startPos.add(dir.mul(i * segWidth)); 
+                body.rotation = dir.angle;
+                body.compound = compound;
+                body.userData.entity = entity;
+                if (prev != null) {
+                    var pj = GameConfig.pivotJoint(JointType.CABLELINK);
+                    pj.maxForce = 1e9;
+                    pj.body1 = prev;
+                    pj.body2 = body;
+                    pj.anchor1 = Vec2.weak(offset, 0);
+                    pj.anchor2 = Vec2.weak(-offset, 0);
+                    pj.compound = compound;
+                }
+                prev = body;
             }
-            prev = body;
         }
-        
-    }
-    
-    override public function update() : Void
-    {
-        if (broken) return;
-        
-        var mid = Std.int(compound.bodies.length / 2);
-        var stress : Vec3 = compound.bodies.at(mid).calculateBeamStress();
-        if (stress.x > material.tensionBreak) {
-            var rand = Std.random(compound.constraints.length);
-            compound.constraints.at(rand).compound = null;
-            broken = true;
+        if (!firstBuild) {
+            compound.visitConstraints(function (c) {
+                var pj = cast(c, PivotJoint);
+                pj.anchor1.x = offset * Util.sign(pj.anchor1.x);
+                pj.anchor2.x = offset * Util.sign(pj.anchor2.x);
+            });
         }
+        prevLen = len;
+        firstBuild = false;
     }
     
     public function getBody(i : Int) : Body
@@ -104,20 +174,44 @@ class CmpCable extends CmpBeamBase
     
     override function set_space(space : Space) : Space
     {
-        compound.space = space;
+        this.space = space;
+        if (compound != null) {
+            compound.space = space;
+        }
         return space;
     }
     
     override function get_space() : Space
     {
-        return compound.space;
+        return this.space;
     }
     
     override function set_entity(e : Entity) : Entity
     {
-        for (b in compound.bodies) {
-            b.userData.entity = e;
+        this.entity = e;
+        if (compound != null) {
+            for (b in compound.bodies) {
+                b.userData.entity = e;
+            }
         }
         return e;
+    }
+    
+    override function set_sj1(sj : CmpSharedJoint) : CmpSharedJoint
+    {
+        if (sj2 != sj) {
+            sj1 = sj;
+            rebuild();
+        }
+        return sj;
+    }
+    
+    override function set_sj2(sj : CmpSharedJoint) : CmpSharedJoint
+    {
+        if (sj1 != sj) {
+            sj2 = sj;
+            rebuild();
+        }
+        return sj;
     }
 }

@@ -3,6 +3,8 @@ import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.constraint.Constraint;
+import nape.constraint.DistanceJoint;
+import nape.constraint.LineJoint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
 import nape.geom.Vec2;
@@ -20,6 +22,9 @@ class CmpSharedJoint extends CmpPhys
     public var body : Body;
     @:isVar public var bodies(default, default) : Array<Body>;
     public var isAnchored = false;
+    @:isVar public var isRolling(default, set_isRolling) : Bool = false;
+    
+    var joints : Array<Constraint>;
     
     public function new(pos : Vec2, startingBodies : Array<Body> = null) 
     {
@@ -27,7 +32,6 @@ class CmpSharedJoint extends CmpPhys
         body = new Body();
         body.shapes.add(GameConfig.sharedJointShape());
         body.position = pos;
-        //body.allowRotation = false;
         body.userData.sharedJoint = this;
         this.bodies = new Array();
         this.joints = new Array();
@@ -35,9 +39,6 @@ class CmpSharedJoint extends CmpPhys
             for (b in startingBodies) {
                 if (b != null) {
                     addBody(b);
-                    if (b.userData.entity != null) {
-                        ents.push(b.userData.entity);
-                    }   
                 }
             }
         } else {
@@ -48,7 +49,7 @@ class CmpSharedJoint extends CmpPhys
     
     public function deleteNull()
     {
-        bodies = bodies.filter(function (b) { return b.space != null || b.compound != null; } );
+        bodies = bodies.filter(function (b) { return b.space != null || (b.compound != null && b.compound.space != null); } );
         joints = joints.filter(function(j) { 
             var shouldDelete = false;
             if (Std.is(j, PivotJoint)) {
@@ -58,15 +59,11 @@ class CmpSharedJoint extends CmpPhys
                     pj.space = null;
                 }
             } else {
-                var pj = cast(j, WeldJoint);
-                shouldDelete = pj.body1.space == null || pj.body2.space == null;
-                if (shouldDelete) {
-                    pj.space = null;
-                }
+                throw "Joint is not pivot joint...";
             }
             return !shouldDelete;
         });
-        if (bodies.length == 0) {
+        if (bodies.length == 0 || (bodies.length == 1 && isAnchored)) {
             entity.delete();
         }
     }
@@ -81,34 +78,30 @@ class CmpSharedJoint extends CmpPhys
     
     public function addBody(b : Body) 
     {
-        var isAnchorBody = b.shapes.at(0).filter.collisionGroup;
+        var isAnchorBody = b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor;
         if (!bodies.has(b) && b != body && b != null) {
-            if (!isAnchored && isAnchorBody == GameConfig.cgAnchor) {
+            if (!isAnchored && isAnchorBody) {
                 isAnchored = true;
-                
             }
             bodies.push(b);
             var beamEnt : Entity = b.userData.entity;
             
             if (beamEnt != null) {
-                ents.push(beamEnt);
                 var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
 
                 for (beam in beams) {
                     beam.sharedJoints.push(this);
                 }
-                if ((beams.length > 0 && beams[0].material.isRigid && isAnchored)||isAnchorBody == GameConfig.cgAnchor) {
-                    var j = GameConfig.getWeldJoint();
-                    j.body1 = b;
-                    j.body2 = body;
-                    /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */
-                    j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true), true);
-                    j.anchor2 = Vec2.get();
-                    j.space = body.space;
-                    joints.push(j);
-                    return;
+                var cable = beamEnt.getCmp(CmpCable);
+                if (cable != null) {
+                    if (cable.sj1 == null) {
+                        cable.sj1 = this;
+                    } else {
+                        cable.sj2 = this;
+                    }
                 }
             }
+            
             var j = GameConfig.pivotJoint(JointType.SHARED);
             j.body1 = b;
             j.body2 = body;
@@ -119,6 +112,17 @@ class CmpSharedJoint extends CmpPhys
             joints.push(j);
             
         }
+    }
+    
+    public function getAnchor() : Body
+    {
+        if (!isAnchored) return null;
+        for (b in bodies) {
+            if (b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor) {
+                return b;
+            }
+        }
+        return null;
     }
     
     public function removeBody(b : Body)
@@ -150,6 +154,16 @@ class CmpSharedJoint extends CmpPhys
                     c.space = null;
                 }
             }
+            // Check if this is still anchor shared joint
+            if (bodies.length > 0 && isAnchored
+             && b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor) {
+                isAnchored = false;
+                bodies.foreach(function (bb) { 
+                    if (bb.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor) 
+                        isAnchored = true; 
+                    return true; 
+                });
+            }
         }
     }
     
@@ -158,18 +172,55 @@ class CmpSharedJoint extends CmpPhys
         deleteNull();
     }
 
-    var ents : Array<Entity> = new Array();
-    var joints : Array<Constraint>;
 
     override function get_space() : Space { return body.space; }
     override function set_space(s : Space) : Space 
     { 
         body.space = s;
+        body.constraints.foreach(function(cc) {
+            cc.space = s;
+        });
         for (j in joints) {
             j.space = s;
         }
         return body.space; 
     }
     
+    function set_isRolling(b : Bool) : Bool {
+        if (b == isRolling) return b;
+        
+        for (cc in body.constraints) {
+           cc.visitBodies(function(bb) {
+                var ent = bb.userData.entity;
+                if (ent != null && ent.hasCmp(CmpAnchor)) {
+                    if (isRolling) {
+                        var lj = cast(cc, LineJoint);
+                        var pj = GameConfig.pivotJoint(JointType.SHARED);
+                        pj.body1 = lj.body1;
+                        pj.body2 = lj.body2;
+                        pj.anchor1 = lj.anchor1;
+                        pj.anchor2 = lj.anchor2;
+                        pj.space = lj.space;
+                        lj.space = null;
+                    } else {
+                        var pj = cast(cc, PivotJoint);
+                        var dj = new LineJoint(pj.body1, pj.body2, pj.anchor1, pj.anchor2, Vec2.weak(1.0, 0), GameConfig.distanceJointMin, GameConfig.distanceJointMax);
+                        dj.frequency = 15;
+                        dj.space = pj.space;
+                        pj.space = null;
+                    }
+                }
+            });
+        }
+        isRolling = b;
+        return b; 
+    }
+    
+    override function set_entity(e: Entity) : Entity
+    {
+        this.entity = e;
+        body.userData.entity = e;
+        return e;
+    }
     
 }

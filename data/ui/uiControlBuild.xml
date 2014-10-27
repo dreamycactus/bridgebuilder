@@ -6,14 +6,14 @@
     <VBox autoHeight="true" childPadding="10" padding="10">
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Toggle Edit'" autoHeight="true" 
                      on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
-        <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="200" format-size="14" text="''"/>
+        <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>
     </VBox>
-    <Floating id="'build'" w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
+    <Floating id="'build'" w="200" right ="3" top="0" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
     <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Super Cable'" autoHeight="true" 
+                 on-click="@controlBuild.set_material($GameConfig.matSuperCable);"/>
+         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
                  on-click="@controlBuild.set_material($GameConfig.matCable);"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Road'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matDeck); @controlBuild.isDeck = true;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
                  on-click="@controlBuild.set_material($GameConfig.matSteel); @controlBuild.isDeck = false;" />
         <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Wood'" autoHeight="true" 
@@ -31,7 +31,7 @@
     </VBox>
     </Floating>
      
-    <Floating id="'levelEdit'" w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
+    <Floating id="'levelEdit'" w="200" right ="3" top="0" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
     <HBox top="0">
     <VBox w="200" left="3" top="40" autoHeight="true" childPadding="10" padding="10">
         <HBox w="400" autoHeight="true" childPadding="10" padding="10">

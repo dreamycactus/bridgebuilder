@@ -1,7 +1,5 @@
 package com.org.bbb;
-import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.JointType;
-import com.org.bbb.GameConfig.MatType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.callbacks.InteractionCallback;

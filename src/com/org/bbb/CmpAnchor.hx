@@ -16,11 +16,6 @@ class CmpAnchor extends CmpPhys
         this.body = body;
     }
     
-    public function getTop() : Float
-    {
-        return body.bounds.y;
-    }
-    
     override function get_space() : Space { return body.space;  }
     override function set_space(space : Space) : Space { body.space = space; return space;  }
     

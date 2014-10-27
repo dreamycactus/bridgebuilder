@@ -1,6 +1,5 @@
 package com.org.bbb;
 import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.GameConfig.BuildMat;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
@@ -115,12 +114,13 @@ class CmpBeam extends CmpBeamBase
     
     override function set_space(space : Space) : Space
     {
+        this.space = space;
         body.space = space;
         return space;
     }
     
     override function get_space() : Space
     {
-        return body.space;
+        return space;
     }
 }
