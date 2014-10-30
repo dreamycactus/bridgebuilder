@@ -63,6 +63,8 @@ class CmpSharedJoint extends CmpPhys
             }
             return !shouldDelete;
         });
+        // isAnchored check not exactly correct..  
+        // cause the anchored body may be removed... prolly not though
         if (bodies.length == 0 || (bodies.length == 1 && isAnchored)) {
             entity.delete();
         }
@@ -88,7 +90,6 @@ class CmpSharedJoint extends CmpPhys
             
             if (beamEnt != null) {
                 var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
-
                 for (beam in beams) {
                     beam.sharedJoints.push(this);
                 }

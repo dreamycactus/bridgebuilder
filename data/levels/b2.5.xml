@@ -1,7 +1,7 @@
 <root w="30" h="15">
-	<anchor x="15" y="2.13" w="1" h="2.4" />
-	<anchor x="24" y="3.81" w="6" h="4" />
-	<anchor x="0.94" y="3.76" w="6" h="4" />
+	<anchor x="15" y="2.13" w="1" h="2.4"/>
+	<anchor x="24" y="3.81" w="6" h="4" type="end"/>
+	<anchor x="0.94" y="3.76" w="6" h="4" sj.getAnchor()/>
 	<spawn x="2.35" y="4.77" dir="1" period="2000" count="30" />
 	<anchor x="24.96" y="6.37" w="5" h="2.5" />
 </root>

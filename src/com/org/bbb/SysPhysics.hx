@@ -77,7 +77,7 @@ class SysPhysics extends System
     
     override public function isValidEnt(e : Entity) : Bool
     {
-        if (e.getCmpsHavingAncestor(CmpPhys).length > 0 ) {
+        if (e.getCmpsHavingAncestor(CmpPhys) != null) {
             return true;
         }
         return false;

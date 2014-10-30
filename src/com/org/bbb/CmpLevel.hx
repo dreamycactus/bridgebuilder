@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.CmpAnchor.AnchorStartEnd;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -46,8 +47,15 @@ class CmpLevel extends Cmp
             case "anchor":
                 var tdim = level.worldDim(Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h"))  );
                 var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), tdim);
+                var startend = e.get("type");
+                var ase = AnchorStartEnd.NONE;
+                if (startend != null) {
+                   if (startend == "start") ase = AnchorStartEnd.START;
+                   else if (startend == "end") ase = AnchorStartEnd.END;
+                }
+                
 
-                var ent = EntFactory.inst.createAnchor(pos, tdim);
+                var ent = EntFactory.inst.createAnchor(pos, tdim, ase);
                 level.ents.push(ent);
                 
             case "spawn":

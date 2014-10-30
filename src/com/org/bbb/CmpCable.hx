@@ -30,6 +30,7 @@ class CmpCable extends CmpBeamBase
     
     public var first : Body;
     public var last : Body;
+    public var prevFilter : InteractionFilter;
     
     var prevLen : Float = Math.POSITIVE_INFINITY;
     var lastTension : Float =-1;
@@ -50,6 +51,7 @@ class CmpCable extends CmpBeamBase
         last.shapes.add(new Polygon(Polygon.box(30, material.height, true), material.material
                                         , new InteractionFilter(GameConfig.cgCable, GameConfig.cmCable)));
         last.compound = compound;
+        prevFilter = new InteractionFilter(GameConfig.cgCable, GameConfig.cmCable);
         
     }
     
@@ -64,7 +66,8 @@ class CmpCable extends CmpBeamBase
             compound.constraints.at(rand).compound = null;
             broken = true;
         }
-        if (stress.x > 5 && stress.x < 100 && tightness > 0.4) {
+        var multiplier = (p2.sub(p1).length  / GameConfig.gridCellWidth) / material.maxLength  + 1;
+        if (stress.x > 5 && stress.x < 20*multiplier && tightness > 0.4) {
             //tightness -= 0.1;
             rebuild();
         }
@@ -122,8 +125,7 @@ class CmpCable extends CmpBeamBase
             }
             body.shapes.clear();
             var shape : Shape = new Polygon(Polygon.box(segWidth*tightness, material.height, true) );
-            shape.filter.collisionGroup = GameConfig.cgCable;
-            shape.filter.collisionMask = GameConfig.cmCable;
+            shape.filter = prevFilter;
             body.shapes.add(shape);
             if (firstBuild) {
                 body.position = startPos.add(dir.mul(i * segWidth)); 
@@ -169,6 +171,7 @@ class CmpCable extends CmpBeamBase
     
     override public function changeFilter(f : InteractionFilter) : Void
     {
+        prevFilter = f;
         compound.visitBodies(function (b) { b.setShapeFilters(f); } );
     }
     
@@ -213,5 +216,9 @@ class CmpCable extends CmpBeamBase
             rebuild();
         }
         return sj;
+    }
+    override function get_isRoad() : Bool
+    {
+        return compound.bodies.at(0).shapes.at(0).filter.collisionMask & GameConfig.cgLoad != 0;
     }
 }

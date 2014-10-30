@@ -76,10 +76,4 @@ class Entity
         }
     }
     
-    @:op(a == b)
-    public function equals(rhs:Entity) : Bool
-    {
-        return rhs.id == id;
-    }
-    
 }

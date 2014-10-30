@@ -112,6 +112,11 @@ class CmpBeam extends CmpBeamBase
         body.setShapeFilters(f);
     }
     
+    override public function getFilter() :InteractionFilter
+    {
+        return body.shapes.at(0).filter;
+    }
+    
     override function set_space(space : Space) : Space
     {
         this.space = space;
@@ -122,5 +127,10 @@ class CmpBeam extends CmpBeamBase
     override function get_space() : Space
     {
         return space;
+    }
+    
+    override function get_isRoad() : Bool
+    {
+        return body.shapes.at(0).filter.collisionMask & GameConfig.cgLoad != 0;
     }
 }

@@ -228,7 +228,7 @@ class CmpMultiBeam extends CmpBeamBase
                 var ent : Entity = cmpBeam.entity;
                 var beams : Array<CmpBeamBase> = ent.getCmpsHavingAncestor(CmpBeamBase);
                 
-                if (beams[0] != null) {
+                if (beams != null) {
                     for (sj in beams[0].sharedJoints) {
                         sj.removeBody(beamBody);
                     }

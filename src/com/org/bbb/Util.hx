@@ -273,4 +273,26 @@ class Util
             return 1;
         }
     }
+    
+    public static function insertSort(list : BodyList, sorter : Body->Body->Bool) 
+    {
+        if (list.length == 0) { return list; }
+        var array = new Array<Body>();
+        array.push(list.at(0));
+        for (k in 1...list.length) {
+            var b = list.at(k);
+            var index = array.length;
+            for (i in 0...array.length) {
+                if (sorter(b, array[i])) {
+                    index = i;
+                }
+            }
+            array.insert(index, b);
+        }
+        var blist = new BodyList();
+        for (b in array) {
+            blist.push(b);
+        }
+        return blist;
+    }
 }

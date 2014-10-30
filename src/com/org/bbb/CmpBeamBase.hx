@@ -14,6 +14,8 @@ class CmpBeamBase extends CmpPhys
     public var broken : Bool = false;
     public var p1 : Vec2;
     public var p2 : Vec2;
+    public var slope(get_slope, null) : Float;
+    public var isRoad(get_isRoad, null) : Bool;
     
     @:isVar public var sj1 (default, set_sj1): CmpSharedJoint;
     @:isVar public var sj2 (default, set_sj2): CmpSharedJoint;
@@ -36,6 +38,11 @@ class CmpBeamBase extends CmpPhys
     {
     }
     
+    public function getFilter() : InteractionFilter
+    {
+        return null;
+    }
+    
     function set_sj1(sj : CmpSharedJoint) : CmpSharedJoint
     {
         this.sj1 = sj;
@@ -46,6 +53,16 @@ class CmpBeamBase extends CmpPhys
     {
         this.sj2 = sj;
         return sj;
+    }
+    
+    function get_slope() : Float
+    {
+        return (p2.y - p1.y) / (p2.x - p1.x);
+    }
+    
+    function get_isRoad() : Bool
+    {
+        return false;
     }
 
 }

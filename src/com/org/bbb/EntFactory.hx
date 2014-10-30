@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.CmpAnchor.AnchorStartEnd;
 import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
 import com.org.bbb.GameConfig.JointType;
@@ -191,7 +192,7 @@ class EntFactory
         return spawn;
     }
     
-    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}) : Entity
+    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}, ase : AnchorStartEnd) : Entity
     {
         var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.h * 0.5), GameConfig.gridCellWidth);
         
@@ -204,7 +205,8 @@ class EntFactory
         anc.shapes.at(0).filter.collisionMask = GameConfig.cmAnchor;
         anc.position = pos;
         var ent = state.createEnt();
-        ent.attachCmp(new CmpAnchor(anc));
+        var cmpanc = new CmpAnchor(anc, ase);
+        ent.attachCmp(cmpanc);
         anc.userData.entity = ent;
         return ent;
     }

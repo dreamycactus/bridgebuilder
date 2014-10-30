@@ -21,13 +21,17 @@ class CmpControlCar extends CmpControl
         if (mover.body.position.y > Lib.current.stage.stageHeight + 1000) {
             entity.delete();
         }
+        if (mover.body.rotation < Math.PI / 12) {
+            mover.motorFront.active = true;
+        } else {
+            mover.motorFront.active = false;
+        }
     }
     
     function set_speed(s : Float) : Float
     {
-        mover.motorFront.rate = 0.1;
+        mover.motorFront.rate = s;
         mover.motorBack.rate = s;
-        mover.motorFront.active = false;
         return s;
     }
 }

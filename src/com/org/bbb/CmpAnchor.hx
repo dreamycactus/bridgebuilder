@@ -7,13 +7,22 @@ import nape.space.Space;
  * ...
  * @author 
  */
+enum AnchorStartEnd
+{
+    START;
+    END;
+    NONE;
+}
+ 
 class CmpAnchor extends CmpPhys
 {
     public var body : Body;
-    public function new(body : Body) 
+    public var startEnd : AnchorStartEnd;
+    public function new(body : Body, ase : AnchorStartEnd) 
     {
         super();
         this.body = body;
+        this.startEnd = ase;
     }
     
     override function get_space() : Space { return body.space;  }
