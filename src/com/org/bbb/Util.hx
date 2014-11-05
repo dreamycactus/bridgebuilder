@@ -19,6 +19,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import ru.stablex.ui.widgets.Widget;
 
 using Lambda;
 
@@ -152,6 +153,7 @@ class Util
             }
             if (anchor != null && anchor.x >= 0) {
                 var imp = pj.bodyImpulse(body);
+                var bounds = body.bounds;
                 totalStressAtCenter = add(totalStressAtCenter, imp );
                 ++count;
             }

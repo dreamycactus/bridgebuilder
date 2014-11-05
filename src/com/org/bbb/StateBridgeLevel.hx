@@ -97,9 +97,11 @@ class StateBridgeLevel extends BBBState
         s1.cmpControl = cmpControl;
         controllerEnt.attachCmp(cmpControl);
         controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
-        controllerEnt.attachCmp( new CmpRenderControlUI(cmpControl, GameConfig.stageWidth, GameConfig.stageHeight) );
+        controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
         s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
+        
+        
         
         var eobj = s1.createEnt();
         eobj.attachCmp(new CmpObjectiveAllPass(cl));

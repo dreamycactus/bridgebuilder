@@ -23,6 +23,7 @@ class CmpBeam extends CmpBeamBase
 {
     public var body : Body;
     public var width : Float;
+    public var length : Float;
     public var jointOffsets : Array<Vec2>;
     public var stressCHp : Float = GameConfig.beamStressHp;
     public var stressTHp : Float = GameConfig.beamStressHp;
@@ -31,14 +32,15 @@ class CmpBeam extends CmpBeamBase
     public function new(p1 : Vec2, p2 : Vec2, body : Body, width : Float, material : BuildMat) 
     {
         super(p1, p2);
+        this.length = p1.sub(p2, true).length;
         this.body = body;
         this.width = width;
         this.jointOffsets = new Array();
         this.material = material;
         
-        stressCHp *= Util.randomf(1, 8);
-        stressTHp *= Util.randomf(1, 8);
-        stressSHp *= Util.randomf(1, 8);
+        stressCHp *= Util.randomf(2, 5);
+        stressTHp *= Util.randomf(2, 5);
+        stressSHp *= Util.randomf(2, 5);
     }
     
     public function getWorldOffset(index : Int) : Vec2
@@ -59,40 +61,45 @@ class CmpBeam extends CmpBeamBase
             return;
         }
         
-        var stress = body.worldVectorToLocal(body.calculateBeamStress().xy(true));
+        var stress = body.calculateBeamStress().xy();
         var splitType = SplitType.TENSION;
         var isBreaking = false;
 
         if (stress.x > material.tensionBreak) { // Tension
-            stressTHp -= dt;
+            stressTHp -= dt * (stress.x / material.tensionBreak);
             if (stressTHp < 0) {
                 isBreaking = true;
                 splitType = SplitType.TENSION;
+                trace('tension');
             }
-        } else if (stressTHp < GameConfig.beamStressHp) {
+        } else if (stressTHp < material.tensionBreak) {
             stressTHp += dt;
         }
         
         if (stress.x < -material.compressionBreak) {
-            stressCHp -= dt;
+            stressCHp -= dt * -(stress.x/material.compressionBreak);
             if (stressCHp < 0) {
                 isBreaking = true;
                 splitType = SplitType.COMPRESSION;
+                trace('compr');
             }
-        } else if (stressTHp < GameConfig.beamStressHp) {
+        } else if (stressTHp < material.compressionBreak) {
             stressCHp += dt;
         }
-
+        
+        var moment = Math.abs(stress.y) * this.length * 0.5;
         // Shear only happens on vertical beams
-        //if (Math.abs(stress.y) > 1000) {
-            //stressSHp -= dt;
-            //if (stressCHp < 0) {
-                //splitType = SplitType.SHEAR;
-                //
-            //}
-        //} else if (stressSHp < GameConfig.beamStressHp) {
-            //stressSHp += dt;
-        //}
+        if (moment > material.momentBreak) {
+            stressSHp -= dt * Math.max(moment/material.compressionBreak, 3);
+            if (stressSHp < 0) {
+                isBreaking = true;
+                splitType = SplitType.SHEAR;
+                trace('shear $moment');
+                
+            }
+        } else if (stressSHp < GameConfig.beamStressHp) {
+            stressSHp += dt;
+        }
         
         stress.dispose();
 

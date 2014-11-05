@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Skins>
+    <!-- here goes `skinName`:`SkinClass` with list of skin properties -->
+    <matBut:Paint
+        color       = "0x6c71c4"
+        borderColor = "0x5e62a9"
+        border      = "1"
+    />
+</Skins>

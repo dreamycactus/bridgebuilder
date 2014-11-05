@@ -21,6 +21,7 @@ class CmpLevel extends Cmp
     public var spawnCD : Float = GameConfig.spawnCDCar;
     public var id : Int;
     public var ents : List<Entity> = new List();
+    public var materialsAllowed : Array<String> = new Array();
     public function new(id : Int = -1) 
     {
         super();
@@ -53,11 +54,11 @@ class CmpLevel extends Cmp
                    if (startend == "start") ase = AnchorStartEnd.START;
                    else if (startend == "end") ase = AnchorStartEnd.END;
                 }
-                
-
                 var ent = EntFactory.inst.createAnchor(pos, tdim, ase);
                 level.ents.push(ent);
-                
+            case "material":
+                var matName = e.get("name");
+                level.materialsAllowed.push(matName);
             case "spawn":
                 var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), {w : 1, h : 1});
                 var dir = Std.parseInt(e.get("dir"));

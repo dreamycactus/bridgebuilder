@@ -31,6 +31,16 @@ enum JointType
     CABLELINK;
 }
 
+enum MaterialNames
+{
+    CABLE;
+    SUPERCABLE;
+    WOOD;
+    CONCRETE;
+    STEEL;
+    NULL;
+}
+
 class GameConfig
 {
     public static var camDragCoeff = 5;
@@ -77,19 +87,20 @@ class GameConfig
     public static var cbTruck = new CbType();
     public static var cbEnd = new CbType();
     
-    public static var matWood : BuildMat = new BuildMat("wood", MatType.BEAM, materialWood, 0
-                                            , 300, 300, 888, 20
+    // Moment Tension Compression Shear
+    public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood
+                                            ,14500, 300, 300, 888, 20
                                             , 7,2, false);
-    public static var matConcrete : BuildMat = new BuildMat("concrete", MatType.BEAM, materialConcrete, 0
+    public static var matConcrete : BuildMat = new BuildMat(tconcrete, MaterialNames.CONCRETE, MatType.BEAM, materialConcrete, 5e5
                                                , 400, 2000, 888, 20
                                                , 7,3, true );
-    public static var matSteel: BuildMat =new BuildMat("steel", MatType.BEAM, materialSteel, 0, 550
+    public static var matSteel: BuildMat =new BuildMat(tsteel, MaterialNames.STEEL, MatType.BEAM, materialSteel, 3e4, 550
                                             , 550, 888, 20, 7,4
                                             , false );
-    public static var matCable : BuildMat = new BuildMat("cable", MatType.CABLE, materialCable, 0, 1000
+    public static var matCable : BuildMat = new BuildMat(tcable, MaterialNames.CABLE, MatType.CABLE, materialCable, 0, 1000
                                             , -1, 888, 10, 30,1
                                             , false);
-    public static var matSuperCable : BuildMat = new BuildMat("supercable", MatType.CABLE,materialSuperCable, 0
+    public static var matSuperCable : BuildMat = new BuildMat(tsupercable, MaterialNames.SUPERCABLE, MatType.CABLE,materialSuperCable, 0
                                                  , 2e5, -1, 888, 20, 30,1
                                                  , false );
 
@@ -98,6 +109,14 @@ class GameConfig
     static var materialConcrete = new Material();
     static var materialCable = new Material(0,1,2,0.0001);
     static var materialSuperCable = new Material();
+    
+    public static var tcable = "Cable";
+    public static var tsupercable = "Supercable";
+    public static var twood = "Wood";
+    public static var tconcrete = "Concrete";
+    public static var tsteel= "Steel";
+    public static var tdelete= "Delete";
+    
     
     public static var stageWidth;
     public static var stageHeight;
@@ -131,6 +150,23 @@ class GameConfig
         ret.autoSize = align;
         
         return ret;
+    }
+    
+    public static function nameToMat(name : String) : BuildMat
+    {
+        if (name == GameConfig.tcable) {
+            return matCable;
+        } else if (name == GameConfig.tsupercable) {
+            return matSuperCable;
+        } else if (name == GameConfig.twood) {
+            return matWood;
+        } else if (name == GameConfig.tconcrete) {
+            return matConcrete;
+        } else if (name == GameConfig.tsteel) {
+            return matSteel;
+        } else {
+            return null;
+        }
     }
     
     public static function pivotJoint(type : JointType) : PivotJoint

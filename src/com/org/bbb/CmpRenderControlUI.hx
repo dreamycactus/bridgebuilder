@@ -15,11 +15,13 @@ class CmpRenderControlUI extends CmpRender
     public var uiInstance : Sprite;
     var width : Float;
     var height : Float;
+    var level : CmpLevel;
     
-    public function new(buildControl : CmpControlBuild, width : Float, height : Float ) 
+    public function new(buildControl : CmpControlBuild, level : CmpLevel, width : Float, height : Float ) 
     {
         super(false);
         this.buildControl = buildControl;
+        this.level = level;
         this.width = width;
         this.height = height;
     }
@@ -38,7 +40,10 @@ class CmpRenderControlUI extends CmpRender
         });
         sprite.addChild(uiInstance);
         var rw = UIBuilder.get('rootWidget');
-        rw.resize(width, height);
+        rw.resize(width, height, true);
+        
+        var cb = cast(UIBuilder.get('controlbar'), WControlBar);
+        cb.addMaterialButtons(level.materialsAllowed);
 
     }
     

@@ -1,6 +1,8 @@
 <root w="23" h="12">
+    <material name="Wood"/>
+    <budget maxBudget="150"/>
     <anchor x="17" y="5" w="6" h="7" type="end" />
     <anchor x="-2" y="5" w="8" h="7" type="start" />
-    <spawn x="3" y="6" dir="1" period="2000" count="30"/>
+    <spawn x="1" y="6" dir="1" period="2000" count="30" />
     <end x="19" y="5"/>
 </root>

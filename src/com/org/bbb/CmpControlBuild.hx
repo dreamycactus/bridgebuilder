@@ -1,11 +1,13 @@
 package com.org.bbb;
 import com.org.bbb.BuildMat.MatType;
 import com.org.bbb.CmpAnchor.AnchorStartEnd;
+import com.org.bbb.GameConfig.MaterialNames;
 import haxe.ds.GenericStack;
 import haxe.ds.ObjectMap;
 import haxe.ds.ObjectMap;
 import haxe.xml.Printer;
 import nape.constraint.ConstraintList;
+import nape.constraint.PivotJoint;
 import nape.phys.BodyType;
 import nape.phys.Material;
 import openfl.geom.Point;
@@ -50,7 +52,7 @@ class CmpControlBuild extends CmpControl
     public var isDrawing : Bool = false;
     public var isDrag : Bool = false;
     public var isDeck : Bool = false;
-    public var beamDeleteMode : Bool = false;
+    public var beamDeleteMode(default, set_beamDeleteMode) : Bool = false;
     var startBody : Body;
     
     var inW : InputText;
@@ -81,6 +83,8 @@ class CmpControlBuild extends CmpControl
     public var builtBeams : Array<Entity> = new Array();
     public var buildHistory : BuildHistory;
     var lineChecker : LineChecker = new LineChecker();
+    
+    public var wcb : WControlBar;
 
 
     public function new(stage : Stage, cmpGrid : CmpGrid, level : CmpLevel) 
@@ -105,7 +109,7 @@ class CmpControlBuild extends CmpControl
         #if flash
         baseMemory = System.totalMemoryNumber;
         #end
-        
+        wcb = cast(UIBuilder.get('controlbar'));
         if (inW == null) {
             inW = cast(UIBuilder.get('inWidth'), InputText);
             inH = cast(UIBuilder.get('inHeight'), InputText);
@@ -116,7 +120,6 @@ class CmpControlBuild extends CmpControl
             inLevelH = cast(UIBuilder.get('levelHeight'), InputText);
             inLevelH.text = Std.string(level.height/ GameConfig.gridCellWidth);
             console = cast(UIBuilder.get('console'), Text);
-            cast(UIBuilder.get('build'), Floating).show();
         }
         regEvents();
         
@@ -141,6 +144,10 @@ class CmpControlBuild extends CmpControl
         if (editMode) {
             levelWidth = Std.parseFloat(inLevelW.text) * GameConfig.gridCellWidth;
             levelHeight = Std.parseFloat(inLevelH.text)* GameConfig.gridCellWidth;
+        }
+        
+        if (hand != null && hand.active) {
+            hand.anchor1 = prevMouse;
         }
         
         if (editMode) {
@@ -198,6 +205,7 @@ class CmpControlBuild extends CmpControl
                        + "total contacts: " + body.totalContactsImpulse().Vec3ToIntString() + ",\n" 
                        + "total impulse: " + body.totalImpulse().Vec3ToIntString() + "\n" 
                        + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n"
+                       + "total stress: " + body.worldVectorToLocal(body.calculateBeamStress().xy(true)) + "\n"
                        + "total stress: " + body.calculateBeamStress().xy(true) + "\n"
                        + "space: " + body.space + "\n";
                        
@@ -238,10 +246,14 @@ class CmpControlBuild extends CmpControl
     
     function beamDown(_) 
     {
-        var mp = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
+        var mousePos = Vec2.get(stage.mouseX, stage.mouseY);
+        var mp = camera.screenToWorld(mousePos);
         var cp = cmpGrid.getClosestCell(mp);
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
         
+        if (mousePos.y > 100 && mousePos.x < GameConfig.stageWidth - 100) {
+            wcb.hide();
+        }
         if (beamDeleteMode || deckSelectMode) {
             spawn1 = mp;
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
@@ -269,6 +281,13 @@ class CmpControlBuild extends CmpControl
             startBody = otherBody;
         }
         
+        if (hand != null && startBody != null) {
+            hand.body2 = startBody;
+            hand.active = true;
+            hand.anchor1 = mp;
+            hand.anchor2 = startBody.worldPointToLocal(mp);
+        }
+        
         if (startBody == null) {
             isDrawing = false;
             isDrag = true;
@@ -277,6 +296,9 @@ class CmpControlBuild extends CmpControl
     
     function beamUp(_)
     {
+        if (hand != null) {
+            hand.active = false;
+        }
         if (isDrag) {
             isDrag = false;
             return;
@@ -718,7 +740,6 @@ class CmpControlBuild extends CmpControl
     public function levelSelect()
     {
         cast(UIBuilder.get('levelEdit'), Floating).show();
-        cast(UIBuilder.get('build'), Floating).show();
         if (!top.transitioning) {
             top.changeState(new StateTransPan(top, cast(top.state), new StateLevelSelect(top)), true);
         }
@@ -866,10 +887,8 @@ class CmpControlBuild extends CmpControl
         this.editMode = m;
         if (m) {
             cast(UIBuilder.get('levelEdit'), Floating).show();
-            cast(UIBuilder.get('build'), Floating).hide();
         } else {
             cast(UIBuilder.get('levelEdit'), Floating).hide();
-            cast(UIBuilder.get('build'), Floating).show();
         }
         camera.isUnlocked = editMode;
         if (m) {
@@ -931,15 +950,36 @@ class CmpControlBuild extends CmpControl
         isExpandingBox = false;
     }
     
+    function set_beamDeleteMode(b : Bool) : Bool
+    {
+        beamDeleteMode = b;
+        if (b) {
+            wcb.setMaterial(MaterialNames.NULL);
+        }
+        return b;
+    }
+    
     function set_material(m : BuildMat) : BuildMat
     {
         beamDeleteMode = false;
         material = m;
+        var enumName = m.ename;
+        wcb.setMaterial(enumName);
         return m;
     }
     
+    
+    var hand:PivotJoint;
+    
     function keyDown(ev:KeyboardEvent) 
     {
+        if (hand == null) {
+            hand = new PivotJoint(level.space.world, null, Vec2.weak(), Vec2.weak());
+            hand.active = false;
+            hand.stiff = false;
+            hand.maxForce = 1e6;
+            hand.space = level.space;
+        }
         if (ev.keyCode == Keyboard.SPACE ) {
             togglePause();
         } else if (ev.keyCode == Keyboard.PAGE_UP) {
@@ -977,6 +1017,9 @@ class CmpControlBuild extends CmpControl
             inX.text = cast(x-rate);
         } else if (ev.keyCode == Keyboard.RIGHT) {
             inX.text = cast(x+rate);
+        }
+        if (ev.keyCode == Keyboard.P) {
+            
         }
         setPos();        
         setBox();

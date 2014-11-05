@@ -31,7 +31,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--no-output&#xA;-dce std&#xA;--no-opt &#xA;-swf-version 11.8" />
+    <option additional="--no-output&#xA;-dce std&#xA;--no-opt &#xA;--no-traces &#xA;-swf-version 11.8" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

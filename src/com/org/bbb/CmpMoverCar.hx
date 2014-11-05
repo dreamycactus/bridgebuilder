@@ -69,12 +69,12 @@ class CmpMoverCar extends CmpMover
     
     override function update()
     {
-        if (body.rotation > Math.PI / 6) {
-            body.rotation = Math.PI / 6;
-        }
-        if (body.rotation < -Math.PI / 6) {
-            body.rotation = -Math.PI / 6;
-        }
+        //if (body.rotation > Math.PI / 6) {
+            //body.rotation = Math.PI / 6;
+        //}
+        //if (body.rotation < -Math.PI / 6) {
+            //body.rotation = -Math.PI / 6;
+        //}
     }
     
     override function set_space(space : Space) : Space

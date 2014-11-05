@@ -1,4 +1,7 @@
 <root w="39" h="20">
+    <material name="Steel"/>
+    <material name="Wood"/>
+
 	<anchor x="29.99" y="8.74" w="10.72" h="9.02" type="end"/>
 	<anchor x="-2.4" y="8.74" w="9.32" h="9.02" type="start"/>
 	<anchor x="6.92" y="2.77" w="23.05" h="3.05" />

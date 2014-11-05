@@ -50,6 +50,10 @@ class Main extends Sprite
         
         UIBuilder.regClass('CmpControlBuild');
         UIBuilder.regClass('GameConfig');
+        UIBuilder.regClass('WControlBar');
+        UIBuilder.regClass('WBottomBar');
+        UIBuilder.regClass('WSideBar');
+        UIBuilder.regSkins('data/ui/skins.xml');
         UIBuilder.init("data/ui/defaults.xml");
         this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 

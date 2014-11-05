@@ -1,6 +1,6 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
-<Widget id="'rootWidget'" w="1280" h="600">
+<Widget id="'rootWidget'" widthPt="100" h="600">
     <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
     <!-- Buttons -->
     <VBox autoHeight="true" childPadding="10" padding="10">
@@ -8,28 +8,51 @@
                      on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
         <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>
     </VBox>
-    <Floating id="'build'" w="200" right ="3" top="0" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
-    <VBox w="200" right ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Super Cable'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matSuperCable);"/>
-         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Cable'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matCable);"/>
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Beam'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matSteel); @controlBuild.isDeck = false;" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Wood'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matWood); @controlBuild.isDeck = false;" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Concrete'" autoHeight="true" 
-                 on-click="@controlBuild.set_material($GameConfig.matConcrete); @controlBuild.isDeck = false;" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Delete Mode'" autoHeight="true" 
-                 on-click="@controlBuild.beamDeleteMode = true;" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Start/Stop'" autoHeight="true" 
+    <HBox id="'topbar'" right="0" align="'right,top'" padding="0">
+    <WControlBar id="'controlbar'" control="@controlBuild">
+        <!--
+            <Button id="'steel'" skinName="'matBut'" w="100" h="50"  text="'Steel'"
+            on-click="@controlBuild.set_material($GameConfig.matSteel);">
+            </Button>
+            <Button id="'concrete'" skinName="'matBut'" w="100" h="50" text="'Concrete'"
+            on-click="@controlBuild.set_material($GameConfig.matConcrete);">
+            </Button>
+            <Button id="'wood'" skinName="'matBut'" w="100" h="50"  text="'Wood'"
+            on-click="@controlBuild.set_material($GameConfig.matWood);">
+            </Button>
+            <Button id="'supercable'" skinName="'matBut'" w="100" h="50" text="'Supercable'"
+             on-click="@controlBuild.set_material($GameConfig.matSuperCable);">
+            </Button>
+            <Button id="'cable'" skinName="'matBut'" w="100" h="50"  text="'Cable'"
+             on-click="@controlBuild.set_material($GameConfig.matCable);">
+            </Button>-->
+
+    </WControlBar>
+    <!--<Button id="'buttab2'" w="100" h="100" skin:Paint-border="0" skin:Paint-alpha="0.3" skin:Paint-color="0xb58900" on-click="@controlBuild.wcb.show();">
+        <Bmp src="'img/tri.png'" w="20" h="100" stretch="true" keepAspect="true"/>
+    </Button>-->
+    <Button id="'buttab'" w="100" h="100" skin:Paint-color="0xd33682" skin:Paint-border="1" skin:Paint-borderColor="0x6c71c4" text="'DODO'" 
+         on-click="@controlBuild.wcb.show();"/>
+    </HBox>
+
+    <WSideBar id="'sidebar'" w="100" right="0" top="150" >
+        <VBox id="'menu'">
+        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Back'"
+             on-click="@controlBuild.levelSelect();" />
+        </VBox>
+        <VBox id="'control'">
+        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Delete Mode'"
+             on-click="@controlBuild.set_beamDeleteMode(true);" />
+        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Start/Stop'"
                  on-click="@controlBuild.togglePause();" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Undo'" autoHeight="true" 
+        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Undo'"
                  on-click="@controlBuild.undo();" />
-        <Button w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Back'" autoHeight="true" 
-                 on-click="@controlBuild.levelSelect();" />
-    </VBox>
-    </Floating>
+        </VBox>
+
+    </WSideBar>
+    <WBottomBar id="'bottombar'" left="0" bottom="0" widthPt="100" heightPt="5" skin:Paint-color="0xFFFFF0" skin:Paint-alpha="0.9">
+        <Text id="'budget'" defaults="'budgetD'" text="'100/1000'" />
+    </WBottomBar>
      
     <Floating id="'levelEdit'" w="200" right ="3" top="0" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
     <HBox top="0">

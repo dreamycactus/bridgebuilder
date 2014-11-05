@@ -44,7 +44,6 @@ class CmpSharedJoint extends CmpPhys
         } else {
             startingBodies = new Array();
         }
-
     }
     
     public function deleteNull()
@@ -58,14 +57,18 @@ class CmpSharedJoint extends CmpPhys
                 if (shouldDelete) {
                     pj.space = null;
                 }
-            } else {
-                throw "Joint is not pivot joint...";
+            } else if (Std.is(j, LineJoint)) {
+                var lj = cast(j, LineJoint); 
+                shouldDelete = lj.body1.space == null || lj.body2.space == null;
+                if (shouldDelete) {
+                    lj.space = null;
+                }
             }
             return !shouldDelete;
         });
         // isAnchored check not exactly correct..  
         // cause the anchored body may be removed... prolly not though
-        if (bodies.length == 0 || (bodies.length == 1 && isAnchored)) {
+        if (bodies.length == 0 || joints.length == 0) {
             entity.delete();
         }
     }
@@ -202,13 +205,17 @@ class CmpSharedJoint extends CmpPhys
                         pj.anchor1 = lj.anchor1;
                         pj.anchor2 = lj.anchor2;
                         pj.space = lj.space;
+                        joints.remove(lj);
+                        joints.push(pj);
                         lj.space = null;
                     } else {
                         var pj = cast(cc, PivotJoint);
-                        var dj = new LineJoint(pj.body1, pj.body2, pj.anchor1, pj.anchor2, Vec2.weak(1.0, 0), GameConfig.distanceJointMin, GameConfig.distanceJointMax);
-                        dj.frequency = 15;
-                        dj.space = pj.space;
+                        var lj = new LineJoint(pj.body1, pj.body2, pj.anchor1, pj.anchor2, Vec2.weak(1.0, 0), GameConfig.distanceJointMin, GameConfig.distanceJointMax);
+                        lj.frequency = 15;
+                        lj.space = pj.space;
                         pj.space = null;
+                        joints.remove(pj);
+                        joints.push(lj);
                     }
                 }
             });

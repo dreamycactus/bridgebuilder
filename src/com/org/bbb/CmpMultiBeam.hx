@@ -203,6 +203,8 @@ class CmpMultiBeam extends CmpBeamBase
                     } else if (pj.body2.userData.sharedJoint != null) {
                         cmpSharedJoint = pj.body2.userData.sharedJoint;
                         firstAnchor = true;
+                    } else {
+                        throw 'Multibeam not provided with sj';
                     }
 
                     if (firstAnchor) {

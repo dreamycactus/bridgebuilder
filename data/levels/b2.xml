@@ -1,4 +1,7 @@
 <root w="30" h="15">
+    <material name="Steel"/>
+    <material name="Wood"/>
+
     <anchor x="24" y="3" w="6" h="4" type="end"/>
     <anchor x="1" y="3" w="6" h="4" type="start"/>
     <spawn x="3" y="8" dir="1" period="2000" count="10" />
