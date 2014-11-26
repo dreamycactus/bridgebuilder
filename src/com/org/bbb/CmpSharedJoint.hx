@@ -92,9 +92,13 @@ class CmpSharedJoint extends CmpPhys
             var beamEnt : Entity = b.userData.entity;
             
             if (beamEnt != null) {
-                var beams = beamEnt.getCmpsHavingAncestor(CmpBeamBase);
-                for (beam in beams) {
+                var beam = beamEnt.getCmpHavingAncestor(CmpBeamBase);
+                if (beam != null) {
                     beam.sharedJoints.push(this);
+                }
+                var anc = beamEnt.getCmpHavingAncestor(CmpAnchor);
+                if (anc != null) {
+                    anc.sharedJoints.push(this);
                 }
                 var cable = beamEnt.getCmp(CmpCable);
                 if (cable != null) {
@@ -110,8 +114,11 @@ class CmpSharedJoint extends CmpPhys
             j.body1 = b;
             j.body2 = body;
             /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */
-            j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true), true);
-            j.anchor2 = Vec2.get();
+            j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true));
+            if (beamEnt.getCmp(CmpCable) != null) { 
+                trace('${j.anchor1} + ${body.localPointToWorld(Vec2.weak(), true)}' );
+            }
+            j.anchor2 = Vec2.weak();
             j.space = body.space;
             joints.push(j);
             
@@ -153,6 +160,10 @@ class CmpSharedJoint extends CmpPhys
             for (beam in beams) {
                 beam.sharedJoints.remove(this);
             }
+            var anc = beamEnt.getCmpHavingAncestor(CmpAnchor);
+            if (anc != null) {
+                anc.sharedJoints.remove(this);
+            }
             for (c in b.constraints) {
                 if (body.constraints.has(c)) {
                     c.space = null;
@@ -174,6 +185,7 @@ class CmpSharedJoint extends CmpPhys
     override public function update()
     {
         deleteNull();
+
     }
 
 
@@ -204,6 +216,7 @@ class CmpSharedJoint extends CmpPhys
                         pj.body2 = lj.body2;
                         pj.anchor1 = lj.anchor1;
                         pj.anchor2 = lj.anchor2;
+                        pj.userData.sharedJoint = this;
                         pj.space = lj.space;
                         joints.remove(lj);
                         joints.push(pj);
@@ -213,6 +226,8 @@ class CmpSharedJoint extends CmpPhys
                         var lj = new LineJoint(pj.body1, pj.body2, pj.anchor1, pj.anchor2, Vec2.weak(1.0, 0), GameConfig.distanceJointMin, GameConfig.distanceJointMax);
                         lj.frequency = 15;
                         lj.space = pj.space;
+                        lj.userData.sharedJoint = this;
+                        
                         pj.space = null;
                         joints.remove(pj);
                         joints.push(lj);

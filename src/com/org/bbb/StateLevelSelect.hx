@@ -9,6 +9,7 @@ import openfl.text.TextFieldAutoSize;
 import ru.stablex.ui.skins.Paint;
 import ru.stablex.ui.UIBuilder;
 import ru.stablex.ui.widgets.Button;
+import ru.stablex.ui.widgets.Widget;
 
 /**
  * ...
@@ -41,10 +42,11 @@ class StateLevelSelect extends BBBState
                 });
                 var p = new Paint();
                 p.border = 1;
+                b.addEventListener(MouseEvent.CLICK, loadLevel.bind(b.text));
                 b.skin = p;
-                b.addEventListener(MouseEvent.MOUSE_UP, loadLevel.bind(b.text));
+
                 b.onInitialize();
-                b.onCreate();
+                b.onCreate(); 
                 UIBuilder.get('levelstuff').addChild(b);
             }
         }
@@ -75,6 +77,7 @@ class StateLevelSelect extends BBBState
     
     override public function disableControl() : Void
     {
+        cast(UIBuilder.get('levelstuff'), Widget); // TODO Disable all buttons
     }
     
     override public function enableControl() : Void
@@ -86,8 +89,9 @@ class StateLevelSelect extends BBBState
         return sprite;
     }
     
-    function loadLevel(p : String, _)
+    function loadLevel(p : String, event:flash.events.MouseEvent)
     {
+        trace('load level $p');
         top.changeState(new StateTransPan(top, this, StateBridgeLevel.createLevelState(top, p)));
     }
     

@@ -1,4 +1,5 @@
 package com.org.mes;
+import haxe.ds.StringMap;
 
 class MESState
 {
@@ -7,6 +8,7 @@ class MESState
     public var ents : List<Entity>;
     public var top : Top;
     public var isTransitioning : Bool = false;
+    public var msgSubscribers : StringMap<Array<Subscriber>> = new StringMap();
     var index = 0;
     
     public function new(top : Top) 
@@ -47,7 +49,12 @@ class MESState
     
     public function createEnt(name : String = "") : Entity
     {
-        var e = new Entity(this, index++);
+        if (index == 0x3FFFFFFF) {
+            trace('max index for entity reached. Resetting');
+            index = 0;
+        }
+
+        var e = new Entity(index++);
         e.name = name;
         return e;
     }
@@ -112,9 +119,38 @@ class MESState
         return null;
     }
     
-    public function onLeaveState(newState : MESState)
+    public function onLeaveState(newState : MESState) : Void {}
+    
+    public function registerSubscriber(msgType : String, subscriber : Subscriber) : Void
     {
-        
+        if (!msgSubscribers.exists(msgType)) {
+            msgSubscribers.set(msgType, new Array());
+        }
+        msgSubscribers.get(msgType).push(subscriber);
+    }    
+    
+    public function unregisterSubscriber(msgType : String, subscriber : Subscriber) : Bool
+    {
+        var subscribers = msgSubscribers.get(msgType);
+        if (subscribers == null || subscribers.length == 0) {
+            trace('No msg subscribers exist of type $msgType');
+            return false;
+        }
+        return subscribers.remove(subscriber);
+
+    }
+    
+    public function distributeMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    {
+        var subscribers = msgSubscribers.get(msgType);
+        if (subscribers == null || subscribers.length == 0) {
+            trace('No msg subscribers exist of type $msgType');
+            return;
+        }
+        for (s in subscribers) {
+            s.recieveMsg(msgType, sender, options);
+        }
+
     }
 
 }

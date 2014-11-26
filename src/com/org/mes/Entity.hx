@@ -10,15 +10,14 @@ class Entity
 {
     var cmps : StringMap<Cmp>;
         
-    public var id : Int;
+    public var id(default, null) : Int;
     public var name : String;
-    public var state : MESState;
+    public var state(default, set_state) : MESState;
     //public var cmpSig : de.polygonal.ds.BitVector;
     
-    public function new(state : MESState, id : Int) 
+    public function new(id : Int) 
     {
         this.cmps = new StringMap<Cmp>();
-        this.state = state;
         this.id = id;
         //cmpSig = BitFields.zero;
     }
@@ -53,6 +52,15 @@ class Entity
         return cmps.exists( Type.getClassName(t) );
     }
     
+    @:generic public function getCmpHavingAncestor<T:Cmp>(ancestor:Class<T>) : T
+    {
+        var res = getCmpsHavingAncestor(ancestor);
+        if (res.length == 0) {
+            return null;
+        }
+        return res[0];
+    }
+    
     @:generic public function getCmpsHavingAncestor<T:Cmp>(ancestor:Class<T>) : Array<T>
     {
         var at = Cmp.cmpManager.getCmp(cast(ancestor));
@@ -76,4 +84,32 @@ class Entity
         }
     }
     
+    public function toString() : String
+    {
+        var str = 'Entity id: ${id}. Cmps: ';
+        for (c in cmps) {
+            str += '${Type.getClassName(Type.getClass(c))}, ';
+        }
+        return str;
+    }
+    
+    function registerSubscriptions()
+    {
+        for (c in cmps.iterator()) {
+            for (s in c.subscriptions) {
+                state.registerSubscriber(s, c);
+            }
+        }
+    }
+    
+    function set_state(s : MESState) : MESState
+    {
+        if (s != null && s != state) {
+            state = s;
+            registerSubscriptions();
+            return s;
+        }
+        state = s;
+        return s;
+    }
 }

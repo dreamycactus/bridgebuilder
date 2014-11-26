@@ -2,12 +2,15 @@ package com.org.bbb;
 import com.org.mes.Entity;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
+import nape.phys.Body;
 
 /**
  * ...
  * @author 
  */
-class CmpBeamBase extends CmpPhys
+
+using Lambda;
+class CmpBeamBase extends CmpPhys implements BridgeNode
 {
     public var sharedJoints : Array<CmpSharedJoint> = new Array();
     public var material : BuildMat;
@@ -16,6 +19,8 @@ class CmpBeamBase extends CmpPhys
     public var p2 : Vec2;
     public var slope(get_slope, null) : Float;
     public var isRoad(get_isRoad, null) : Bool;
+    public var length(get_length, null) : Float;
+    public var unitLength(get_unitLength, null) : Int;
     
     @:isVar public var sj1 (default, set_sj1): CmpSharedJoint;
     @:isVar public var sj2 (default, set_sj2): CmpSharedJoint;
@@ -43,6 +48,37 @@ class CmpBeamBase extends CmpPhys
         return null;
     }
     
+    //function sameBody(b2 : Body) : Bool
+    //{
+        //return b.id == b2.id;
+    //}
+    
+    public function findAdjacentBodies() : Array<Body>
+    {
+        var res = new Array<Body>();
+        for (sj in sharedJoints) {
+            for (b in sj.bodies) {
+                //var e : Entity = b.userData.entity;
+                //if (e == null) continue;
+                //var beam = e.getCmpHavingAncestor(CmpBeamBase);
+                //if (beam != null) {
+                    //res.push(beam.get_body());
+                    //continue;
+                //}
+                //var anc = e.getCmpHavingAncestor(CmpAnchor);
+                //if (anc != null) {
+                    //res.push(anc.body);
+                    //continue;
+                //}
+                if (!res.has(b)) {
+                    res.push(b);
+                }
+            }
+        }
+        return res;
+    }
+
+    
     function set_sj1(sj : CmpSharedJoint) : CmpSharedJoint
     {
         this.sj1 = sj;
@@ -63,6 +99,23 @@ class CmpBeamBase extends CmpPhys
     function get_isRoad() : Bool
     {
         return false;
+    }
+    
+    function get_length() : Float
+    {
+        var p = p1.sub(p2);
+        var l = p.length;
+        p.dispose();
+        return l;
+    }
+
+    function get_body() : Body
+    {
+        return null;
+    }
+    function get_unitLength() : Int
+    {
+        return Std.int(length / GameConfig.gridCellWidth);
     }
 
 }

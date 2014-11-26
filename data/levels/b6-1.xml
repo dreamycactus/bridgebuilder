@@ -1,0 +1,12 @@
+<root w="50" h="23">
+    <material name="Steel"/>
+    <material name="Wood"/>
+    <material name="Cable"/>
+    <material name="Supercable"/>
+    <material name="Concrete"/>
+
+    <anchor x="41.99" y="14.74" w="10.72" h="9.02" type="end"/>
+    <anchor x="-2.4" y="14.74" w="9.32" h="9.02" type="start" />
+    <spawn x="2.01" y="15.36" dir="1" period="2000" count="30" type="Car"/>
+    <end x="31.95" y="16.75" />
+</root>

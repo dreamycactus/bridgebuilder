@@ -1,10 +1,12 @@
-<root w="39" h="20">
-    <material name="Steel"/>
+<root w="23" h="12">
     <material name="Wood"/>
+    <material name="Concrete"/>
+    <material name="Steel"/>
+    <material name="Cable"/>
+    <budget maxBudget="180" expectedBudget="136" minimum="54" />
+	<anchor x="17.01" y="8.71" w="10" h="7" type="end" />
+	<anchor x="-8.6" y="4.75" w="15" h="7" type="start" />
+	<spawn x="1.01" y="5.23" dir="1" period="2000" count="30" type="Car"/>
+	<end x="23.5" y="4" />
 
-	<anchor x="29.99" y="8.74" w="10.72" h="9.02" type="end"/>
-	<anchor x="-2.4" y="8.74" w="9.32" h="9.02" type="start"/>
-	<anchor x="6.92" y="2.77" w="23.05" h="3.05" />
-	<spawn x="2.01" y="13.36" dir="1" period="2000" count="30"/>
-	<end x="31.95" y="10.75" />
 </root>

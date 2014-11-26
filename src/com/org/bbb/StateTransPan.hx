@@ -28,7 +28,7 @@ class StateTransPan extends Transition
     {
         super.enter();
         bos.disableControl();
-        //bns.disableControl();
+        bns.disableControl();
         
         var nsSprite : Sprite = bns.mainSprite;
         nsSprite.scrollRect = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
@@ -54,6 +54,7 @@ class StateTransPan extends Transition
         bns.mainSprite.mask = null;
         
         bos.deinit();
+        bns.enableControl();
         top.changeState(newState);
     }
     

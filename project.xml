@@ -20,6 +20,8 @@
 	<haxelib name="actuate" />
 	<haxelib name="nape" />
 	<haxelib name="spritesheet" />
+    <haxedef name="HXCPP_DEBUGGER" />
+    <haxelib name="hxcpp-debugger" />
 	
 	<!-- assets -->
 	<assets path="assets/img" rename="img" exclude="icon.svg" />

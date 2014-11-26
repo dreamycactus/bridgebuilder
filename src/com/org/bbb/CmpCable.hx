@@ -40,7 +40,6 @@ class CmpCable extends CmpBeamBase
         super(pos1, pos2);
         this.material = cableMat;
         tightness = 1.0;
-        rebuild();
         
         compound = new Compound();
         first = new Body(null, pos1);
@@ -60,7 +59,9 @@ class CmpCable extends CmpBeamBase
         if (broken) return;
         if (compound.bodies.length < 1) { return; }
         var mid = Std.int(compound.bodies.length / 2);
-        var stress : Vec3 = compound.bodies.at(mid).calculateBeamStress();
+        var midbody = compound.bodies.at(mid);
+        var stress : Vec3 = midbody.calculateBeamStress();
+        var stressWorldSpace = midbody.localVectorToWorld(stress.xy(true));
         if (stress.x > material.tensionBreak) {
             var rand = Std.random(compound.constraints.length);
             compound.constraints.at(rand).compound = null;
@@ -71,7 +72,8 @@ class CmpCable extends CmpBeamBase
             //tightness -= 0.1;
             rebuild();
         }
-        lastTension = stress.x;
+        // Last tension is the Y component of tension in world space for... keeping the road level
+        lastTension = stressWorldSpace.y;
     }
     
     public function rebuild()
@@ -90,8 +92,8 @@ class CmpCable extends CmpBeamBase
             prevLen = dir.length;
         }
         var len = dir.length;
-        if (lastTension < 100) {
-            len = Math.min(dir.length, prevLen);
+        if (lastTension < 160) {
+            len = Math.min(dir.length, prevLen*0.99);
         }
         dir = dir.normalise();
         var prev : Body = null;
@@ -121,7 +123,7 @@ class CmpCable extends CmpBeamBase
             if (i == 0) {
                 body = first;
             } else if (i == segCount - 1) {
-               body = last;
+                body = last;
             }
             body.shapes.clear();
             var shape : Shape = new Polygon(Polygon.box(segWidth*tightness, material.height, true) );

@@ -4,6 +4,7 @@ import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import nape.geom.Vec3;
+import nape.phys.MassMode;
 import nape.space.Space;
 import openfl.display.Shape;
 import nape.callbacks.BodyListener;
@@ -23,7 +24,6 @@ class CmpBeam extends CmpBeamBase
 {
     public var body : Body;
     public var width : Float;
-    public var length : Float;
     public var jointOffsets : Array<Vec2>;
     public var stressCHp : Float = GameConfig.beamStressHp;
     public var stressTHp : Float = GameConfig.beamStressHp;
@@ -32,7 +32,6 @@ class CmpBeam extends CmpBeamBase
     public function new(p1 : Vec2, p2 : Vec2, body : Body, width : Float, material : BuildMat) 
     {
         super(p1, p2);
-        this.length = p1.sub(p2, true).length;
         this.body = body;
         this.width = width;
         this.jointOffsets = new Array();
@@ -73,7 +72,7 @@ class CmpBeam extends CmpBeamBase
                 trace('tension');
             }
         } else if (stressTHp < material.tensionBreak) {
-            stressTHp += dt;
+            //stressTHp += dt;
         }
         
         if (stress.x < -material.compressionBreak) {
@@ -84,7 +83,7 @@ class CmpBeam extends CmpBeamBase
                 trace('compr');
             }
         } else if (stressTHp < material.compressionBreak) {
-            stressCHp += dt;
+            //stressCHp += dt;
         }
         
         var moment = Math.abs(stress.y) * this.length * 0.5;
@@ -98,7 +97,7 @@ class CmpBeam extends CmpBeamBase
                 
             }
         } else if (stressSHp < GameConfig.beamStressHp) {
-            stressSHp += dt;
+            //stressSHp += dt;
         }
         
         stress.dispose();
@@ -108,7 +107,7 @@ class CmpBeam extends CmpBeamBase
             if (cmpMulti != null) {
                 entity.state.insertEnt(cmpMulti);
             }
-
+            sendMsg(Msgs.BEAMBREAK, this, { } );
             this.broken = true;
             entity.delete();
         }
@@ -129,6 +128,11 @@ class CmpBeam extends CmpBeamBase
         this.space = space;
         body.space = space;
         return space;
+    }
+    
+    override function get_body() : Body
+    {
+        return body;
     }
     
     override function get_space() : Space

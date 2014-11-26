@@ -1,9 +1,10 @@
 <root w="30" h="15">
-    <material name="Steel"/>
     <material name="Wood"/>
-
-    <anchor x="24" y="3" w="6" h="4" type="end"/>
-    <anchor x="1" y="3" w="6" h="4" type="start"/>
-    <spawn x="3" y="8" dir="1" period="2000" count="10" />
-    <end x="27" y="8"/>
+    <budget maxBudget="180" expectedBudget="180" minimum="54" />
+    
+	<anchor x="15" y="4.13" w="1" h="6"/>
+	<anchor x="24" y="5.81" w="6" h="6" type="end"/>
+	<anchor x="-2.6" y="5.81" w="9" h="6" type="start" />
+	<spawn x="2.35" y="4.77" dir="1" period="2000" count="30" type="Car"/>
+	<end x="24.96" y="8" w="5" h="2.5" />
 </root>

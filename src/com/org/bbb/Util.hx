@@ -170,11 +170,9 @@ class Util
     public static function zoomInAtPoint(sprite : Sprite, x : Float, y : Float , scale : Float)
     {
         var mat = new Matrix();
-        //mat.translate(-x,-y);
+        mat.translate(-x,-y);
         mat.scale(scale,scale);
-        //mat.translate(x,y);
-        mat.tx = x;
-        mat.ty = y;
+        mat.translate(x,y);
         sprite.transform.matrix = mat;
         
         
@@ -182,7 +180,6 @@ class Util
     // Bubble sort.. Insert sort would be better, prolly... maybe... not sure.
     public static function sortZ (dParent : DisplayObjectContainer) : Void {
         for (i in dParent.numChildren - 1...0) {
-            
             var bFlipped = false;
             for (o in 0...i) {
                 if (dParent.getChildAt(o).z > dParent.getChildAt(o+1).z) {

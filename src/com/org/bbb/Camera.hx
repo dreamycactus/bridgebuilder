@@ -29,9 +29,10 @@ class Camera
     
     public function update()
     {
-        sprite.zoomInAtPoint(pos.x, pos.y, zoom);
-        pos.x = sprite.transform.matrix.tx;
-        pos.y = sprite.transform.matrix.ty;
+        //pos.x = sprite.transform.matrix.tx;
+        //pos.y = sprite.transform.matrix.ty;
+        sprite.x = pos.x;
+        sprite.y = pos.y;
         clampPos();
         //sprite.x = pos.x;
         //sprite.y = pos.y;
@@ -65,6 +66,9 @@ class Camera
         if (dragBounds != null && !isUnlocked) {
             zoom = Util.clampf(z, Math.max(GameConfig.stageWidth / dragBounds.width, GameConfig.stageHeight / dragBounds.height)
                                 , Math.min(GameConfig.stageWidth/200, GameConfig.stageHeight/200));
+        }
+        if (sprite != null) {
+            sprite.zoomInAtPoint(pos.x, pos.y, zoom);
         }
         return z;
     }

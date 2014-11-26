@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.mes.Cmp;
 
 /**
  * ...
@@ -6,20 +7,28 @@ package com.org.bbb;
  */
 class CmpObjectiveEndBridgeIntact extends CmpObjective
 {
-
+    var beamBroken = false;
     public function new(l : CmpLevel) 
     {
         super("intact", false, true, l);
+        subscriptions = [Msgs.BEAMBREAK];
     }
     
     override public function met() : Bool
     {
-        var stats = entity.state.getSystem(SysRuntimeOverlord).beamBreak;
-        for (s in stats) {
-            if (s != 0) {
-                return false;
-            }
-        }
+        
+    
         return true;
     }
+    
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
+    {
+        switch(msgType) {
+        case Msgs.BEAMBREAK:
+            
+        default:
+        }
+    }
+
+    
 }

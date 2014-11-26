@@ -31,7 +31,10 @@ class BuildHistory
     {
         var snapshot : Array<Entity> = new Array();
         var oldToNew : ObjectMap<Entity, Entity> = new ObjectMap();
-        var cables : Array<CmpCable> = new Array(); // special case for cables since they need reference to sharedJoint
+        // special case for cables since they need reference to sharedJoint
+        // AND they must have both sharedJoints set before they are added to a CmpSharedJoint...
+        var cables : Array<CmpCable> = new Array(); 
+        
         
         for (e in builtEnts) {
             var newEnt : Entity = null;
@@ -45,6 +48,10 @@ class BuildHistory
                 newEnt = state.createEnt();
                 var newCable = new CmpCable(cmpCable.p1, cmpCable.p2, cmpCable.material);
                 newEnt.attachCmp(newCable);
+            } else if (e.hasCmp(CmpAnchor)) {
+                var cmpAnchor = e.getCmp(CmpAnchor);
+                var bounds = cmpAnchor.body.bounds;
+                newEnt = EntFactory.inst.createAnchor(cmpAnchor.body.position, {w : bounds.width, h : bounds.height}, cmpAnchor.fluid, cmpAnchor.startEnd, cmpAnchor.tapered);
             }
             if (newEnt != null) {
                 oldToNew.set(e, newEnt);
@@ -61,24 +68,26 @@ class BuildHistory
             for (b in sharedJoint.bodies) {
                 var ent : Entity = b.userData.entity;
                 if (ent == null) {
-                    trace(ent.id);
+                    trace('problem $ent.id');
                 }
                 var newB = oldToNew.get(ent);
-                if (newB == null) { // for cmpAnchor?
+                
+                if (newB == null && ent.hasCmp(CmpAnchor)) { // for cmpAnchor?
                     newB = ent;
                 }
                 var body : Body = null;
                 if (newB.hasCmp(CmpBeam)) {
-                    body = newB.getCmp(CmpBeam).body;
+                    var beam = newB.getCmp(CmpBeam);
+                    body = beam.body;
                 } else if (newB.hasCmp(CmpAnchor)) {
-                    body = newB.getCmp(CmpAnchor).body;
+                    var anc = newB.getCmp(CmpAnchor);
+                    body = anc.body;
                 } else if (newB.hasCmp(CmpCable)) {
                     var cmpCable = newB.getCmp(CmpCable);
                     var b1 = cmpCable.first;
                     var b2 = cmpCable.last;
                     var dp = sharedJoint.body.position.sub(b1.position);
                     var dp2 = sharedJoint.body.position.sub(b2.position);
-                    
                     if (dp.lsq() < dp2.lsq()) {
                         body = b1;
                         cmpCable.sj1 = newSharedJoint;
@@ -86,6 +95,7 @@ class BuildHistory
                         body = b2;
                         cmpCable.sj2 = newSharedJoint;
                     }
+                    cables.push(cmpCable);
                 }
                 //var beambase = newB.getCmpsHavingAncestor(CmpBeamBase);
                 //for (bb in beambase) {
@@ -97,11 +107,24 @@ class BuildHistory
                         //trace('whoa 3 sj on beambase');
                     //}
                 //}
-                newSharedJoint.addBody(body);
+                // This special case is pretty ugly as cables must know both their sharedJoints befor
+                // they are actually added to a sharedJoint (which uses the current position of the cable link)
+                if (!newB.hasCmp(CmpCable)) {
+                    newSharedJoint.addBody(body);
+                }
                 oldToNew.set(e, newEnt);
+
             }
             newSharedJoint.isRolling = sharedJoint.isRolling;
             snapshot.push(newEnt);
+        }
+        for (cab in cables) {
+            if (cab.sj1 != null) {
+                cab.sj1.addBody(cab.first);
+            }
+            if (cab.sj1 != null) {
+                cab.sj2.addBody(cab.last);
+            }
         }
         
         stack.push( { ents: snapshot, lines : linechecker.copy() } );

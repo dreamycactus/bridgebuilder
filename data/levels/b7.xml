@@ -1,0 +1,11 @@
+<root w="39" h="30">
+    <material name="Wood"/>
+    <material name="Steel"/>
+    <material name="Concrete"/>
+    <material name="Cable"/>
+	<anchor x="29.99" y="20.74" w="10.72" h="20.02" type="end"/>
+	<anchor x="-2.4" y="20.74" w="9.32" h="20.02" type="start"/>
+	<anchor x="15" y="8" w="7" h="8"/>
+	<spawn x="2.01" y="22.36" dir="1" period="2000" count="5" type="Train"/>
+	<end x="31.95" y="22.75"/>
+</root>

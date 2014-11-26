@@ -3,5 +3,7 @@
 <Widget w="1024" h="600">
     <!-- Buttons -->
     <VBox id="'levelstuff'" w="200" left ="3" top="40" autoHeight="true" childPadding="10" padding="10" >
+        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Hello'" autoHeight="true" 
+                     on-click="trace('hello');"/>
     </VBox>
 </Widget>

@@ -2,12 +2,14 @@ package com.org.bbb;
 
 import com.org.mes.Top;
 import openfl.display.Sprite;
+import openfl.display.StageDisplayState;
 import openfl.events.Event;
 import openfl.Lib;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.geom.Matrix;
 import ru.stablex.ui.UIBuilder;
+
 
 import nape.geom.Vec2;
 
@@ -25,7 +27,6 @@ class Main extends Sprite
         GameConfig.stageHeight = Lib.current.stage.stageHeight;
         GameConfig.stageWidth = Lib.current.stage.stageWidth;
         if (top == null) { return; }
-        
             if (top.state.getSystem(SysRender) != null) {
             var msprite = top.state.getSystem(SysRender).mainSprite;
             var sx = Lib.current.stage.stageWidth / 600;
@@ -60,7 +61,7 @@ class Main extends Sprite
 		GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
-        //var bp = StateBridgeLevel.createLevelState(top, "levels/btest.xml");
+        //var bp = StateBridgeLevel.createLevelState(top, "levels/b3.xml");
         //var bp = new StateMainMenu(top);
         var bp = new StateLevelSelect(top);
     
@@ -83,6 +84,7 @@ class Main extends Sprite
 	public function new() 
 	{
 		super();	
+        
 		addEventListener(Event.ADDED_TO_STAGE, added);
 	}
 
@@ -98,8 +100,13 @@ class Main extends Sprite
 		// static entry point
 		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
+        //Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+#if cpp
+#if HXCPP_DEBUGGER
+		new debugger.Local(true);
+#end
+#end
         Lib.current.addChild(new Main());
-
         
 	}
 }

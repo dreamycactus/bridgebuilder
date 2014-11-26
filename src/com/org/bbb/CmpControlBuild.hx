@@ -1,16 +1,21 @@
 package com.org.bbb;
 import com.org.bbb.BuildMat.MatType;
 import com.org.bbb.CmpAnchor.AnchorStartEnd;
+import com.org.bbb.CmpSpawn.SpawnType;
 import com.org.bbb.GameConfig.MaterialNames;
 import haxe.ds.GenericStack;
+import haxe.ds.IntMap;
 import haxe.ds.ObjectMap;
 import haxe.ds.ObjectMap;
 import haxe.xml.Printer;
 import nape.constraint.ConstraintList;
 import nape.constraint.PivotJoint;
+import nape.geom.AABB;
 import nape.phys.BodyType;
 import nape.phys.Material;
+import openfl.display.StageDisplayState;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.system.System;
 import openfl.utils.Object;
 import ru.stablex.ui.widgets.Floating;
@@ -54,6 +59,7 @@ class CmpControlBuild extends CmpControl
     public var isDeck : Bool = false;
     public var beamDeleteMode(default, set_beamDeleteMode) : Bool = false;
     var startBody : Body;
+    var inited : Bool = false;
     
     var inW : InputText;
     var inH : InputText;
@@ -105,6 +111,8 @@ class CmpControlBuild extends CmpControl
         this.top = entity.state.top;
         this.state = entity.state;
         buildHistory = new BuildHistory(state);
+        var anchors = level.space.bodies.filter(function(b) { return b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor; } );
+        anchors.foreach(function(b) { builtBeams.push(b.userData.entity);  } );
         buildHistory.snapAndPush(builtBeams, lineChecker.copy());
         #if flash
         baseMemory = System.totalMemoryNumber;
@@ -123,18 +131,19 @@ class CmpControlBuild extends CmpControl
         }
         regEvents();
         
-        material = GameConfig.matSteel;
+        material = GameConfig.nameToMat(level.materialsAllowed[0]); 
         this.camBody.inertia = 50; 
 
         camera = state.getSystem(SysRender).camera;
+        inited = true;
     }
     
     override public function update() : Void
     {
+        if (!inited) return;
         #if flash
         //cast(UIBuilder.get('mem'), Text).text = "mem: " + (("" + (System.totalMemoryNumber - baseMemory) / (1024 * 1024)).substr(0, 5)) + "Mb";
         #end
-
         if (isDrag) {
             dragCamera();
         } else if (isDrawing) {
@@ -200,13 +209,22 @@ class CmpControlBuild extends CmpControl
     
     function printBodyForces(body : Body) : String
     {
-        var str =        "body id: " + body.id + "\n"
-                       + "rotation: " + body.rotation
+        var e : Entity = body.userData.entity;
+        var str = "";
+        if (e != null) {
+            str = 'entity id: ${e.id}\n';
+        }
+        str +=        "body id: " + body.id + "\n"
+                       + 'body mass: ' + body.mass + ' \n'
+                       + 'body gmass: ' + body.gravMass + ' \n'
+                       + 'body massMode: ' + body.massMode + ' \n'
+                       + 'body gmassMode: ' + body.gravMassMode + ' \n'
+                       + "rotation: " + body.rotation +'\n'
                        + "total contacts: " + body.totalContactsImpulse().Vec3ToIntString() + ",\n" 
                        + "total impulse: " + body.totalImpulse().Vec3ToIntString() + "\n" 
                        + "total constraint: " + body.constraintsImpulse().Vec3ToIntString() + "\n"
-                       + "total stress: " + body.worldVectorToLocal(body.calculateBeamStress().xy(true)) + "\n"
                        + "total stress: " + body.calculateBeamStress().xy(true) + "\n"
+                       + "total stress body space: " + body.localVectorToWorld(body.calculateBeamStress().xy(true)) + "\n"
                        + "space: " + body.space + "\n";
                        
         for (c in body.constraints) {
@@ -236,12 +254,12 @@ class CmpControlBuild extends CmpControl
     
     public function createBox()
     {
-        state.insertEnt(EntFactory.inst.createAnchor(Vec2.get(300, 300), { w : 300, h : 300 }, AnchorStartEnd.NONE));
+        state.insertEnt(EntFactory.inst.createAnchor(Vec2.get(300, 300), { w : 300, h : 300 }, false, AnchorStartEnd.NONE));
     }
     
     public function createSpawn()
     {
-        state.insertEnt(EntFactory.inst.createSpawn(Vec2.get(300, 300), 1, 200, 30));
+        state.insertEnt(EntFactory.inst.createSpawn(SpawnType.Car, Vec2.get(300, 300), 1, 200, 30));
     }
     
     function beamDown(_) 
@@ -281,7 +299,7 @@ class CmpControlBuild extends CmpControl
             startBody = otherBody;
         }
         
-        if (hand != null && startBody != null) {
+        if (hand != null && startBody != null && startBody.isDynamic()) {
             hand.body2 = startBody;
             hand.active = true;
             hand.anchor1 = mp;
@@ -298,6 +316,7 @@ class CmpControlBuild extends CmpControl
     {
         if (hand != null) {
             hand.active = false;
+            hand.body2 = null;
         }
         if (isDrag) {
             isDrag = false;
@@ -333,10 +352,11 @@ class CmpControlBuild extends CmpControl
         if (beamDeleteMode && startBody != null) {
             var ent : Entity = startBody.userData.entity;
             if (ent != null && bb.has(startBody)) {
-                var cmpBeam = ent.getCmpsHavingAncestor(CmpBeamBase)[0];
+                var cmpBeam : CmpBeamBase = ent.getCmpHavingAncestor(CmpBeamBase);
                 buildHistory.snapAndPush(builtBeams, lineChecker.copy());
                 lineChecker.removeLine(cmpBeam.p1, cmpBeam.p2);
                 builtBeams.remove(ent);
+                sendMsg(Msgs.BEAMDELETE, this, { length : cmpBeam.unitLength, cost : cmpBeam.material.cost } );
                 state.deleteEnt(startBody.userData.entity);
                 startBody = null;
             }
@@ -409,7 +429,6 @@ class CmpControlBuild extends CmpControl
 
         default:
         }
-        
         if (beamEnt != null) {
             builtBeams.push(beamEnt);
         }
@@ -420,13 +439,15 @@ class CmpControlBuild extends CmpControl
         }
             
         sharedJoint.addBody(beamStartBody);
+        var beam = beamEnt.getCmpsHavingAncestor(CmpBeamBase)[0];
+        sendMsg(Msgs.BEAMDOWN, this, { length : beam.unitLength, cost : cast(beam.material.cost, Int) } );
         
         // Add extra bolt for foundation pillar
         if (material.matType != MatType.CABLE && sharedJoint.isAnchored) {
             var pl = Util.parametricEqn(spawn1, spawn2);
             var xx = { min : pl.b, max : pl.a + pl.b };
             var yy = { min : pl.d, max : pl.c + pl.d };
-            if (Math.abs(pl.c) < 0.5) {
+            if (Math.abs(pl.c/pl.a) < 4) {
                 
             } else {
                 var bbb = [xx, yy];
@@ -493,10 +514,9 @@ class CmpControlBuild extends CmpControl
         var body : Body = new Body();
         var center = spawn1.add(spawn2).mul(0.5);
         var beamshape = new Polygon(Polygon.box(spawn1.sub(spawn2).length + 10, material.height), 
-                                    null, iFilter );
+                                    material.material, iFilter );
         body.shapes.add(beamshape);
         body.rotation = spawn2.sub(spawn1).angle;
-        body.mass = 1;
         body.space = level.space;
         
         var ent = EntFactory.inst.createBeamEnt(spawn1, spawn2, center, body, spawn1.sub(spawn2).length + 10, material, "bob");
@@ -665,11 +685,24 @@ class CmpControlBuild extends CmpControl
         }
         trace('built beams $builtBeams.length');
         var buildstate = buildHistory.pop();
+        trace(buildHistory.length);
+        if (buildHistory.length == 0) {
+            buildHistory.snapAndPush(buildstate.ents, buildstate.lines.copy());
+        }
         builtBeams = buildstate.ents;
         lineChecker = buildstate.lines;
+        //var anchors = level.space.bodies.filter(function(b) { return b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor; } );
+        //anchors.foreach(function(b) { builtBeams.push(b.userData.entity);  } );
+        
+        var costs : Array<{length : Int, cost : Int}> = new Array();
         for (e in builtBeams) {
             state.insertEnt(e);
+            var bbeam = e.getCmpHavingAncestor(CmpBeamBase);
+            if (bbeam != null) { 
+                costs.push( { length : bbeam.unitLength, cost : cast(bbeam.material.cost) } );
+            }
         }
+        sendMsg(Msgs.BEAMRECALC, this, {beams : costs});
     }
     
     public function undo()
@@ -687,11 +720,13 @@ class CmpControlBuild extends CmpControl
             buildHistory.snapAndPush(builtBeams, lineChecker.copy());
             var frb = findRoadBeams();
             for (e in frb) {
+                trace(e.toString());
                 toggleBeamRoad(e);
             }
         } else {
             restore();
         }
+
         state.getSystem(SysLevelDirector).runExecution(sys.paused);
 
         sys.paused = !sys.paused;
@@ -787,28 +822,28 @@ class CmpControlBuild extends CmpControl
             var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
             var bod : Body = a1;
             var bodEnt : Entity = a1.userData.entity;
-            var parentList : ObjectMap<Entity, Entity> = new ObjectMap();
-            var markers : ObjectMap<Entity, Bool> = new ObjectMap();
+            var parentList : IntMap<Entity> = new IntMap();
+            var markers : IntMap<Bool> = new IntMap();
             var stack : GenericStack<Body> = new GenericStack<Body>();
             stack.add(a1);
             
             while (!stack.isEmpty()) {
                 var bod = stack.pop();
                 var bodEnt : Entity = bod.userData.entity;
-                if (!markers.exists(bodEnt)) {
-                    markers.set(bodEnt, true);
-                    if (bodEnt != a1.userData.entity && bodEnt.hasCmp(CmpAnchor)) {
+                if (!markers.exists(bodEnt.id)) {
+                    markers.set(bodEnt.id, true);
+                    var ca = bodEnt.getCmp(CmpAnchor);
+                    if (bodEnt.id != a1.userData.entity.id && ca != null && ca.startEnd == AnchorStartEnd.END) {
                         var array = new Array<Entity>();
-                        var ent = parentList.get(bodEnt);
+                        var ent = parentList.get(bodEnt.id);
                         while (ent != null) {
                             if (!ent.hasCmp(CmpAnchor)) {
                                 array.push(ent);
                             }
-                            ent = parentList.get(ent);
+                            ent = parentList.get(ent.id);
                         }
                         return array;
                     }
-                    var sorter = bod == a1 ? firstNode.bind(a1e) : flattestSlope;
                     var cmpCable = bodEnt.getCmp(CmpCable);
                     if (cmpCable != null) {
                         if (bod == cmpCable.first) {
@@ -817,12 +852,20 @@ class CmpControlBuild extends CmpControl
                             bod = cmpCable.first;
                         }
                     }
-                    var cb : BodyList = bod.connectedBodies(2).filter(beamsOnly.bind(markers)).insertSort(sorter);
+                    var cb : Array<Body> = null;
+                    if (bodEnt.hasCmp(CmpAnchor)) {
+                        cb = bodEnt.getCmp(CmpAnchor).findAdjacentBodies();
+                    } else {
+                        cb = bodEnt.getCmpHavingAncestor(CmpBeamBase).findAdjacentBodies();
+                    }
+                    var sorter = bod == a1 ? firstNode.bind(a1e) : flattestSlope;
+                    cb = cb.filter(beamsOnly.bind(markers));
+                    cb.sort(sorter);
                     for (i in 0...cb.length) {
-                        var b = cb.at(i);
+                        var b = cb[i];
                         var e : Entity = b.userData.entity;
                         stack.add(b);
-                        parentList.set(e, bodEnt);
+                        parentList.set(e.id, bodEnt);
                     }
                 }
             }
@@ -830,7 +873,7 @@ class CmpControlBuild extends CmpControl
         return new Array<Entity>();
     }
     
-    function firstNode(a1e:Entity, a:Body, b:Body) 
+    function firstNode(a1e:Entity, a:Body, b:Body) : Int
     {
         var anchorBounds = a1e.getCmp(CmpAnchor).body.bounds;
         var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
@@ -839,24 +882,24 @@ class CmpControlBuild extends CmpControl
         var aclose = Math.min(Math.abs(abounds.y - anchorTopRight.y), Math.abs(abounds.y + abounds.height - anchorTopRight.y));
         var bclose = Math.min(Math.abs(bbounds.y - anchorTopRight.y), Math.abs(bbounds.y + bbounds.height - anchorTopRight.y));
         if (aclose < bclose) {
-            return false;
+            return 1;
         } else if (aclose == bclose){
             return flattestSlope(a, b);
         } else {
-            return true;
+            return -1;
         }
     }
     
-    function flattestSlope(a:Body, b:Body) : Bool
+    function flattestSlope(a:Body, b:Body) : Int
     {
         var e1 : Entity = a.userData.entity;
         var e2 : Entity = b.userData.entity;
         
         if (e1.hasCmp(CmpAnchor)) {
-            return false;
+            return 1;
         }
         if (e2.hasCmp(CmpAnchor)) {
-            return true;
+            return -1;
         }
         
         var b1 = e1.getCmpsHavingAncestor(CmpBeamBase)[0];
@@ -864,20 +907,23 @@ class CmpControlBuild extends CmpControl
         
         var sl1 = Math.abs(b1.slope);
         var sl2 = Math.abs(b2.slope);
-        
-        return sl2 < sl1;
+        if (sl1 > sl2) {
+            return -1;
+        } else {
+            return 1;
+        }
         
     }
     
-    function beamsOnly( markers : ObjectMap<Entity, Bool>, b : Body) : Bool
+    function beamsOnly(markers : IntMap<Bool>, b : Body) : Bool
     {
         var e : Entity = b.userData.entity;
         var tooSteep = false;
         var beamz = e.getCmpsHavingAncestor(CmpBeamBase);
-        if (beamz.length != 0 && Math.abs(beamz[0].slope) > 2) {
+        if (beamz.length != 0 && Math.abs(beamz[0].slope) > 1.5) {
             tooSteep = true;
         }
-        return e != null && !e.hasCmp(CmpSharedJoint) && !markers.exists(e) && !tooSteep;
+        return e != null && !e.hasCmp(CmpSharedJoint) && !markers.exists(e.id) && !tooSteep;
     }
     
     
@@ -986,6 +1032,15 @@ class CmpControlBuild extends CmpControl
             camera.zoom += 0.1;
         } else if (ev.keyCode == Keyboard.PAGE_DOWN) {
             camera.zoom -= 0.1;
+        } else if (ev.keyCode == Keyboard.F) {
+            //if (stage.displayState != StageDisplayState.FULL_SCREEN_INTERACTIVE) {
+                //stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+                //trace(stage.displayState);
+            //} else {
+                //stage.displayState = StageDisplayState.NORMAL;
+            //}
+            //GameConfig.resize(stage.stageWidth, stage.stageHeight);
+            //state.getSystem(SysRender).resize(stage.stageWidth, stage.stageHeight);
         }
         
         if (lastSelectedBody == null) return;

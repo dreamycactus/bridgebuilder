@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.bbb.CmpAnchor.AnchorStartEnd;
+import com.org.bbb.CmpSpawn.SpawnType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -54,7 +55,16 @@ class CmpLevel extends Cmp
                    if (startend == "start") ase = AnchorStartEnd.START;
                    else if (startend == "end") ase = AnchorStartEnd.END;
                 }
-                var ent = EntFactory.inst.createAnchor(pos, tdim, ase);
+                var fluid = false;
+                if (e.get('fluid') != null) {
+                    fluid = true;
+                }
+                var ent = EntFactory.inst.createAnchor(pos, tdim, fluid, ase, e.get('taperEnd')!=null);
+                level.ents.push(ent);
+            case "budget":
+                var ent = state.createEnt();
+                
+                //ent.attachCmp(new CmpObjectiveBudget(level, Std.parseInt(e.get('
                 level.ents.push(ent);
             case "material":
                 var matName = e.get("name");
@@ -64,7 +74,10 @@ class CmpLevel extends Cmp
                 var dir = Std.parseInt(e.get("dir"));
                 var period = Std.parseFloat(e.get("period"));
                 var count = Std.parseInt(e.get("count"));
-                var spawn = EntFactory.inst.createSpawn(pos.addeq(gridOffset), dir, period, count);
+                var spawnTypeName  = e.get("type");
+
+                var spawnType : SpawnType = Type.createEnum(SpawnType, spawnTypeName);
+                var spawn = EntFactory.inst.createSpawn(spawnType, pos.addeq(gridOffset), dir, period, count);
                 level.spawns.push(spawn.getCmp(CmpSpawn));
                 level.ents.push(spawn);
                 

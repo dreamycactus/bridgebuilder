@@ -46,7 +46,7 @@ class GameConfig
     public static var camDragCoeff = 5;
     
     public static var cableSegWidth = 50.0;
-    public static var beamStressHp = 600;
+    public static var beamStressHp = 900;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
     public static var multiBeamJointDecay = 9e4;
@@ -54,7 +54,7 @@ class GameConfig
     public static var distanceJointMax = 40;
     
     public static var spawnCDCar = 2000;
-    public static var carSpeed = 20;
+    public static var carSpeed = 15;
     
     public static var gridCellWidth = 40;
     public static var maxBeamCells = 6;
@@ -87,36 +87,44 @@ class GameConfig
     public static var cbTruck = new CbType();
     public static var cbEnd = new CbType();
     
+    static var materialSteel = new Material(0.2, 0.2, 0.3, 3, 2);
+    static var materialWood = new Material(0.4, 0.4, 0.5, 0.5);
+    static var materialConcrete = new Material(0.25, 0.5, 0.7, 7);
+    static var materialCable = new Material(0.4, 0.2, 0.2, 1e-5);
+    static var materialSuperCable = new Material(0.4, 0.2, 5e-5, 0.5);
+    
+    public static var materialCar = Material.steel();
+    public static var materialTrain = new Material(0.4, 0.2, 0.3, 10);
+    
+    public static var trainEngineDim = { w : 100, h : 40 };
+    public static var trainCarDim = { w : 130, h : 50 };
+    public static var trainMargin = 15;
+    
     // Moment Tension Compression Shear
     public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood
-                                            ,14500, 300, 300, 888, 20
-                                            , 7,2, false);
-    public static var matConcrete : BuildMat = new BuildMat(tconcrete, MaterialNames.CONCRETE, MatType.BEAM, materialConcrete, 5e5
-                                               , 400, 2000, 888, 20
-                                               , 7,3, true );
-    public static var matSteel: BuildMat =new BuildMat(tsteel, MaterialNames.STEEL, MatType.BEAM, materialSteel, 3e4, 550
-                                            , 550, 888, 20, 7,4
+                                            ,1.6e5, 370, 370, 888, 20
+                                            , 7,3, false);
+    public static var matConcrete : BuildMat = new BuildMat(tconcrete, MaterialNames.CONCRETE, MatType.BEAM, materialConcrete
+                                            , 5e5, 700, 4000, 888, 20
+                                               , 7,25, true );
+    public static var matSteel: BuildMat = new BuildMat(tsteel, MaterialNames.STEEL, MatType.BEAM, materialSteel
+                                            , 3.5e5, 2000, 2000, 888, 20, 7, 24
                                             , false );
-    public static var matCable : BuildMat = new BuildMat(tcable, MaterialNames.CABLE, MatType.CABLE, materialCable, 0, 1000
-                                            , -1, 888, 10, 30,1
+    public static var matCable : BuildMat = new BuildMat(tcable, MaterialNames.CABLE, MatType.CABLE, materialCable
+                                            , 0, 2000, -1, 888, 10, 30, 5
                                             , false);
-    public static var matSuperCable : BuildMat = new BuildMat(tsupercable, MaterialNames.SUPERCABLE, MatType.CABLE,materialSuperCable, 0
-                                                 , 2e5, -1, 888, 20, 30,1
+    public static var matSuperCable : BuildMat = new BuildMat(tsupercable, MaterialNames.SUPERCABLE, MatType.CABLE, materialSuperCable
+                                            , 0, 2e5, -1, 888, 20, 30, 20
                                                  , false );
 
-    static var materialSteel = new Material();
-    static var materialWood = new Material();
-    static var materialConcrete = new Material();
-    static var materialCable = new Material(0,1,2,0.0001);
-    static var materialSuperCable = new Material();
+    
     
     public static var tcable = "Cable";
     public static var tsupercable = "Supercable";
     public static var twood = "Wood";
     public static var tconcrete = "Concrete";
     public static var tsteel= "Steel";
-    public static var tdelete= "Delete";
-    
+    public static var tdelete = "Delete";
     
     public static var stageWidth;
     public static var stageHeight;
@@ -127,15 +135,19 @@ class GameConfig
         Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
                                        , CmpRenderMultiBeam, CmpRenderSlide]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
-                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpSpawn, CmpEnd]);
+                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
         Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
         Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp]);
         Cmp.cmpManager.adopt(CmpSpawn, []);
         
-        
-        stageWidth = Lib.current.stage.stageWidth;
-        stageHeight = Lib.current.stage.stageHeight;
+        resize(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+    }
+    
+    public static function resize(w : Int, h : Int) : Void
+    {
+        stageWidth = w;
+        stageHeight = h;
     }
     
     public static function basicTextField(text : String, sz : Int, colour : Int, align : TextFieldAutoSize) : TextField
@@ -202,7 +214,9 @@ class GameConfig
             //ret.stiff = true;
             ret.maxForce = 1e7;
             ret.breakUnderForce = true;
-            //ret.frequency = 40;
+            ret.breakUnderError = true;
+            ret.maxError = 30;
+            //ret.frequency = 10;
         case CABLEEND:
             ret.stiff = true;
             ret.maxForce = 1e9;

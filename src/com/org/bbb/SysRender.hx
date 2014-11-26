@@ -108,6 +108,15 @@ class SysRender extends System
         }
     }
     
+    public function resize(w : Int, h : Int) : Void
+    {
+        this.debug = new ShapeDebug(w, h, Lib.current.stage.color);
+        this.mainSprite.width = w;
+        this.mainSprite.height = h;
+        //this.camera.sprite.width = w;
+        //this.camera.sprite.height = h;
+    }
+    
     var debug:Debug;
     var cmpsToRender : Array<CmpRender>;
 }

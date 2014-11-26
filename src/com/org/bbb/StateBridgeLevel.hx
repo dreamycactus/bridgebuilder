@@ -101,7 +101,10 @@ class StateBridgeLevel extends BBBState
         s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
         
-        
+        var cob = s1.createEnt();
+        var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
+        cob.attachCmp(cmpCob);
+        s1.insertEnt(cob);
         
         var eobj = s1.createEnt();
         eobj.attachCmp(new CmpObjectiveAllPass(cl));
@@ -134,7 +137,7 @@ class StateBridgeLevel extends BBBState
     override public function disableControl() : Void
     {
         getSystem(SysControl).active = false;
-        controllerEnt.delete();
+        //controllerEnt.delete();
     }
     
     override public function enableControl() : Void

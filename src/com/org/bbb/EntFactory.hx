@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.bbb.CmpAnchor.AnchorStartEnd;
 import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
+import com.org.bbb.CmpSpawn.SpawnType;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -16,6 +17,7 @@ import nape.phys.Compound;
 import nape.phys.Material;
 import nape.shape.Polygon;
 import openfl.Lib;
+import com.org.bbb.CmpMoverTrainEngine;
 
 /**
  * ...
@@ -177,7 +179,36 @@ class EntFactory
         return e;
     }
     
-    public function createSpawn(pos : Vec2, dir : Int, period : Float, count : Int) : Entity
+    public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>
+    {
+        var ents = new Array<Entity>();
+        var e = state.createEnt();
+        var cm = new CmpMoverTrainEngine(pos);
+        var cm2 = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2), 0)));
+        cm.addCar(cm2);
+        ents.push(e);
+        
+        var prev : CmpMoverTrainCar = cm2;
+        for (i in 0...count) {
+            var cmt = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2 )* i, 0)));
+            var ee = state.createEnt();
+            ee.attachCmp(cmt);
+            prev.addCar(cmt);
+            prev = cmt;
+            ents.push(ee);
+        }
+        //var cc = new CmpControlCar(cm);
+        
+        //cc.speed = GameConfig.carSpeed * dir;
+        
+        e.attachCmp(cm);
+        e.attachCmp(cm2);
+        //e.attachCmp(cc);
+        
+        return ents;
+    }
+    
+    public function createSpawn(spawnType : SpawnType, pos : Vec2, dir : Int, period : Float, count : Int) : Entity
     {
         var spawnIcon = new Body(BodyType.KINEMATIC, pos);
         spawnIcon.shapes.add(new Polygon(Polygon.regular(20, 20, 3, 0.0), null, new InteractionFilter(GameConfig.cgSpawn, GameConfig.cmEditable)));
@@ -185,14 +216,14 @@ class EntFactory
             spawnIcon.rotation = Math.PI;
         }
         var spawn = state.createEnt();
-        var cmpSpawn = new CmpSpawn(pos, dir, 0, spawnIcon, count, period);
+        var cmpSpawn = new CmpSpawn(spawnType, pos, dir, spawnIcon, count, period);
         spawn.attachCmp(cmpSpawn);
         spawnIcon.userData.entity = spawn;
         
         return spawn;
     }
     
-    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}, ase : AnchorStartEnd) : Entity
+    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}, fluid : Bool, ase : AnchorStartEnd, taperEnd : Bool=false) : Entity
     {
         var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.h * 0.5), GameConfig.gridCellWidth);
         
@@ -200,9 +231,29 @@ class EntFactory
         //pos.addeq(Vec2.get(0, -(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5));
 
         var anc = new Body(BodyType.STATIC);
-        anc.shapes.add( new Polygon(Polygon.box(tdim.w, tdim.h), null, new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor) ) );
-        anc.shapes.at(0).filter.collisionGroup = GameConfig.cgAnchor;
-        anc.shapes.at(0).filter.collisionMask = GameConfig.cmAnchor;
+        var filter = null;
+        if (fluid) {
+            filter = new InteractionFilter(1, 0, 1, 0, GameConfig.cgAnchor, -1);
+        } else {
+            filter = new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor);
+        }
+        var box = new Polygon(Polygon.box(tdim.w, tdim.h), GameConfig.matSteel.material, filter);
+        if (fluid) {
+            box.fluidEnabled = fluid;
+            box.fluidProperties.viscosity = 7;
+            box.fluidProperties.density = 1;
+        }
+        
+        if (ase == AnchorStartEnd.END || taperEnd) {
+            var localVerts = box.localVerts;
+            var tv = localVerts.at(0).copy();
+            tv.y += 10;
+            localVerts.at(0).x += 10;
+            box.localVerts.unshift(tv);
+        }
+
+        anc.shapes.add(box);
+        
         anc.position = pos;
         var ent = state.createEnt();
         var cmpanc = new CmpAnchor(anc, ase);

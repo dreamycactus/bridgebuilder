@@ -14,6 +14,7 @@ class CmpControlCar extends CmpControl
     {
         super();
         this.mover = mover;
+        subscriptions = [Msgs.BEAMBREAK];
     }
     
     override public function update() : Void
@@ -21,11 +22,14 @@ class CmpControlCar extends CmpControl
         if (mover.body.position.y > Lib.current.stage.stageHeight + 1000) {
             entity.delete();
         }
-        if (mover.body.rotation < Math.PI / 12) {
-            mover.motorFront.active = true;
-        } else {
-            mover.motorFront.active = false;
-        }
+        
+        //if (mover.body.rotation < Math.PI / 3) {
+            //mover.motorFront.active = true;
+            //mover.motorBack.active = false;
+        //} else {
+            //mover.motorFront.active = false;
+            //mover.motorBack.active = true;
+        //}
     }
     
     function set_speed(s : Float) : Float
