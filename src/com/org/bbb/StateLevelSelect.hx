@@ -19,6 +19,8 @@ class StateLevelSelect extends BBBState
 {
     var sprite : Sprite;
     var inited : Bool = false;
+    var fun : MouseEvent -> Void;
+    
     public function new(top : Top) 
     {
         super(top);
@@ -29,6 +31,7 @@ class StateLevelSelect extends BBBState
         var xml = Xml.parse(content);
         var root = xml.elementsNamed("root").next();
         var widgets : Array<Button> = new Array();
+        var levelwidget = UIBuilder.get('levelstuff');
 
         for (e in root) {
             if (e.nodeType == Xml.PCData || e.nodeType == Xml.Comment) {
@@ -37,17 +40,18 @@ class StateLevelSelect extends BBBState
             switch(e.nodeName.toLowerCase()) {
             case "level":
                 var path = e.get("path");
-                var b = UIBuilder.create(Button, {
-                    text : path,
-                });
                 var p = new Paint();
                 p.border = 1;
-                b.addEventListener(MouseEvent.CLICK, loadLevel.bind(b.text));
-                b.skin = p;
+                var b = UIBuilder.create(Button, {
+                    text : path,
+                    skin : p
+                }); 
 
-                b.onInitialize();
-                b.onCreate(); 
-                UIBuilder.get('levelstuff').addChild(b);
+                //fun = loadLevel.bind(b.text);
+                //trace();
+                b.addEventListener(MouseEvent.MOUSE_DOWN, loadLevel.bind(path));
+                levelwidget.addChild(b);
+
             }
         }
         inited = true;
@@ -89,7 +93,7 @@ class StateLevelSelect extends BBBState
         return sprite;
     }
     
-    function loadLevel(p : String, event:flash.events.MouseEvent)
+    function loadLevel(p : String, event:MouseEvent) : Void
     {
         trace('load level $p');
         top.changeState(new StateTransPan(top, this, StateBridgeLevel.createLevelState(top, p)));

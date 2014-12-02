@@ -4,7 +4,7 @@ import com.org.mes.Entity;
 import nape.geom.Vec2;
 
 /**
- * ...
+ * ...todo:delete
  * @author 
  */
 class CmpTransform extends Cmp

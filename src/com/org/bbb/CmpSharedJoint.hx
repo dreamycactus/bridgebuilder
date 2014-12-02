@@ -49,28 +49,31 @@ class CmpSharedJoint extends CmpPhys
     public function deleteNull()
     {
         bodies = bodies.filter(function (b) { return b.space != null || (b.compound != null && b.compound.space != null); } );
-        joints = joints.filter(function(j) { 
-            var shouldDelete = false;
-            if (Std.is(j, PivotJoint)) {
-                var pj = cast(j, PivotJoint);
-                shouldDelete = pj.body1.space == null || pj.body2.space == null;
-                if (shouldDelete) {
-                    pj.space = null;
-                }
-            } else if (Std.is(j, LineJoint)) {
-                var lj = cast(j, LineJoint); 
-                shouldDelete = lj.body1.space == null || lj.body2.space == null;
-                if (shouldDelete) {
-                    lj.space = null;
-                }
-            }
-            return !shouldDelete;
-        });
+        joints = joints.filter(deleteJointIfNull);
         // isAnchored check not exactly correct..  
         // cause the anchored body may be removed... prolly not though
         if (bodies.length == 0 || joints.length == 0) {
             entity.delete();
         }
+    }
+    
+    function deleteJointIfNull(j : Constraint)
+    {
+        var shouldDelete = false;
+        if (Std.is(j, PivotJoint)) {
+            var pj = cast(j, PivotJoint);
+            shouldDelete = pj.body1.space == null || pj.body2.space == null;
+            if (shouldDelete) {
+                pj.space = null;
+            }
+        } else if (Std.is(j, LineJoint)) {
+            var lj = cast(j, LineJoint); 
+            shouldDelete = lj.body1.space == null || lj.body2.space == null;
+            if (shouldDelete) {
+                lj.space = null;
+            }
+        }
+        return !shouldDelete;
     }
     
     public function breakAll()
@@ -115,9 +118,6 @@ class CmpSharedJoint extends CmpPhys
             j.body2 = body;
             /* Center of shared joint to world, then get the local coordinate of that point for the attached beam */
             j.anchor1 = b.worldPointToLocal(body.localPointToWorld(Vec2.weak(), true));
-            if (beamEnt.getCmp(CmpCable) != null) { 
-                trace('${j.anchor1} + ${body.localPointToWorld(Vec2.weak(), true)}' );
-            }
             j.anchor2 = Vec2.weak();
             j.space = body.space;
             joints.push(j);

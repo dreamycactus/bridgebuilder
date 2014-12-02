@@ -9,7 +9,7 @@
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
     <app swf-version="11.8" /> 
 	
-	<window background="#073642" />
+	<window background="#073642" fps="60" hardware="true" vsync="false" />
     <window width="0" height="0" orientation="landscape" unless="flash" />
     <window width="1024" height="576" />
 	<!--<window width="0" height="0" unless="flash" />-->

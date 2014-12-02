@@ -48,9 +48,9 @@ class LineChecker
     {
         var linechecker = new LineChecker();
         linechecker.lines = new Array();
-        lines.map(function(bl) {
-            linechecker.lines.push(bl.copy());
-        });
+        for (l in lines) {
+            linechecker.lines.push(l.copy());
+        }
         return linechecker;
     }
     

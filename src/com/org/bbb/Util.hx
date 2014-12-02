@@ -141,30 +141,30 @@ class Util
         if (body == null) {
             trace("Calculate stress... body null!" + body.id);
         }
-        var count : Int = 0;
-
-        body.constraints.foreach(function(cons) {
-            var pj : PivotJoint = cast(cons);
-            var anchor : Vec2 = null;
-            if (pj.body1 == body) {
-                anchor = pj.anchor1;
-            } else if (pj.body2 == body) {
-                anchor = pj.anchor2;
-            }
-            if (anchor != null && anchor.x >= 0) {
-                var imp = pj.bodyImpulse(body);
-                var bounds = body.bounds;
-                totalStressAtCenter = add(totalStressAtCenter, imp );
-                ++count;
-            }
-            
-        });
+        body.constraints.foreach(addForceOnLeft.bind(body, totalStressAtCenter));
         
         var loc = body.worldVectorToLocal(totalStressAtCenter.xy());
         if (body.worldVectorToLocal(Vec2.weak(0, 1)).y < 0) {
             loc.y *= -1;
         }
         return Vec3.get(loc.x, loc.y, totalStressAtCenter.z);
+    }
+    
+    static function addForceOnLeft(body: Body, totalStressAtCenter : Vec3, cons:Constraint) 
+    {
+        var pj : PivotJoint = cast(cons);
+        var anchor : Vec2 = null;
+        if (pj.body1 == body) {
+            anchor = pj.anchor1;
+        } else if (pj.body2 == body) {
+            anchor = pj.anchor2;
+        }
+        if (anchor != null && anchor.x >= 0) {
+            var imp = pj.bodyImpulse(body);
+            var bounds = body.bounds;
+            totalStressAtCenter = add(totalStressAtCenter, imp );
+        }
+        
     }
     
     public static function zoomInAtPoint(sprite : Sprite, x : Float, y : Float , scale : Float)
@@ -293,5 +293,24 @@ class Util
             blist.push(b);
         }
         return blist;
+    }
+    
+    public static function ffilter<A>(it:Iterable<A>, f:A -> Bool) : List<A>
+    {
+        var res = new List<A>();
+        for (item in it) {
+            if (f(item)) {
+                res.push(item);
+            }
+        }
+        return res;
+    }
+    
+    // not pure of course
+    public static function foreach<A>(it:Iterable<A>, f:A -> Void) : Void
+    {
+        for (item in it) {
+            f(item);
+        }
     }
 }

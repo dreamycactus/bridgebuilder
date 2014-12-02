@@ -61,9 +61,9 @@ class Main extends Sprite
 		GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
-        //var bp = StateBridgeLevel.createLevelState(top, "levels/b3.xml");
+        var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b3.xml"));
         //var bp = new StateMainMenu(top);
-        var bp = new StateLevelSelect(top);
+        //var bp = new StateLevelSelect(top);
     
         top.changeState(bp, false);
         resize(null);
@@ -101,7 +101,7 @@ class Main extends Sprite
 		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
         //Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-#if cpp
+#if (cpp && debug)
 #if HXCPP_DEBUGGER
 		new debugger.Local(true);
 #end

@@ -4,14 +4,17 @@ using Lambda;
  * ...
  * @author 
  */
-class System
+class System implements Subscriber
 {
     public var state : MESState;
     public var active(default, set_active) : Bool = false;
+    var subscriptions : Array<String>;
     
     public function new(state : MESState) 
     {
         this.state = state;
+        this.subscriptions = new Array();
+        
         ents = new List();
     }
     
@@ -54,6 +57,32 @@ class System
         return false;
     }
     
+    
+    public function subscribeToMsgs(ofType : String) : Void
+    {
+        subscriptions.push(ofType);
+        if (state != null) {
+            state.registerSubscriber(ofType, this);
+        }
+       
+    }
+    public function unsubscribeToMsgs(ofType : String) : Void
+    {
+        subscriptions.remove(ofType);
+        if (state != null) {
+            state.unregisterSubscriber(ofType, this);
+        }
+    }
+    
+    public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void {}
+    //function broadcastMessage(name : String, sender : Cmp, options : Dynamic);
+    
+    public function sendMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    {
+        if (state != null) {
+            state.distributeMsg(msgType, sender, options);
+        }
+    }
     function set_active(a : Bool) : Bool
     {
         active = a;

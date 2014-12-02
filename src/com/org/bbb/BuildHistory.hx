@@ -5,6 +5,7 @@ import haxe.ds.GenericStack;
 import haxe.ds.ObjectMap;
 import nape.phys.Body;
 using Lambda;
+using com.org.bbb.Util;
 /**
  * ...
  * @author 
@@ -56,11 +57,11 @@ class BuildHistory
             if (newEnt != null) {
                 oldToNew.set(e, newEnt);
                 snapshot.push(newEnt);
-            }
+            } 
             
         }
         
-        for (e in builtEnts.filter(function(s) { return s.hasCmp(CmpSharedJoint); } )) {
+        for (e in builtEnts.ffilter(function(s) { return s.hasCmp(CmpSharedJoint); } )) {
             var sharedJoint = e.getCmp(CmpSharedJoint);
             var newEnt = EntFactory.inst.createSharedJoint(sharedJoint.body.position);
             var newSharedJoint = newEnt.getCmp(CmpSharedJoint);

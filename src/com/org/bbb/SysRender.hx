@@ -40,7 +40,7 @@ class SysRender extends System
     
     override public function init()
     {
-        this.debug = new ShapeDebug(2000, 2000, Lib.current.stage.color);
+        this.debug = new ShapeDebug(1300, 800, Lib.current.stage.color);
         this.debug.drawConstraints = true;
         this.debug.cullingEnabled = true;
         
@@ -48,7 +48,7 @@ class SysRender extends System
         
         stage.addChild(this.mainSprite);
 
-        this.camera = new Camera();
+        this.camera = new Camera(this);
         this.camera.sprite.addChild(debug.display);
         this.mainSprite.addChild(this.camera.sprite);
     }

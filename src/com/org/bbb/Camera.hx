@@ -18,8 +18,11 @@ class Camera
     public var vel : Vec2;
     @:isVar public var dragBounds(default, set_dragBounds) : Bounds;
     public var isUnlocked : Bool = false;
-    public function new() 
+    public var sysRender : SysRender;
+    
+    public function new(sysRender : SysRender) 
     {
+        this.sysRender = sysRender;
         pos = Vec2.get();
         vel = Vec2.get();
         zoom = 1.0;
@@ -46,8 +49,11 @@ class Camera
         if (delta.length > 20) {
             delta = delta.normalise().mul(20);
         }
+        var oldPos = pos.copy();
         pos.addeq(delta);
         clampPos();
+        var newDelta = pos.sub(oldPos);
+        sysRender.sendMsg(Msgs.CAMERAMOVE, null, { delta:newDelta } );
     }
     
     public function screenToWorld(v : Vec2) : Vec2

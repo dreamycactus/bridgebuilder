@@ -11,7 +11,7 @@ import nape.shape.Shape;
 import nape.space.Space;
 
 /**
- * ...
+ * ... TO DO :DELETE FILE
  * @author 
  */
 class CmpCableStable extends CmpPhys

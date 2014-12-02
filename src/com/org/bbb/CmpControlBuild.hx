@@ -111,8 +111,11 @@ class CmpControlBuild extends CmpControl
         this.top = entity.state.top;
         this.state = entity.state;
         buildHistory = new BuildHistory(state);
-        var anchors = level.space.bodies.filter(function(b) { return b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor; } );
-        anchors.foreach(function(b) { builtBeams.push(b.userData.entity);  } );
+        trace(level.space.bodies.length);
+        
+        var anchors : List<Body>= level.space.bodies.ffilter(function(b) { return b.userData.entity != null && !b.userData.entity.hasCmp(CmpSpawn); } );
+        anchors.foreach(function(b) { builtBeams.push(b.userData.entity);} );
+        
         buildHistory.snapAndPush(builtBeams, lineChecker.copy());
         #if flash
         baseMemory = System.totalMemoryNumber;
@@ -201,12 +204,13 @@ class CmpControlBuild extends CmpControl
         
         console.text = cmpGrid.getClosestCell(prevMouse) + '\n';
         var res = level.space.bodiesUnderPoint(prevMouse);
-        res.foreach(function(b) {
-            console.text += printBodyForces(b) + '\n';
-        });
+        res.foreach(ppp);
 
     }
-    
+    function ppp(b) 
+    {
+        console.text += printBodyForces(b) + '\n';
+    }
     function printBodyForces(body : Body) : String
     {
         var e : Entity = body.userData.entity;
@@ -683,9 +687,7 @@ class CmpControlBuild extends CmpControl
         for (e in builtBeams) {
             state.deleteEnt(e);
         }
-        trace('built beams $builtBeams.length');
         var buildstate = buildHistory.pop();
-        trace(buildHistory.length);
         if (buildHistory.length == 0) {
             buildHistory.snapAndPush(buildstate.ents, buildstate.lines.copy());
         }
@@ -720,7 +722,6 @@ class CmpControlBuild extends CmpControl
             buildHistory.snapAndPush(builtBeams, lineChecker.copy());
             var frb = findRoadBeams();
             for (e in frb) {
-                trace(e.toString());
                 toggleBeamRoad(e);
             }
         } else {
@@ -852,7 +853,7 @@ class CmpControlBuild extends CmpControl
                             bod = cmpCable.first;
                         }
                     }
-                    var cb : Array<Body> = null;
+                    var cb : Array<Body> = null; // connected bodies
                     if (bodEnt.hasCmp(CmpAnchor)) {
                         cb = bodEnt.getCmp(CmpAnchor).findAdjacentBodies();
                     } else {

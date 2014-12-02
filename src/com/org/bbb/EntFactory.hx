@@ -233,7 +233,7 @@ class EntFactory
         var anc = new Body(BodyType.STATIC);
         var filter = null;
         if (fluid) {
-            filter = new InteractionFilter(1, 0, 1, 0, GameConfig.cgAnchor, -1);
+            filter = new InteractionFilter(GameConfig.cgNull, 0, GameConfig.cgNull, 0, GameConfig.cgAnchor, -1);
         } else {
             filter = new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor);
         }
