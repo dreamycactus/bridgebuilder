@@ -52,8 +52,7 @@ class Camera
         var oldPos = pos.copy();
         pos.addeq(delta);
         clampPos();
-        var newDelta = pos.sub(oldPos);
-        sysRender.sendMsg(Msgs.CAMERAMOVE, null, { delta:newDelta } );
+        sysRender.sendMsg(Msgs.CAMERAMOVE, null, { camPos:pos } );
     }
     
     public function screenToWorld(v : Vec2) : Vec2

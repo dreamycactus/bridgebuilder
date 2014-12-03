@@ -43,8 +43,8 @@ class CmpRenderBgStarfield extends CmpRender
     
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
-        var delta : Vec2 = options.delta;
-        sprite.x -= delta.x * 0.8;
-        sprite.y -= delta.y * 0.8;
+        var camPos : Vec2 = options.camPos;
+        sprite.x = -camPos.x;
+        sprite.y = -camPos.y;
     }
 }
