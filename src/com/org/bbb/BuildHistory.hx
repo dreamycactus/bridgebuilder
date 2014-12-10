@@ -36,7 +36,6 @@ class BuildHistory
         // AND they must have both sharedJoints set before they are added to a CmpSharedJoint...
         var cables : Array<CmpCable> = new Array(); 
         
-        
         for (e in builtEnts) {
             var newEnt : Entity = null;
             if (e.hasCmp(CmpBeam)) {
@@ -46,9 +45,7 @@ class BuildHistory
                 newBody.userData.entity = newEnt;
             } else if (e.hasCmp(CmpCable)) {
                 var cmpCable = e.getCmp(CmpCable);
-                newEnt = state.createEnt();
-                var newCable = new CmpCable(cmpCable.p1, cmpCable.p2, cmpCable.material);
-                newEnt.attachCmp(newCable);
+                newEnt = EntFactory.inst.createCable(cmpCable.p1, cmpCable.p2, cmpCable.material);
             } else if (e.hasCmp(CmpAnchor)) {
                 var cmpAnchor = e.getCmp(CmpAnchor);
                 var bounds = cmpAnchor.body.bounds;

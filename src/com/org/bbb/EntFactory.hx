@@ -92,7 +92,9 @@ class EntFactory
     {
         var cab = state.createEnt("cc");
         var cmp = new CmpCable(p1, p2, material);
+        var rcmp = new CmpRenderCable(cmp);
         cab.attachCmp(cmp);
+        cab.attachCmp(rcmp);
         return cab;
     }
     
@@ -119,8 +121,10 @@ class EntFactory
     {
         var e = state.createEnt("sj");
         var sj = new CmpSharedJoint(pos, bodies);
+        var rsj = new CmpRenderSharedJoint(sj);
         
         e.attachCmp(sj);
+        e.attachCmp(rsj);
         
         return e;
     }
@@ -170,11 +174,13 @@ class EntFactory
         
         var cm = new CmpMoverCar(pos);
         var cc = new CmpControlCar(cm);
+        var cr = new CmpRenderCar(cm);
         
         cc.speed = GameConfig.carSpeed * dir;
         
         e.attachCmp(cm);
         e.attachCmp(cc);
+        e.attachCmp(cr);
         
         return e;
     }
@@ -257,7 +263,11 @@ class EntFactory
         anc.position = pos;
         var ent = state.createEnt();
         var cmpanc = new CmpAnchor(anc, ase);
+        var cmprender = new CmpRenderAnchor(cmpanc);
+		
         ent.attachCmp(cmpanc);
+        ent.attachCmp(cmprender);
+		
         anc.userData.entity = ent;
         return ent;
     }

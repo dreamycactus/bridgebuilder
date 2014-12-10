@@ -3,7 +3,7 @@
 <Widget id="'rootWidget'" widthPt="100" h="600">
     <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
     <!-- Buttons -->
-    <VBox autoHeight="true" childPadding="10" padding="10">
+    <VBox autoHeight="true" childPadding="10" padding="10" left="150">
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Toggle Edit'" autoHeight="true" 
                      on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
         <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>

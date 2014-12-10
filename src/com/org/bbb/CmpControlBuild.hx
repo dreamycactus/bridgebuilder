@@ -353,7 +353,7 @@ class CmpControlBuild extends CmpControl
         var endBody : Body = null;
         var otherBody : Body = null;
         
-        if (beamDeleteMode && startBody != null) {
+        if (beamDeleteMode && startBody != null && !state.getSystem(SysPhysics).paused) {
             var ent : Entity = startBody.userData.entity;
             if (ent != null && bb.has(startBody)) {
                 var cmpBeam : CmpBeamBase = ent.getCmpHavingAncestor(CmpBeamBase);
@@ -413,8 +413,8 @@ class CmpControlBuild extends CmpControl
             beamStartBody = lastBody;
             beamEnt = genBody.ent;
         case MatType.CABLE:
-            var cab = state.createEnt("cc");
-            cmp = new CmpCable(spawn1, spawn2, material);
+			var cab = EntFactory.inst.createCable(spawn1, spawn2, material);
+			var cmp = cab.getCmp(CmpCable);
             cab.attachCmp(cmp);
             state.insertEnt(cab);
             beamEnt = cab;
@@ -724,8 +724,10 @@ class CmpControlBuild extends CmpControl
             for (e in frb) {
                 toggleBeamRoad(e);
             }
+			cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
         } else {
             restore();
+			cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;
         }
 
         state.getSystem(SysLevelDirector).runExecution(sys.paused);
@@ -737,6 +739,7 @@ class CmpControlBuild extends CmpControl
     
     function toggleBeamRoad(e : Entity) : Entity
     {
+		if (e == null) { return e; }
         var rends = e.getCmpsHavingAncestor(CmpRender);
         var beamz = e.getCmpsHavingAncestor(CmpBeamBase);
         var beam = beamz[0];
@@ -796,8 +799,11 @@ class CmpControlBuild extends CmpControl
         var endAnchor : Body = null;
         var funccy = function(b:Body) {
             var e : Entity = b.userData.entity;
-            var cmpa = e.getCmp(CmpAnchor);
-            if (e != null && cmpa != null) {
+            if (e != null) {
+				var cmpa = e.getCmp(CmpAnchor);
+				if (cmpa == null) {
+					return false;
+				}
                 if (cmpa.startEnd == AnchorStartEnd.START) {
                     startAnchor = b;
                 } else if (cmpa.startEnd == AnchorStartEnd.END) {

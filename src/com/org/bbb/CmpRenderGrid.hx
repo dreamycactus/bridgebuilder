@@ -13,16 +13,19 @@ import openfl.Lib;
  */
 class CmpRenderGrid extends CmpRender
 {
+	public var visible : Bool = true;
     public function new(cmpGrid : CmpGrid) 
     {
-        super();
+        super(true);
         this.cmpGrid = cmpGrid;
+		sprite.z = GameConfig.zGrid;
     }
 
     override public function render(dt : Float) : Void
     {
         var g = sprite.graphics;
         g.clear();
+		if (!visible) { return; }
         var cellsz = cmpGrid.cellSize;
         var w = cmpGrid.width;
         var h = cmpGrid.height;

@@ -21,6 +21,11 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     public var startEnd : AnchorStartEnd;
     public var tapered : Bool;
     public var fluid : Bool;
+	
+	public var pos : Vec2;
+	public var width : Float;
+	public var height : Float;
+	
     @:isVar public var sharedJoints(default, default) : Array<CmpSharedJoint> = new Array();
     public function new(body : Body, ase : AnchorStartEnd, tapered : Bool=false) 
     {
@@ -28,6 +33,10 @@ class CmpAnchor extends CmpPhys implements BridgeNode
         this.body = body;
         this.startEnd = ase;
         this.tapered = tapered;
+		var bounds = body.bounds;
+		this.pos = body.position.sub(Vec2.weak(bounds.width * 0.5, bounds.height * 0.5));
+		this.width = bounds.width;
+		this.height = bounds.height;
     }
     
     public function findAdjacentBodies() : Array<Body>

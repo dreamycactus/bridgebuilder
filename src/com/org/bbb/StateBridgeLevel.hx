@@ -82,7 +82,6 @@ class StateBridgeLevel extends BBBState
         s1.insertEnt(grid);
         s1.cmpGrid = cmpGrid;
        
-        
         s1.renderSys = s1.getSystem(SysRender);
         s1.getSystem(SysPhysics).level = cl;
         s1.getSystem(SysRender).level = cl;
@@ -115,9 +114,13 @@ class StateBridgeLevel extends BBBState
         starbg.attachCmp(new CmpRenderBgStarfield(100, cl.width, cl.height/2));
         s1.insertEnt(starbg);
         
-        var citybg1 = s1.createEnt();
-        citybg1.attachCmp(new CmpRenderBgCityfield(Vec2.get(0, 300), 200, 100, 40, 2, 15, 0.3));
-        s1.insertEnt(citybg1);
+        //var citybg1 = s1.createEnt();
+        //citybg1.attachCmp(new CmpRenderBgCityfield(Vec2.get(0, 300), 200, 100, 10, 2, 0.3));
+        //s1.insertEnt(citybg1);
+		//
+		//var citybg2 = s1.createEnt();
+        //citybg2.attachCmp(new CmpRenderBgCityfield(Vec2.get(500, 300), 200, 100, 10, 2, 0.3));
+        //s1.insertEnt(citybg2);
         
         return s1;
     }

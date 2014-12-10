@@ -35,7 +35,7 @@ class CmpObjectiveBudget extends CmpObjective
         if (bottombar == null) {
             bottombar = cast(UIBuilder.get('bottombar'));
         }
-        bottombar.setBudgetText('$currentBudget / $maxBudget');
+        bottombar.setBudgetText('Budget: $currentBudget / $maxBudget');
     }
     
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 

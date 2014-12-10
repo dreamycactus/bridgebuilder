@@ -24,6 +24,7 @@ class CmpRenderBgStarfield extends CmpRender
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
+		this.z = GameConfig.zStars;
         for (i in 0...count) {
             stars.add( { pos : Vec2.get(Util.randomf(0, w), Util.randomf(0, h)), size : Util.randomf(0.1, 3) } );
         }

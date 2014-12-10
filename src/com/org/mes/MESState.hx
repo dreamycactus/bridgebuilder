@@ -9,7 +9,7 @@ class MESState
     public var top : Top;
     public var isTransitioning : Bool = false;
     public var msgSubscribers : StringMap<Array<Subscriber>> = new StringMap();
-    var index = 0;
+    public var index = 0;
     
     public function new(top : Top) 
     {

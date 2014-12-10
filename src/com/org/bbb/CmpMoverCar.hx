@@ -35,20 +35,20 @@ class CmpMoverCar extends CmpMover
         body = new Body(); // Chassis
         var p = Polygon.box(40, 20);
         
-        body.shapes.add( new Polygon( p, null, new InteractionFilter(GameConfig.cgLoad)));
+        body.shapes.add(new Polygon(p, null, new InteractionFilter(GameConfig.cgLoad)));
         body.shapes.at(0).material = Material.steel();
         body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
         body.position = pos;
         
         var fw = new Body(); // Front wheel
-        fw.shapes.add( new Circle(8, null, null, new InteractionFilter(GameConfig.cgLoad)) );
+        fw.shapes.add( new Circle(GameConfig.carWheelRadius, null, null, new InteractionFilter(GameConfig.cgLoad)) );
         fw.shapes.at(0).material = Material.rubber();
         fw.position = pos.add(Vec2.weak(15, 9));
         fw.compound = compound;
         
         var bw = new Body(); // Front wheel
-        bw.shapes.add(new Circle(8, null, null, new InteractionFilter(GameConfig.cgLoad)) );
+        bw.shapes.add(new Circle(GameConfig.carWheelRadius, null, null, new InteractionFilter(GameConfig.cgLoad)) );
         bw.shapes.at(0).material = Material.rubber();
         bw.position = pos.add(Vec2.weak(-15, 9));
         bw.compound = compound;

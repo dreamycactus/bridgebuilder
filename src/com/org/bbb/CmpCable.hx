@@ -74,6 +74,8 @@ class CmpCable extends CmpBeamBase
         }
         // Last tension is the Y component of tension in world space for... keeping the road level
         lastTension = stressWorldSpace.y;
+		
+		sendMsg(Msgs.CABLEUPDATE, this, null);
     }
     
     public function rebuild()

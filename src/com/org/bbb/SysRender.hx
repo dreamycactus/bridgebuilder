@@ -9,8 +9,10 @@ import nape.space.Space;
 import nape.util.Debug;
 import nape.util.ShapeDebug;
 import openfl.display.DisplayObject;
+import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
+import openfl.text.TextField;
 import ru.stablex.ui.UIBuilder;
 import ru.stablex.ui.widgets.Text;
 using Lambda;
@@ -24,6 +26,7 @@ class SysRender extends System
     public var stage : Stage;
     public var camera : Camera;
     public var mainSprite : Sprite;
+	public var someStats : TextField;
     
     public function new(state : MESState, level : CmpLevel, stage : Stage)
     {
@@ -31,6 +34,7 @@ class SysRender extends System
         this.level = level;
         this.cmpsToRender = new Array();
         this.stage = stage;
+		someStats = new TextField();
     }
      
     public function addChild(c : DisplayObject)
@@ -51,6 +55,8 @@ class SysRender extends System
         this.camera = new Camera(this);
         this.camera.sprite.addChild(debug.display);
         this.mainSprite.addChild(this.camera.sprite);
+		this.mainSprite.addChild(new FPS());
+		this.mainSprite.addChild(someStats);
     }
     
     override public function deinit()
@@ -66,7 +72,8 @@ class SysRender extends System
         debug.clear();
         debug.draw(level.space);
         debug.flush();
-        
+		
+		someStats.text = 'State\nEntities Created: ${state.index}\nNum Entities: ${state.ents.length}';
         for (c in cmpsToRender) {
             c.render(state.top.dt);
         }
@@ -99,7 +106,7 @@ class SysRender extends System
     {
         var res = e.getCmpsHavingAncestor(CmpRender);
         for (c in res) {
-            cmpsToRender.push(c);
+            cmpsToRender.remove(c);
             if (c.inCamera) {
                 c.removeFromScene(camera.sprite);
             } else {

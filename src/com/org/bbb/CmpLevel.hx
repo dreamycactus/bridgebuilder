@@ -86,7 +86,17 @@ class CmpLevel extends Cmp
                 var end = state.createEnt();
                 end.attachCmp(new CmpEnd(pos.add(gridOffset)));
                 level.ents.push(end);
+            case "city":
+                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), { w : 0, h : 0 } );
+                var tdim = level.worldDim(Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h")));
+                var buildingW = level.worldDim(Std.parseFloat(e.get("buildingW")), 0).w;
+                var layers = Std.parseInt(e.get('layers'));
+                var parallaxK = Std.parseFloat(e.get('parallaxK'));
                 
+                var citybg1 = state.createEnt();
+                citybg1.attachCmp(new CmpRenderBgCityfield(pos, tdim.w, tdim.h, buildingW, layers, parallaxK));
+                level.ents.push(citybg1);
+
             default:
                  
             }

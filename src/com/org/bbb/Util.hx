@@ -126,8 +126,11 @@ class Util
         return blist;
     }
     
-    public static function add(v : Vec3, v2 : Vec3) {
-        return Vec3.get(v.x + v2.x, v.y + v2.y, v.z + v2.z);
+    public static function addeq(v : Vec3, v2 : Vec3) {
+        v.x += v2.x;
+		v.y += v2.y;
+		v.z += v2.z;
+		return v;
     }
     
     public static function mul(v : Vec3, scale : Float) {
@@ -162,7 +165,7 @@ class Util
         if (anchor != null && anchor.x >= 0) {
             var imp = pj.bodyImpulse(body);
             var bounds = body.bounds;
-            totalStressAtCenter = add(totalStressAtCenter, imp );
+            addeq(totalStressAtCenter, imp );
         }
         
     }
@@ -179,10 +182,11 @@ class Util
     }
     // Bubble sort.. Insert sort would be better, prolly... maybe... not sure.
     public static function sortZ (dParent : DisplayObjectContainer) : Void {
-        for (i in dParent.numChildren - 1...0) {
+        for (t in 0...dParent.numChildren) {
+			var i = dParent.numChildren - t - 1;
             var bFlipped = false;
             for (o in 0...i) {
-                if (dParent.getChildAt(o).z > dParent.getChildAt(o+1).z) {
+                if (dParent.getChildAt(o).z < dParent.getChildAt(o+1).z) {
                     dParent.swapChildrenAt(o,o+1);
                     bFlipped = true;
                 }

@@ -14,6 +14,7 @@ class CmpRender extends Cmp
 {
     public var sprite : Sprite;
     public var inCamera : Bool;
+	public var z(get_z, set_z) : Float;
     
     public function new(inCamera : Bool=true)
     {
@@ -44,4 +45,14 @@ class CmpRender extends Cmp
             sprite.transform.colorTransform = col;
         }
     }
+	
+	function get_z() : Float
+	{
+		return sprite.z;
+	}
+	function set_z(z : Float) : Float
+	{
+		this.sprite.z = z;
+		return z;
+	}
 }

@@ -37,25 +37,33 @@ class CmpRenderBgCityfield extends CmpRender
     public var pos : Vec2;
     
     var camPos : Vec2;
-    public function new(pos : Vec2, w : Float, h : Float, depth : Float, numLayers : Int, numFirstLayerBuildings: Int, parallaxK : Float) 
+	
+    public function new(pos : Vec2, w : Float, h : Float, buildingWidth : Float, numLayers : Int, parallaxK : Float) 
     {
         super(true);
         this.pos = pos;
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
+		this.z = GameConfig.zCity;
+		
         for (t in 0...numLayers) {
 			var i = numLayers - t;
 			var prevX = 0.0;
-            var layer : BuildingLayer = { buildings : new List<Building>(), parallaxK : parallaxK + 0.2 * i, color : Std.random(0xFFFFFF), sprite : new Sprite()};
+            var layer : BuildingLayer = { buildings : new List<Building>(), parallaxK : parallaxK + 0.1 * i, color : Std.random(0xFFFFFF), sprite : new Sprite()};
             buildingLayers.push(layer);
-            for (j in 0...numFirstLayerBuildings) {
-                var randX = Util.randomf(10, 25);
-                var randHeight = Util.randomf(20, 70);
+            var numBuildings = Std.int(w / buildingWidth);
+            var j = 0;
+            while (true) {
+                var randX = Util.randomf(buildingWidth*0.2, buildingWidth*1.0);
+                var randHeight = Util.randomf(buildingWidth*1.2, buildingWidth*5);
                 prevX += randX;
-                layer.buildings.push( { pos : Vec2.get(pos.x + prevX, pos.y + 10 * i - randHeight), w : Util.randomf(10, 20), h : randHeight, type : BuildingType.RECT, layer :layer } );
+                if (prevX - pos.x > width) {
+                    break;
+                }
+                layer.buildings.push( { pos : Vec2.get(pos.x + prevX, pos.y + 10 * i - randHeight), w : Util.randomf(buildingWidth*0.5, buildingWidth*1.5), h : randHeight, type : BuildingType.RECT, layer :layer } );
+                j++;
             }
-            
         }
 		camPos = Vec2.get();
 
@@ -86,7 +94,7 @@ class CmpRenderBgCityfield extends CmpRender
         camPos = options.camPos;
 		for (layer in buildingLayers) {
 			layer.sprite.x = - camPos.x * layer.parallaxK;
-			layer.sprite.y = - camPos.y* layer.parallaxK	;
+			layer.sprite.y = - camPos.y* layer.parallaxK;
 		}
         //sprite.x -= delta.x * 0.8;
         //sprite.y -= delta.y * 0.8;
