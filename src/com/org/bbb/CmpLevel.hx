@@ -63,8 +63,10 @@ class CmpLevel extends Cmp
                 level.ents.push(ent);
             case "budget":
                 var ent = state.createEnt();
-                
-                //ent.attachCmp(new CmpObjectiveBudget(level, Std.parseInt(e.get('
+                ent.attachCmp(new CmpObjectiveBudget(level
+                    , Std.parseInt(e.get('maxBudget'))
+                    , Std.parseInt(e.get('expectedBudget'))
+                    , Std.parseInt(e.get('minBudget'))));
                 level.ents.push(ent);
             case "material":
                 var matName = e.get("name");

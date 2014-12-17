@@ -24,15 +24,11 @@ class CmpRenderBgStarfield extends CmpRender
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
-		this.z = GameConfig.zStars;
+        this.z = GameConfig.zStars;
         for (i in 0...count) {
-            stars.add( { pos : Vec2.get(Util.randomf(0, w), Util.randomf(0, h)), size : Util.randomf(0.1, 3) } );
+            stars.add( { pos : Vec2.get(Util.randomf(0, w), Util.randomf(0, h)), size : Util.randomf(0.1, 2) } );
         }
         sprite.filters = [new GlowFilter(0xFFFFFF, 0.8, 6, 6, 2, 1)];
-    }
-    
-    override public function render(dt : Float) : Void
-    {
         var g = sprite.graphics;
         g.clear();
         for (s in stars) {
@@ -42,10 +38,15 @@ class CmpRenderBgStarfield extends CmpRender
         }
     }
     
+    override public function render(dt : Float) : Void
+    {
+
+    }
+    
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         var camPos : Vec2 = options.camPos;
-        sprite.x = -camPos.x;
-        sprite.y = -camPos.y;
+        sprite.x = (0.1 - 1) * camPos.x;
+        sprite.y = (0.1 - 1) * camPos.y;
     }
 }

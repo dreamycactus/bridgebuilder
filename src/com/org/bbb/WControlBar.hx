@@ -80,8 +80,19 @@ class WControlBar extends HBox
                 buttonTab.text = b.text;
             }
         }
-        
-        
+    }
+    
+    public function toggleVisible() : Void
+    {
+        visible = !visible;
+        if (visible) {
+            show();
+            Actuate.tween(buttonTab, 0.5, { y :0 } );
+        } else {
+            hide();
+            Actuate.tween(buttonTab, 0.5, { y :-100 } );
+        }
+        cast(UIBuilder.get('sidebar'), WSideBar).toggleVisible();
     }
     
     public function addMaterialButtons(arr : Array<String>) : Void

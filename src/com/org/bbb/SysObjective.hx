@@ -32,6 +32,7 @@ class SysObjective extends System
         var res = e.getCmpsHavingAncestor(CmpObjective);
         if ( res.length > 0 ) {
             cmpobjs.push(res[0]);
+            res[0].onActivate();
         }
     }
     

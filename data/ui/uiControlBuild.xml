@@ -43,13 +43,14 @@
         <VBox id="'control'">
         <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Delete Mode'"
              on-click="@controlBuild.set_beamDeleteMode(true);" />
-        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Start/Stop'"
-                 on-click="@controlBuild.togglePause();" />
         <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Undo'"
                  on-click="@controlBuild.undo();" />
+         <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x268bd2" text="'Start/Stop'"
+                 on-click="@controlBuild.togglePause();" />
         </VBox>
-
     </WSideBar>
+    
+
     <WBottomBar id="'bottombar'" left="0" bottom="0" widthPt="100" heightPt="5" skin:Paint-color="0xFFFFF0" skin:Paint-alpha="0.9">
         <Text id="'budget'" defaults="'budgetD'" text="'100/1000'" />
     </WBottomBar>

@@ -21,6 +21,7 @@ class StateLevelSelect extends BBBState
     var sprite : Sprite;
     var inited : Bool = false;
     var fun : MouseEvent -> Void;
+    var enabled = false;
     
     public function new(top : Top) 
     {
@@ -55,9 +56,8 @@ class StateLevelSelect extends BBBState
                 }); 
 
                 //fun = loadLevel.bind(b.text);
-                //trace();
                 rowWidget.addChild(b);
-				b.addEventListener(MouseEvent.MOUSE_DOWN, loadLevel.bind(path));
+                b.addEventListener(MouseEvent.MOUSE_DOWN, loadLevel.bind(path));
                 hIndex++;
                 if (hIndex > 4) {
                     hIndex = 0;
@@ -89,10 +89,12 @@ class StateLevelSelect extends BBBState
     override public function disableControl() : Void
     {
         cast(UIBuilder.get('levelstuff'), Widget); // TODO Disable all buttons
+        enabled = false;
     }
     
     override public function enableControl() : Void
     {
+        enabled = true;
     }
     
     override public function get_mainSprite()
@@ -102,6 +104,7 @@ class StateLevelSelect extends BBBState
     
     function loadLevel(p : String, event:MouseEvent) : Void
     {
+        if (!enabled) return;
         trace('load level $p');
         top.changeState(new StateTransPan(top, this, StateBridgeLevel.createLevelState(top, p)));
     }

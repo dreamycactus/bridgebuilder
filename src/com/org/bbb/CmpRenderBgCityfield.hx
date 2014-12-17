@@ -15,8 +15,8 @@ typedef BuildingLayer =
 {
     buildings : List<Building>,
     parallaxK : Float,
-	color : Int,
-	sprite : Sprite
+    color : Int,
+    sprite : Sprite
 
 }
 typedef Building = 
@@ -37,7 +37,7 @@ class CmpRenderBgCityfield extends CmpRender
     public var pos : Vec2;
     
     var camPos : Vec2;
-	
+    
     public function new(pos : Vec2, w : Float, h : Float, buildingWidth : Float, numLayers : Int, parallaxK : Float) 
     {
         super(true);
@@ -45,12 +45,12 @@ class CmpRenderBgCityfield extends CmpRender
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
-		this.z = GameConfig.zCity;
-		
+        this.z = GameConfig.zCity;
+        
         for (t in 0...numLayers) {
-			var i = numLayers - t;
-			var prevX = 0.0;
-            var layer : BuildingLayer = { buildings : new List<Building>(), parallaxK : parallaxK + 0.1 * i, color : Std.random(0xFFFFFF), sprite : new Sprite()};
+            var i = numLayers - t;
+            var prevX = 0.0;
+            var layer : BuildingLayer = { buildings : new List<Building>(), parallaxK : parallaxK - 0.1 * i, color : Std.random(0xFFFFFF), sprite : new Sprite()};
             buildingLayers.push(layer);
             var numBuildings = Std.int(w / buildingWidth);
             var j = 0;
@@ -65,11 +65,11 @@ class CmpRenderBgCityfield extends CmpRender
                 j++;
             }
         }
-		camPos = Vec2.get();
+        camPos = Vec2.get();
 
-		for (layer in buildingLayers) {
-			var sp = layer.sprite;
-			var g = sp.graphics;
+        for (layer in buildingLayers) {
+            var sp = layer.sprite;
+            var g = sp.graphics;
             for (building in layer.buildings) {
                 g.beginFill(layer.color);
                 //g.moveTo(building.pos.x-camDelta.x, building.pos.y-camDelta.y);
@@ -77,7 +77,7 @@ class CmpRenderBgCityfield extends CmpRender
                 g.endFill();
                 trace(building.pos);
             }
-			sprite.addChild(sp);
+            sprite.addChild(sp);
         }
         //sprite.filters = [new GlowFilter(0xFFFFFF, 0.8, 6, 6, 2, 1)];
     }
@@ -92,10 +92,10 @@ class CmpRenderBgCityfield extends CmpRender
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         camPos = options.camPos;
-		for (layer in buildingLayers) {
-			layer.sprite.x = - camPos.x * layer.parallaxK;
-			layer.sprite.y = - camPos.y* layer.parallaxK;
-		}
+        for (layer in buildingLayers) {
+            layer.sprite.x = camPos.x * (layer.parallaxK - 1);
+            layer.sprite.y = camPos.y * (layer.parallaxK - 1);
+        }
         //sprite.x -= delta.x * 0.8;
         //sprite.y -= delta.y * 0.8;
     }

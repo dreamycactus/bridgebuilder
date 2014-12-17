@@ -15,15 +15,15 @@ import nape.geom.Vec2;
 
 class Main extends Sprite 
 {
-	var inited:Bool;
+    var inited:Bool;
     var prevTime : Float = 0;
     var top : Top;
-	/* ENTRY POINT */
-	
-	function resize(e) 
-	{
-		if (!inited) init();
-		// else (resize or orientation change)
+    /* ENTRY POINT */
+    
+    function resize(e) 
+    {
+        if (!inited) init();
+        // else (resize or orientation change)
         GameConfig.stageHeight = Lib.current.stage.stageHeight;
         GameConfig.stageWidth = Lib.current.stage.stageWidth;
         if (top == null) { return; }
@@ -39,12 +39,12 @@ class Main extends Sprite
         
         //var cam = top.state.getSystem(SysRender).camera;
         //cam.zoom = scale;
-	}
-	
-	function init() 
-	{
-		if (inited) return;
-		inited = true;
+    }
+    
+    function init() 
+    {
+        if (inited) return;
+        inited = true;
         
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -58,7 +58,7 @@ class Main extends Sprite
         UIBuilder.init("data/ui/defaults.xml");
         this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
 
-		GameConfig.init();
+        GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
         var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b1.xml"));
@@ -68,7 +68,7 @@ class Main extends Sprite
         top.changeState(bp, false);
         resize(null);
 
-	}
+    }
     
     function enterFrame(_)
     {
@@ -79,34 +79,34 @@ class Main extends Sprite
         top.update(deltaTime);
     }
 
-	/* SETUP */
+    /* SETUP */
 
-	public function new() 
-	{
-		super();	
+    public function new() 
+    {
+        super();    
         
-		addEventListener(Event.ADDED_TO_STAGE, added);
-	}
+        addEventListener(Event.ADDED_TO_STAGE, added);
+    }
 
-	function added(e) 
-	{
-		removeEventListener(Event.ADDED_TO_STAGE, added);
-		stage.addEventListener(Event.RESIZE, resize);
+    function added(e) 
+    {
+        removeEventListener(Event.ADDED_TO_STAGE, added);
+        stage.addEventListener(Event.RESIZE, resize);
         init();
-	}
-	
-	public static function main() 
-	{
-		// static entry point
-		//Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
-		//Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
+    }
+    
+    public static function main() 
+    {
+        // static entry point
+        //Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
+        //Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
         //Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
 #if (cpp && debug)
 #if HXCPP_DEBUGGER
-		new debugger.Local(true);
+        new debugger.Local(true);
 #end
 #end
         Lib.current.addChild(new Main());
         
-	}
+    }
 }

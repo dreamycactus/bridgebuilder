@@ -16,12 +16,14 @@ class WSideBar extends ViewStack
     var menu : VBox;
     var control : VBox;
     var tmpChildren : Array<DisplayObject> = new Array();
+    var vvisible : Bool = true;
+    
     public function new() 
     {
         super();
     }
     
-     public function hidee()
+    public function hidee()
     {
         Actuate.tween(control, 0.3, { alpha : 1 } );
         Actuate.tween(menu, 0.3, { x : 100 } );
@@ -31,6 +33,18 @@ class WSideBar extends ViewStack
     {        
         Actuate.tween(control, 0.3, { alpha : 0 } );
         Actuate.tween(menu, 0.3, { x : 0 } );
+    }
+    
+    public function toggleVisible() : Void
+    {
+        vvisible = !vvisible;
+        if (vvisible) {
+            Actuate.tween(control, 0.3, { alpha : 1 } );
+            Actuate.tween(menu, 0.3, { x : 100 } );
+        } else {
+            Actuate.tween(control, 0.3, { alpha : 0 } );
+            Actuate.tween(menu, 0.3, { x : 100 } );
+        }
     }
     
     override public function addChild(child : DisplayObject) : DisplayObject

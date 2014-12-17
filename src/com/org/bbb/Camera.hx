@@ -34,7 +34,7 @@ class Camera
     {
         //pos.x = sprite.transform.matrix.tx;
         //pos.y = sprite.transform.matrix.ty;
-		sprite.sortZ();
+        sprite.sortZ();
         sprite.x = pos.x;
         sprite.y = pos.y;
         clampPos();
@@ -53,7 +53,7 @@ class Camera
         var oldPos = pos.copy();
         pos.addeq(delta);
         clampPos();
-        sysRender.sendMsg(Msgs.CAMERAMOVE, null, { camPos:pos } );
+        sysRender.sendMsg(Msgs.CAMERAMOVE, null, { camPos:pos.mul(1/zoom) } );
     }
     
     public function screenToWorld(v : Vec2) : Vec2

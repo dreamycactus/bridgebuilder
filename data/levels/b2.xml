@@ -2,9 +2,11 @@
     <material name="Wood"/>
     <budget maxBudget="180" expectedBudget="180" minimum="54" />
     
-	<anchor x="15" y="4.13" w="1" h="6"/>
-	<anchor x="24" y="5.81" w="6" h="6" type="end"/>
-	<anchor x="-2.6" y="5.81" w="9" h="6" type="start" />
-	<spawn x="2.35" y="4.77" dir="1" period="2000" count="30" type="Car"/>
-	<end x="24.96" y="8" w="5" h="2.5" />
+    <anchor x="15" y="4.13" w="1" h="6"/>
+    <anchor x="23" y="5.81" w="6" h="6" type="end"/>
+    <anchor x="-2.6" y="5.81" w="9" h="6" type="start" />
+    <spawn x="2.35" y="4.77" dir="1" period="2000" count="10" type="Car"/>
+    <end x="24.96" y="8" w="5" h="2.5" />
+    <city x="-1" y="6" w="6" h="5" buildingW="0.9" layers="2" parallaxK="1.3" />
+    <city x="23" y="6" w="5" h="5" buildingW="0.9" layers="2" parallaxK="1.3" />
 </root>

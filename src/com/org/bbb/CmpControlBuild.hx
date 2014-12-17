@@ -274,7 +274,12 @@ class CmpControlBuild extends CmpControl
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
         
         if (mousePos.y > 100 && mousePos.x < GameConfig.stageWidth - 100) {
-            wcb.hide();
+            //TODO MOVE THIS
+            if (state.getSystem(SysPhysics).paused) {
+                wcb.hide();
+            } else {
+                togglePause();
+            }
         }
         if (beamDeleteMode || deckSelectMode) {
             spawn1 = mp;
@@ -413,8 +418,8 @@ class CmpControlBuild extends CmpControl
             beamStartBody = lastBody;
             beamEnt = genBody.ent;
         case MatType.CABLE:
-			var cab = EntFactory.inst.createCable(spawn1, spawn2, material);
-			var cmp = cab.getCmp(CmpCable);
+            var cab = EntFactory.inst.createCable(spawn1, spawn2, material);
+            var cmp = cab.getCmp(CmpCable);
             cab.attachCmp(cmp);
             state.insertEnt(cab);
             beamEnt = cab;
@@ -718,16 +723,18 @@ class CmpControlBuild extends CmpControl
     public function togglePause()
     {
         var sys = state.getSystem(SysPhysics);
+        var cb = cast(UIBuilder.get('controlbar'), WControlBar);
+        cb.toggleVisible();
         if (sys.paused) {
             buildHistory.snapAndPush(builtBeams, lineChecker.copy());
             var frb = findRoadBeams();
             for (e in frb) {
                 toggleBeamRoad(e);
             }
-			cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
+            cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
         } else {
             restore();
-			cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;
+            cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;
         }
 
         state.getSystem(SysLevelDirector).runExecution(sys.paused);
@@ -739,7 +746,7 @@ class CmpControlBuild extends CmpControl
     
     function toggleBeamRoad(e : Entity) : Entity
     {
-		if (e == null) { return e; }
+        if (e == null) { return e; }
         var rends = e.getCmpsHavingAncestor(CmpRender);
         var beamz = e.getCmpsHavingAncestor(CmpBeamBase);
         var beam = beamz[0];
@@ -800,10 +807,10 @@ class CmpControlBuild extends CmpControl
         var funccy = function(b:Body) {
             var e : Entity = b.userData.entity;
             if (e != null) {
-				var cmpa = e.getCmp(CmpAnchor);
-				if (cmpa == null) {
-					return false;
-				}
+                var cmpa = e.getCmp(CmpAnchor);
+                if (cmpa == null) {
+                    return false;
+                }
                 if (cmpa.startEnd == AnchorStartEnd.START) {
                     startAnchor = b;
                 } else if (cmpa.startEnd == AnchorStartEnd.END) {

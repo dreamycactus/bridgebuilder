@@ -88,10 +88,6 @@ class StateBridgeLevel extends BBBState
         s1.getSystem(SysLevelDirector).level = cl;
         s1.getSystem(SysRuntimeOverlord).level = cl;
         
-        for (e in cl.ents) {
-            s1.insertEnt(e);
-        }
-        
         var controllerEnt = s1.createEnt();
         var cmpControl = new CmpControlBuild(Lib.current.stage, cmpGrid, cl);
         s1.cmpControl = cmpControl;
@@ -101,24 +97,30 @@ class StateBridgeLevel extends BBBState
         s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
         
-        var cob = s1.createEnt();
-        var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
-        cob.attachCmp(cmpCob);
-        s1.insertEnt(cob);
+        for (e in cl.ents) {
+            s1.insertEnt(e);
+        }
+        
+
+        
+        //var cob = s1.createEnt();
+        //var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
+        //cob.attachCmp(cmpCob);
+        //s1.insertEnt(cob);
         
         var eobj = s1.createEnt();
         eobj.attachCmp(new CmpObjectiveAllPass(cl));
         s1.insertEnt(eobj);
         
         var starbg = s1.createEnt();
-        starbg.attachCmp(new CmpRenderBgStarfield(100, cl.width, cl.height/2));
+        starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
         s1.insertEnt(starbg);
         
         //var citybg1 = s1.createEnt();
         //citybg1.attachCmp(new CmpRenderBgCityfield(Vec2.get(0, 300), 200, 100, 10, 2, 0.3));
         //s1.insertEnt(citybg1);
-		//
-		//var citybg2 = s1.createEnt();
+        //
+        //var citybg2 = s1.createEnt();
         //citybg2.attachCmp(new CmpRenderBgCityfield(Vec2.get(500, 300), 200, 100, 10, 2, 0.3));
         //s1.insertEnt(citybg2);
         

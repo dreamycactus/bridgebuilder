@@ -55,6 +55,7 @@ class CmpSpawn extends CmpPhys
             switch(spawnType) {
             case Car:
                 entity.state.insertEnt(EntFactory.inst.createCar(pos, dir));
+                curCount++;
             case Train:
                 var arr = EntFactory.inst.createTrain(pos, dir, totalCount);
                 for (e in arr) {
@@ -65,6 +66,11 @@ class CmpSpawn extends CmpPhys
             spawnCD = period;
 
         }
+    }
+    
+    public function reset() : Void
+    {
+        curCount = 0;
     }
     
     override function set_space(space : Space) : Space

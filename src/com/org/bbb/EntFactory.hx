@@ -16,6 +16,8 @@ import nape.phys.BodyType;
 import nape.phys.Compound;
 import nape.phys.Material;
 import nape.shape.Polygon;
+import openfl.Assets;
+import openfl.display.Bitmap;
 import openfl.Lib;
 import com.org.bbb.CmpMoverTrainEngine;
 
@@ -92,7 +94,8 @@ class EntFactory
     {
         var cab = state.createEnt("cc");
         var cmp = new CmpCable(p1, p2, material);
-        var rcmp = new CmpRenderCable(cmp);
+        var bitmap = new Bitmap(Assets.getBitmapData('img/cable.png'));
+        var rcmp = new CmpRenderCable(cmp, bitmap);
         cab.attachCmp(cmp);
         cab.attachCmp(rcmp);
         return cab;
@@ -264,10 +267,10 @@ class EntFactory
         var ent = state.createEnt();
         var cmpanc = new CmpAnchor(anc, ase);
         var cmprender = new CmpRenderAnchor(cmpanc);
-		
+        
         ent.attachCmp(cmpanc);
         ent.attachCmp(cmprender);
-		
+        
         anc.userData.entity = ent;
         return ent;
     }

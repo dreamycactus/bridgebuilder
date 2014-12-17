@@ -127,13 +127,13 @@ class GameConfig
     public static var tconcrete = "Concrete";
     public static var tsteel= "Steel";
     public static var tdelete = "Delete";
-	
-	public static var zStars : Float = 20.0;
-	public static var zCity : Float = 4.0;
-	public static var zAnchor : Float = 5.0;
-	public static var zGrid : Float = 1.0;
-	public static var zCar : Float = 3.0;
-	
+    
+    public static var zStars : Float = 20.0;
+    public static var zCity : Float = 4.0;
+    public static var zAnchor : Float = 5.0;
+    public static var zGrid : Float = 1.0;
+    public static var zCar : Float = 3.0;
+    
     
     public static var stageWidth;
     public static var stageHeight;
@@ -143,12 +143,12 @@ class GameConfig
         Cmp.cmpManager = new CmpManager();
         Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
                                        , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
-									   , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar]);
+                                       , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
         Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
-        Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp]);
+        Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp, CmpObjectiveBudget]);
         Cmp.cmpManager.adopt(CmpSpawn, []);
         
         resize(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);

@@ -11,5 +11,8 @@ class Msgs
     public static var BEAMRECALC = "beamrecalc";
     public static var BEAMBREAK = "beambreak";
     public static var CAMERAMOVE = "cameramove";
+    
     public static var CABLEUPDATE = "cableupdate";
+    public static var CABLECREATE = "cablecreate";
+    
 }

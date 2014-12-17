@@ -9,7 +9,7 @@ import ru.stablex.ui.UIBuilder;
  */
 class CmpObjectiveBudget extends CmpObjective
 {
-    public var maxBudget : Int = 1000;
+    public var maxBudget : Int = 0;
     public var currentBudget : Int = 0;
     public var expectedBudget : Int; // Average spending to beat level
     public var minimumBudget : Int;  // Lowest possible spending to beat level
@@ -22,6 +22,10 @@ class CmpObjectiveBudget extends CmpObjective
         this.expectedBudget = expected;
         this.minimumBudget = minimum;
         this.subscriptions = [Msgs.BEAMRECALC, Msgs.BEAMDELETE, Msgs.BEAMDOWN];
+    }
+    
+    override public function onActivate() : Void 
+    { 
         updateUI();
     }
     
@@ -35,7 +39,9 @@ class CmpObjectiveBudget extends CmpObjective
         if (bottombar == null) {
             bottombar = cast(UIBuilder.get('bottombar'));
         }
-        bottombar.setBudgetText('Budget: $currentBudget / $maxBudget');
+        if (bottombar != null) {
+            bottombar.setBudgetText('Budget: $currentBudget / $maxBudget');
+        }
     }
     
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
