@@ -20,6 +20,8 @@ using Lambda;
  * ...
  * @author 
  */
+using com.org.bbb.Util;
+ 
 class SysRender extends System
 {
     public var level : CmpLevel;
@@ -27,6 +29,8 @@ class SysRender extends System
     public var camera : Camera;
     public var mainSprite : Sprite;
     public var someStats : TextField;
+    var debug:Debug;
+    var cmpsToRender : Array<CmpRender>;
     
     public function new(state : MESState, level : CmpLevel, stage : Stage)
     {
@@ -93,13 +97,18 @@ class SysRender extends System
     {
         var res = e.getCmpsHavingAncestor(CmpRender);
         for (c in res) {
-            cmpsToRender.push(c);
+            var index = cmpsToRender.insertInPlace(c, higherDisplayLayer);
             if (c.inCamera) {
-                c.addToScene(camera.sprite);
+                c.addToScene(camera.sprite, index);
             } else {
-                c.addToScene(mainSprite);
+                c.addToScene(mainSprite, index);
             }
         }
+    }
+    
+    function higherDisplayLayer(a : CmpRender, b : CmpRender)
+    {
+        return a.displayLayer > b.displayLayer;
     }
     
     override public function removed(e : Entity)
@@ -124,6 +133,5 @@ class SysRender extends System
         //this.camera.sprite.height = h;
     }
     
-    var debug:Debug;
-    var cmpsToRender : Array<CmpRender>;
+
 }

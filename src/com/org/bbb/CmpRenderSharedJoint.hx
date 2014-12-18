@@ -11,6 +11,7 @@ class CmpRenderSharedJoint extends CmpRender
     {
         super(true);
         this.cmpSharedJoint = cmpSharedJoint;
+        displayLayer = GameConfig.zSharedJoint;
         var g = sprite.graphics;
         g.beginFill(0xFFFFFF);
         var pos = cmpSharedJoint.body.position;

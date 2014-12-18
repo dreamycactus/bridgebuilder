@@ -317,4 +317,16 @@ class Util
             f(item);
         }
     }
+    
+    public static function insertInPlace<A>(a:Array<A>, item : A, f:A -> A -> Bool) : Int 
+    {
+        for (i in 0...a.length) {
+            if (f(item, a[i])) {
+                a.insert(i, item);
+                return i;
+            }
+        }
+        a.push(item);
+        return a.length - 1;
+    }
 }

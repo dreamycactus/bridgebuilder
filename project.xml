@@ -12,6 +12,8 @@
 	<window background="#073642" fps="60" hardware="true" vsync="false" />
     <window width="0" height="0" orientation="landscape" unless="flash" />
     <window width="1024" height="576" />
+    <window hardware="true" allow-shaders="true" require-shaders="true" if="cpp"/>
+    <window vsync="true" antialiasing="4" if="cpp" />
 	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->
 	<source path="src" />

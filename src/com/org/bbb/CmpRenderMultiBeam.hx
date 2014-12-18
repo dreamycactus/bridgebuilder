@@ -25,6 +25,7 @@ class CmpRenderMultiBeam extends CmpRender
     public function new(pairs : Array<BodyBitmap>, offset : Vec2=null) 
     {
         super();
+        displayLayer = GameConfig.zBeam;
         this.pairs = pairs;
         if (offset == null) {
             offset = Vec2.get();

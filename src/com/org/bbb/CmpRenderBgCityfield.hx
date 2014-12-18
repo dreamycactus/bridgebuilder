@@ -45,7 +45,7 @@ class CmpRenderBgCityfield extends CmpRender
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
-        this.z = GameConfig.zCity;
+        displayLayer = GameConfig.zCity;
         
         for (t in 0...numLayers) {
             var i = numLayers - t;

@@ -19,7 +19,7 @@ class CmpRenderCar extends CmpRender
     {
         super(true);
         this.cmpcar = cmpcar;
-        sprite.z = GameConfig.zCar;
+        displayLayer = GameConfig.zCar;
         
         chassis = new Sprite();
         chassis.graphics.beginFill(0x999999);

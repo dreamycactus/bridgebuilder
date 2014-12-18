@@ -112,9 +112,9 @@ class StateBridgeLevel extends BBBState
         eobj.attachCmp(new CmpObjectiveAllPass(cl));
         s1.insertEnt(eobj);
         
-        var starbg = s1.createEnt();
-        starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
-        s1.insertEnt(starbg);
+        //var starbg = s1.createEnt();
+        //starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
+        //s1.insertEnt(starbg);
         
         //var citybg1 = s1.createEnt();
         //citybg1.attachCmp(new CmpRenderBgCityfield(Vec2.get(0, 300), 200, 100, 10, 2, 0.3));

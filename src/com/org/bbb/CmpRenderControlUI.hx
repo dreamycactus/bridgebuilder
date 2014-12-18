@@ -26,9 +26,9 @@ class CmpRenderControlUI extends CmpRender
         this.height = height;
     }
     
-    override public function addToScene(scene : DisplayObjectContainer) : Void 
+    override public function addToScene(scene : DisplayObjectContainer, index : Int) : Void 
     {
-        super.addToScene(scene);
+        super.addToScene(scene, index);
         var rw = UIBuilder.get('rootWidget');
         
         if (rw != null) {
@@ -49,7 +49,7 @@ class CmpRenderControlUI extends CmpRender
     
     override public function removeFromScene(scene : DisplayObjectContainer) : Void 
     {
-        super.addToScene(scene);
+        super.removeFromScene(scene);
         if (uiInstance.parent == sprite) {
             sprite.removeChild(uiInstance);
             var rw = UIBuilder.get('rootWidget');

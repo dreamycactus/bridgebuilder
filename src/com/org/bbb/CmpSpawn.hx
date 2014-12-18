@@ -24,7 +24,7 @@ class CmpSpawn extends CmpPhys
     public var curCount : Int = 0;
     public var period : Float;
     public var spawnCD : Float;
-    public var active : Bool = false;
+    public var active(default, set_active) : Bool = false;
     
     public function new(spawnType : SpawnType, pos : Vec2, dir : Int, body : Body, totalCount : Int, period : Float)
     {
@@ -82,6 +82,14 @@ class CmpSpawn extends CmpPhys
     override function get_space() : Space
     {
         return body.space;
+    }
+    function set_active(a : Bool) : Bool
+    {
+        active = a;
+        if (a) {
+            reset();
+        }
+        return a;
     }
     
     

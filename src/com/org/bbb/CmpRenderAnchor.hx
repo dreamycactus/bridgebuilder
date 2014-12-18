@@ -1,4 +1,6 @@
 package com.org.bbb;
+import openfl.filters.BitmapFilter;
+import openfl.filters.GlowFilter;
 
 /**
  * ...
@@ -11,9 +13,12 @@ class CmpRenderAnchor extends CmpRender
     {
         super(true);
         this.cmpAnchor = cmpAnchor;
-        sprite.z = GameConfig.zAnchor;
+        this.displayLayer = GameConfig.zAnchor;
         var g = sprite.graphics;
-        g.beginFill(0x333333, 1.0);
+        //sprite.filters = [];
+        //sprite.cacheAsBitmap = false;
+        g.clear();
+        g.beginFill(0xFFFFFF);
         g.drawRect(cmpAnchor.pos.x, cmpAnchor.pos.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
         

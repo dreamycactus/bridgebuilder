@@ -128,11 +128,13 @@ class GameConfig
     public static var tsteel= "Steel";
     public static var tdelete = "Delete";
     
-    public static var zStars : Float = 20.0;
-    public static var zCity : Float = 4.0;
-    public static var zAnchor : Float = 5.0;
-    public static var zGrid : Float = 1.0;
-    public static var zCar : Float = 3.0;
+    public static var zStars : Int = 20;
+    public static var zCity : Int = 5;
+    public static var zAnchor : Int = 7;
+    public static var zBeam : Int = 3;
+    public static var zSharedJoint : Int = 2;
+    public static var zGrid : Int = 1;
+    public static var zCar : Int = 4;
     
     
     public static var stageWidth;
