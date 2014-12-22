@@ -3,6 +3,7 @@ import haxe.ds.StringMap;
 
 class MESState
 {
+    public var entityTypeManager : EntityTypeManager = new EntityTypeManager();
     public var renderSys : System;
     public var sys : Array<System>;
     public var ents : List<Entity>;
@@ -66,10 +67,15 @@ class MESState
             trace('overwriting entity ${e.id} state ${e.state} with ${this}');
         }
         e.state = this;
-        
+        entityTypeManager.onInserted(e);
         for (s in sys) {
             s.onInserted(e);
         }
+    }
+    
+    public function getEntitiesOfType(name : String) : Array <Entity>
+    {
+        return entityTypeManager.getEntitiesOfType(name);
     }
     
     public function deleteEnt(e : Entity)
@@ -77,6 +83,7 @@ class MESState
         if (e.state == null) { return; }
         ents.remove(e);
         e.state = null;
+        entityTypeManager.onRemoved(e);
         
         for (s in sys) {
             s.onRemoved(e);

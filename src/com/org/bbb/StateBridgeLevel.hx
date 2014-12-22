@@ -5,6 +5,7 @@ import com.org.bbb.GameConfig.JointType;
 import com.org.bbb.Template.TemplateParams;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import com.org.mes.EntityType;
 import com.org.mes.MESState;
 import com.org.mes.Top;
 import flash.display.Stage;
@@ -139,6 +140,8 @@ class StateBridgeLevel extends BBBState
         textField.mouseEnabled = false;
         
         this.stage = Lib.current.stage;
+        var etCar = new EntityType(GameConfig.tCar, [CmpMoverCar], [], []);
+        entityTypeManager.registerType(etCar);
         //this.stage.addChild(textField);
         
     }

@@ -1,5 +1,7 @@
 package com.org.bbb;
 
+import com.org.mes.Entity;
+import com.org.mes.EntityType;
 import com.org.mes.Top;
 import openfl.display.Sprite;
 import openfl.display.StageDisplayState;

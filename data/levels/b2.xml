@@ -2,7 +2,7 @@
     <material name="Wood"/>
     <budget maxBudget="180" expectedBudget="180" minimum="54" />
     
-    <anchor x="15" y="4.13" w="1" h="6"/>
+    <anchor x="14" y="4.13" w="1" h="6"/>
     <anchor x="23" y="5.81" w="6" h="6" type="end"/>
     <anchor x="-2.6" y="5.81" w="9" h="6" type="start" />
     <spawn x="2.35" y="4.77" dir="1" period="2000" count="10" type="Car"/>

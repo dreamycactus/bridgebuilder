@@ -120,6 +120,8 @@ class GameConfig
                                                  , false );
 
     
+    public static var tCar = "car";
+    public static var tBeam = "beam";
     
     public static var tcable = "Cable";
     public static var tsupercable = "Supercable";

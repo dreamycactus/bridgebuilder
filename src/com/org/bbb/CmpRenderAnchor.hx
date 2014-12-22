@@ -18,7 +18,7 @@ class CmpRenderAnchor extends CmpRender
         //sprite.filters = [];
         //sprite.cacheAsBitmap = false;
         g.clear();
-        g.beginFill(0xFFFFFF);
+        g.beginFill(0x404040);
         g.drawRect(cmpAnchor.pos.x, cmpAnchor.pos.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
         

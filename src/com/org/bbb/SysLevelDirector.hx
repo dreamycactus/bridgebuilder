@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.System;
+import nape.dynamics.InteractionFilter;
 
 /**
  * ...
@@ -35,6 +36,14 @@ class SysLevelDirector extends System
     
     public function runExecution(b : Bool) : Void
     {
+        var cars : Array<Entity> = state.getEntitiesOfType(GameConfig.tCar);
+        for (c in cars) {
+            var mover = c.getCmp(CmpMoverCar);
+            mover.compound.visitBodies(function(b) {
+                b.setShapeFilters(new InteractionFilter(GameConfig.cgLoad, 0));
+            });
+            
+        }
         for (e in level.ents) {
             
         }

@@ -272,12 +272,13 @@ class CmpControlBuild extends CmpControl
         var mp = camera.screenToWorld(mousePos);
         var cp = cmpGrid.getClosestCell(mp);
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
-        
+        var bb : BodyList = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck) ) ;
+
         if (mousePos.y > 100 && mousePos.x < GameConfig.stageWidth - 100) {
             //TODO MOVE THIS
             if (state.getSystem(SysPhysics).paused) {
                 wcb.hide();
-            } else {
+            } else if (bb.length == 0) {
                 togglePause();
             }
         }
@@ -287,7 +288,7 @@ class CmpControlBuild extends CmpControl
         } else {
             spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
         }
-        var bb : BodyList = level.space.bodiesUnderPoint(spawn1, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
+        bb  = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
         var otherBody : Body = null;
         startBody = null;
         isDrawing = true;
@@ -304,6 +305,7 @@ class CmpControlBuild extends CmpControl
                 otherBody = b;
             }
         }
+        
         if (startBody == null && otherBody != null) {
             startBody = otherBody;
         }
