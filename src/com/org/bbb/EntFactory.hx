@@ -68,7 +68,8 @@ class EntFactory
             default:
                 assetPath = "img/beam.png";
         }
-        var cmprend = new CmpRenderMultiBeam([{bitmap : GfxFactory.inst.createBeamBitmap(assetPath, width), body : body} ], offset);
+        var bbit = GfxFactory.inst.createBeamBitmap(assetPath, width);
+        var cmprend = new CmpRenderMultiBeam([{bitmap : bbit, body : body} ], offset);
         if (pos != null) {
             body.position = pos;
         }

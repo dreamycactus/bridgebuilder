@@ -75,7 +75,6 @@ class CmpRenderBgCityfield extends CmpRender
                 //g.moveTo(building.pos.x-camDelta.x, building.pos.y-camDelta.y);
                 g.drawRect(building.pos.x-camPos.x*layer.parallaxK, building.pos.y-camPos.y*layer.parallaxK, building.w, building.h);
                 g.endFill();
-                trace(building.pos);
             }
             sprite.addChild(sp);
         }

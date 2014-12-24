@@ -9,7 +9,7 @@ class Cmp implements Subscriber
     public static var cmpManager : CmpManager;
     public var entity(default, set_entity) : Entity;
     public var type : CmpType;
-    public var subscriptions : Array<String>;
+    public var subscriptions : Array<String> = new Array();
     
     public function new(subscriptions : Array<String>=null)
     {

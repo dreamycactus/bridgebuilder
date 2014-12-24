@@ -24,7 +24,7 @@ class CmpRenderBgStarfield extends CmpRender
         width = w;
         height = h;
         subscriptions = [Msgs.CAMERAMOVE];
-        sprite.z = GameConfig.zStars;
+        displayLayer = GameConfig.zStars;
         for (i in 0...count) {
             stars.add( { pos : Vec2.get(Util.randomf(0, w), Util.randomf(0, h)), size : Util.randomf(0.1, 2) } );
         }
@@ -46,7 +46,7 @@ class CmpRenderBgStarfield extends CmpRender
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         var camPos : Vec2 = options.camPos;
-        sprite.x = (0.1 - 1) * camPos.x;
-        sprite.y = (0.1 - 1) * camPos.y;
+        sprite.x = (1 - 1) * camPos.x;
+        sprite.y = (1 - 1) * camPos.y;
     }
 }

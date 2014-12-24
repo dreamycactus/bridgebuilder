@@ -8,8 +8,6 @@ import openfl.display.PixelSnapping;
 import openfl.display.Sprite;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import spritesheet.data.BehaviorData;
-import spritesheet.importers.BitmapImporter;
 
 /**
  * ...

@@ -139,6 +139,9 @@ class MESState
     public function unregisterSubscriber(msgType : String, subscriber : Subscriber) : Bool
     {
         var subscribers = msgSubscribers.get(msgType);
+        for (s in msgSubscribers) {
+            trace(s);
+        }
         if (subscribers == null || subscribers.length == 0) {
             trace('No msg subscribers exist of type $msgType');
             return false;

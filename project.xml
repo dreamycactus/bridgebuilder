@@ -9,10 +9,10 @@
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
     <app swf-version="11.8" /> 
 	
-	<window background="#073642" fps="60" hardware="true" vsync="false" />
+	<window background="#073642" fps="60" vsync="false" />
     <window width="0" height="0" orientation="landscape" unless="flash" />
     <window width="1024" height="576" />
-    <window hardware="true" allow-shaders="true" require-shaders="true" if="cpp"/>
+    <window hardware="true" allow-shaders="true" if="cpp"/>
     <window vsync="true" antialiasing="4" if="cpp" />
 	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->
@@ -21,8 +21,8 @@
 	<haxelib name="stablexui" />
 	<haxelib name="actuate" />
 	<haxelib name="nape" />
+	<haxelib name="openfl-simple-particles" />
 	<haxelib name="spritesheet" />
-    <haxedef name="HXCPP_DEBUGGER" />
     <haxelib name="hxcpp-debugger" />
 	
 	<!-- assets -->
@@ -36,6 +36,9 @@
     <haxeflag name="-dce std" />
     <haxeflag name="--no-opt " if="flash" />
     <haxeflag name="--no-traces " unless="debug" />
+    
+    <haxedef name="HXCPP_DEBUGGER" />
+    <haxedef name="HXCPP_STACK_TRACE" />
 
     <!--<haxedef name="NAPE_RELEASE_BUILD" if="debug" />-->
     <haxedef name="NAPE_NO_INLINE" if="neko" />
