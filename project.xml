@@ -21,7 +21,6 @@
 	<haxelib name="stablexui" />
 	<haxelib name="actuate" />
 	<haxelib name="nape" />
-	<haxelib name="openfl-simple-particles" />
 	<haxelib name="spritesheet" />
     <haxelib name="hxcpp-debugger" />
 	

@@ -6,8 +6,6 @@ import openfl.display.Tilesheet;
 import openfl.filters.ColorMatrixFilter;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import particles.Particles.Color;
-import particles.Particles.ParticleSystem;
 
 enum ColorMethod
 {
