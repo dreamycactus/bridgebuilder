@@ -97,10 +97,15 @@ class GameConfig
     
     public static var materialCar = Material.steel();
     public static var materialTrain = new Material(0.4, 0.2, 0.3, 10);
+    public static var materialTruck = new Material(0.4, 0.2, 0.3, 10); // TODO fixme
     
     public static var trainEngineDim = { w : 100, h : 40 };
     public static var trainCarDim = { w : 130, h : 50 };
     public static var trainMargin = 15;
+
+    public static var truckTractorDim = { w : 100, h : 40 }; // TODO fixme
+    public static var truckSemiTrailerDim = { w : 100, h : 40 }; // TODO fixme
+    public static var truckRigidCargoDim = { w : 100, h : 40 }; // TODO fixme
     
     // Moment Tension Compression Shear
     public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood

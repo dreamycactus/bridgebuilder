@@ -17,7 +17,7 @@ import nape.space.Space;
  * ...
  * @author 
  */
-class CmpMoverTrainCar extends CmpMover
+class CmpMoverTruckTrailer extends CmpMover
 {
     public var motorFront : MotorJoint;
     public var motorBack : MotorJoint;
@@ -34,12 +34,12 @@ class CmpMoverTrainCar extends CmpMover
         this.compound = new Compound();
         
         body = new Body(); // Chassis
-        var w = GameConfig.trainCarDim.w;
-        var h = GameConfig.trainCarDim.h;
+        var w = GameConfig.truckSemiTrailerDim.w;
+        var h = GameConfig.truckSemiTrailerDim.h;
         
         var p = Polygon.box(w, h);
         
-        body.shapes.add(new Polygon(p, GameConfig.materialTrain, new InteractionFilter(GameConfig.cgLoad)));
+        body.shapes.add(new Polygon(p, GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad)));
         body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
         body.position = pos;
@@ -94,12 +94,5 @@ class CmpMoverTrainCar extends CmpMover
     override function get_space() : Space
     {
         return compound.space;
-    }
-    
-    public function addCar(car : CmpMoverTrainCar) : Void
-    {
-        var lj = new LineJoint(body, car.body, Vec2.weak(-GameConfig.trainCarDim.w*0.5-GameConfig.trainMargin, 0), Vec2.weak(GameConfig.trainCarDim.w*0.5+GameConfig.trainMargin, 0), Vec2.weak(1, 0), 0, 20);
-        lj.ignore = true;
-        lj.compound = compound;
     }
 }

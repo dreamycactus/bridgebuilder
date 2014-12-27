@@ -25,6 +25,13 @@ import com.org.bbb.CmpMoverTrainEngine;
  * ...
  * @author 
  */
+
+enum TruckType {
+    TRACTOR_ONLY;
+    RIGID;
+    HEAVY_COMBINATION; // tractor unit folllowed by a semi-trailer (3+ axles)
+}
+
 class EntFactory
 {
     public static var inst(get_inst, null) : EntFactory; // Forgive me..
@@ -191,6 +198,14 @@ class EntFactory
         e.attachCmp(cr);
         
         return e;
+    }
+
+    public function createTruck(pos : Vec2, dir : Int, type : TruckType ) : Array<Entity>
+    {
+        // ignore truck type for now
+        // create tractor
+        // create semi trailer
+        return [];
     }
     
     public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>

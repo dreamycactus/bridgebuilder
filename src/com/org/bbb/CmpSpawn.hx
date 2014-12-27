@@ -9,6 +9,7 @@ enum SpawnType
 {
     Car;
     Train;
+    Truck;
 }
 /**
  * ...
@@ -62,6 +63,12 @@ class CmpSpawn extends CmpPhys
                     entity.state.insertEnt(e);
                 }
                 curCount = totalCount;
+            case Truck:
+                var arr = EntFactory.inst.createTruck(pos, dir, HEAVY_COMBINATION);
+                for (e in arr) {
+                    entity.state.insertEnt(e);
+                }
+                curCount++;
             }
             spawnCD = period;
 
