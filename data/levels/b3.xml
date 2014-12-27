@@ -6,7 +6,7 @@
     <budget maxBudget="180" expectedBudget="136" minimum="54" />
 	<anchor x="17.01" y="8.71" w="10" h="7" type="end" />
 	<anchor x="-8.6" y="4.75" w="15" h="7" type="start" />
-	<spawn x="1.01" y="5.23" dir="1" period="2000" count="30" type="Car"/>
+	<spawn x="1.01" y="5.23" dir="1" period="2000" count="15" type="Car"/>
 	<end x="23.5" y="4" />
 
 </root>

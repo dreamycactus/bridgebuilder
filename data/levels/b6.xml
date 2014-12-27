@@ -9,6 +9,6 @@
     <anchor x="-2.6" y="14.74" w="9.32" h="9.02" type="start" />
     <anchor x="6.92" y="12" w="23.05" h="12" fluid="true"/>
     <anchor x="6.92" y="2.77" w="23.05" h="3.05" />
-    <spawn x="2.01" y="15.36" dir="1" period="2000" count="30" type="Car"/>
+    <spawn x="2.01" y="15.36" dir="1" period="2000" count="15" type="Car"/>
     <end x="31.95" y="16.75" />
 </root>

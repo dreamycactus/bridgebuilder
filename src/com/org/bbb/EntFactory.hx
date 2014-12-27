@@ -60,8 +60,12 @@ class EntFactory
         var assetPath : String = "";
         var offset = Vec2.get();
         switch(material.name) {
-            case "steel":
+            case "Steel":
                 assetPath = "img/beam.png";
+            case "Wood":
+                assetPath = "img/wood.png";            
+            case "Concrete":
+                assetPath = "img/concrete.png";
             case "deck":
                 assetPath = "img/deck.png";
                 offset.y = -20;
