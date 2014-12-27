@@ -102,8 +102,6 @@ class StateBridgeLevel extends BBBState
             s1.insertEnt(e);
         }
         
-
-        
         //var cob = s1.createEnt();
         //var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
         //cob.attachCmp(cmpCob);
@@ -113,17 +111,17 @@ class StateBridgeLevel extends BBBState
         eobj.attachCmp(new CmpObjectiveAllPass(cl));
         s1.insertEnt(eobj);
         
-        //var starbg = s1.createEnt();
-        //starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
-        //s1.insertEnt(starbg);
+        var starbg = s1.createEnt();
+        starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
+        s1.insertEnt(starbg);
         
-        //var citybg1 = s1.createEnt();
-        //citybg1.attachCmp(new CmpRenderBgCityfield(Vec2.get(0, 300), 200, 100, 10, 2, 0.3));
-        //s1.insertEnt(citybg1);
-        //
-        //var citybg2 = s1.createEnt();
-        //citybg2.attachCmp(new CmpRenderBgCityfield(Vec2.get(500, 300), 200, 100, 10, 2, 0.3));
-        //s1.insertEnt(citybg2);
+        var rainbg = s1.createEnt();
+        rainbg.attachCmp(new CmpRenderRain(Std.int(cl.width), Std.int(cl.height), false));
+        s1.insertEnt(rainbg);
+        
+        //var tt = s1.createEnt();
+        //tt.attachCmp(new CmpRenderPony());
+        //s1.insertEnt(tt);
         
         return s1;
     }

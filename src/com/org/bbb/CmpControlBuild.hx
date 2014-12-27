@@ -278,9 +278,10 @@ class CmpControlBuild extends CmpControl
             //TODO MOVE THIS
             if (state.getSystem(SysPhysics).paused) {
                 wcb.hide();
-            } else if (bb.length == 0) {
-                togglePause();
             }
+            //} else if (bb.length == 0) {
+                //togglePause();
+            //}
         }
         if (beamDeleteMode || deckSelectMode) {
             spawn1 = mp;
@@ -733,7 +734,7 @@ class CmpControlBuild extends CmpControl
             for (e in frb) {
                 toggleBeamRoad(e);
             }
-            cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
+            //cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
         } else {
             restore();
             cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;

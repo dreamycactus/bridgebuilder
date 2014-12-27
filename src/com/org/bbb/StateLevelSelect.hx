@@ -16,6 +16,7 @@ import ru.stablex.ui.widgets.Widget;
  * ...
  * @author 
  */
+@:access(ru.stablex.ui.widgets.Button)
 class StateLevelSelect extends BBBState
 {
     var sprite : Sprite;
@@ -51,13 +52,15 @@ class StateLevelSelect extends BBBState
                 var p = new Paint();
                 p.border = 1;
                 var b = UIBuilder.create(Button, {
+                    w : 50,
+                    h : 50,
                     text : levelIndex++,
-                    skin : p
+                    skinName : 'matBut'
                 }); 
+                b.addEventListener(MouseEvent.CLICK, loadLevel.bind(path) );
 
                 //fun = loadLevel.bind(b.text);
                 rowWidget.addChild(b);
-                b.addEventListener(MouseEvent.MOUSE_DOWN, loadLevel.bind(path));
                 hIndex++;
                 if (hIndex > 4) {
                     hIndex = 0;
@@ -68,9 +71,10 @@ class StateLevelSelect extends BBBState
         }
         inited = true;
         sprite.addChild(uiInstance);
-
-        
+                //b.addEventListener(MouseEvent.MOUSE_DOWN, loadLevel.bind(path));
+        trace(levelwidget.numChildren);
         Lib.current.stage.addChild(sprite);
+
     }
     
     override public function init()

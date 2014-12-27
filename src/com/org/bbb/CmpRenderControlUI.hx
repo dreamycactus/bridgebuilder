@@ -20,6 +20,7 @@ class CmpRenderControlUI extends CmpRender
     public function new(buildControl : CmpControlBuild, level : CmpLevel, width : Float, height : Float ) 
     {
         super(false);
+        this.displayLayer = GameConfig.zRenderControlUI;
         this.buildControl = buildControl;
         this.level = level;
         this.width = width;
@@ -44,7 +45,7 @@ class CmpRenderControlUI extends CmpRender
         
         var cb = cast(UIBuilder.get('controlbar'), WControlBar);
         cb.addMaterialButtons(level.materialsAllowed);
-
+        
     }
     
     override public function removeFromScene(scene : DisplayObjectContainer) : Void 

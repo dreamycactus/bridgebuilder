@@ -60,15 +60,20 @@ class EntFactory
         var assetPath : String = "";
         var offset = Vec2.get();
         switch(material.name) {
-            case "steel":
+            case "Steel":
                 assetPath = "img/beam.png";
+            case "Wood":
+                assetPath = "img/wood.png";            
+            case "Concrete":
+                assetPath = "img/concrete.png";
             case "deck":
                 assetPath = "img/deck.png";
                 offset.y = -20;
             default:
                 assetPath = "img/beam.png";
         }
-        var cmprend = new CmpRenderMultiBeam([{bitmap : GfxFactory.inst.createBeamBitmap(assetPath, width), body : body} ], offset);
+        var bbit = GfxFactory.inst.createBeamBitmap(assetPath, width);
+        var cmprend = new CmpRenderMultiBeam([{bitmap : bbit, body : body} ], offset);
         if (pos != null) {
             body.position = pos;
         }

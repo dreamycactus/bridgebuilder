@@ -24,6 +24,7 @@ class CmpRenderControlBuild extends CmpRender
     {
         super();
         this.buildControl = buildControl;
+        this.displayLayer = GameConfig.zControlUI;
         this.stage = stage;
     }
     

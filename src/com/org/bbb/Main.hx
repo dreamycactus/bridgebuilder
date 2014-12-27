@@ -3,15 +3,21 @@ package com.org.bbb;
 import com.org.mes.Entity;
 import com.org.mes.EntityType;
 import com.org.mes.Top;
+import openfl.display.OpenGLView;
 import openfl.display.Sprite;
 import openfl.display.StageDisplayState;
 import openfl.events.Event;
+import openfl.gl.GL;
 import openfl.Lib;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.geom.Matrix;
+import openfl.utils.Float32Array;
 import ru.stablex.ui.UIBuilder;
 
+#if cpp
+import cpp.vm.Profiler;
+#end
 
 import nape.geom.Vec2;
 
@@ -63,7 +69,7 @@ class Main extends Sprite
         GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
-        var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b1.xml"));
+        var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b7.xml"));
         //var bp = new StateMainMenu(top);
         //var bp = new StateLevelSelect(top);
     
@@ -103,12 +109,18 @@ class Main extends Sprite
         //Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
         //Lib.current.stage.scaleMode = openfl.display.StageScaleMode.EXACT_FIT;
         //Lib.current.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-#if (cpp && debug)
-#if HXCPP_DEBUGGER
+#if cpp
+
+#if (HXCPP_DEBUGGER && debug)
         new debugger.Local(true);
 #end
+#if HXCPP_STACK_TRACE
+        //cpp.vm.Profiler.start("log.txt");
 #end
-        Lib.current.addChild(new Main());
         
+#end      
+        Lib.current.addChild(new Main());
     }
+    
+    
 }

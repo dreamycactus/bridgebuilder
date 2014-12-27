@@ -97,6 +97,7 @@ class Entity
     {
         for (c in cmps.iterator()) {
             for (s in c.subscriptions) {
+                trace(s);
                 state.registerSubscriber(s, c);
             }
         }

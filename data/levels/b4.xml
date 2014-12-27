@@ -5,6 +5,6 @@
 	<anchor x="15" y="10.13" w="1" h="10" taperEnd="true" />
 	<anchor x="25" y="5.81" w="6" h="6" type="end"/>
 	<anchor x="-2.6" y="5.81" w="9" h="6" type="start" />
-	<spawn x="2.35" y="4.77" dir="1" period="2000" count="30" type="Car"/>
+	<spawn x="2.35" y="4.77" dir="1" period="2000" count="15" type="Car"/>
 	<end x="24.96" y="8" w="5" h="2.5" />
 </root>
