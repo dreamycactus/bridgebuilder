@@ -51,6 +51,27 @@ Classes
 - GameConfig-game constaints, some helper function, AND the logic which sets ancestor relationship for components
 - LineChecker-class which constrains bridge beams to non-overlapping and non-parallel beams
 
+Build
+=====
+
+Required libs: openfl, lime, stablexui, actuate, nape, spritesheet, hxcpp-debugger
+
+To get libs:
+
+    haxelib install openfl
+    haxelib run openfl setup 	# this will install lime
+    haxelib install stablexui	# this will install actuate 
+    haxelib install nape
+    haxelib install spritesheet
+    haxelib install hxcpp-debugger
+
+To build:
+
+    openfl build flash
+    openfl build cpp
+
+BridgeBuilderBob.hxml is just for compiling/typechecking. Running haxe on it will not produce any output.
+
 
 	
 
