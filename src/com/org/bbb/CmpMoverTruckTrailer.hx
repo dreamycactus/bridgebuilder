@@ -47,7 +47,7 @@ class CmpMoverTruckTrailer extends CmpMover
         body.position = pos;
 
         var bw = new Body(); // Rear wheel
-        bw.shapes.add(new Circle(15, null, new Material(0.15, 1, 2, 3, 2), new InteractionFilter(GameConfig.cgLoad)) );
+        bw.shapes.add(new Circle(12, null, new Material(0.15, 1, 2, 3, 2), new InteractionFilter(GameConfig.cgLoad)) );
         var offBw = Vec2.get( -w * 0.5 + 5, h * 0.5 - 3);
         bw.position = pos.add(offBw);
         bw.compound = compound;

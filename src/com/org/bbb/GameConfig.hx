@@ -105,12 +105,12 @@ class GameConfig
     public static var trainMargin = 15;
 
     public static var truckTractorCabDim = { w : 50, h : 40 };
-    public static var truckTractorFrameDim = { w : 100, h : 15 };
+    public static var truckTractorFrameDim = { w : 100, h : 12 };
     public static var truckTractorCabOffset = Mat23.translation( 25, -20 );
-    public static var truckSemiTrailerDim = { w : 150, h : 30 }; // TODO fixme
-    public static var truckSemiTrailerOffset = Mat23.translation(0, -35);
+    public static var truckSemiTrailerDim = { w : 150, h : 35 };
+    public static var truckSemiTrailerOffset = Mat23.translation(0, -25);
     public static var truckRigidDim = { w : 100, h : 40 };
-    public static var truckTrailerMargin = 5;
+    public static var truckTrailerMaxMargin = 30;
     
     // Moment Tension Compression Shear
     public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood

@@ -96,7 +96,7 @@ class CmpMoverTruckTractor extends CmpMover
 
     public function addTrailer(trailer : CmpMoverTruckTrailer) : Void
     {
-        var lj = new LineJoint(body, trailer.body, Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-GameConfig.truckTrailerMargin, 0), Vec2.weak(GameConfig.truckSemiTrailerDim.w*0.5+GameConfig.truckTrailerMargin, 0), Vec2.weak(1, 0), 0, 20);
+        var lj = new LineJoint(body, trailer.body, Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-5, GameConfig.truckTractorCabOffset.ty), Vec2.weak(GameConfig.truckSemiTrailerDim.w*0.5, -14), Vec2.weak(1, 0), 0, GameConfig.truckTrailerMaxMargin);
         lj.ignore = true;
         lj.compound = compound;
     }
