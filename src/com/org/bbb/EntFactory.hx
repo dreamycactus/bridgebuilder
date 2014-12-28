@@ -213,7 +213,12 @@ class EntFactory
                 var e1 = state.createEnt();
                 var tractor = new CmpMoverTruckTractor(pos);
                 e1.attachCmp(tractor);
+                var e2 = state.createEnt();
+                var trailer = new CmpMoverTruckTrailer(pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-GameConfig.truckTrailerMargin, 0 )));
+                e2.attachCmp(trailer);
+                tractor.addTrailer(trailer);
                 truck.push(e1);
+                truck.push(e2);
             case RIGID:
                 var e = state.createEnt();
                 var tractor = new CmpMoverTruckRigid(pos);

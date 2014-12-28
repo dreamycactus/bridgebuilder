@@ -49,14 +49,14 @@ class CmpMoverTruckTractor extends CmpMover
         body.position = pos;
 
         var fw = new Body(); // Front wheel
-        fw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
-        var offFw = Vec2.get(w * 0.5 - 5, h * 0.5 - 3);
+        fw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        var offFw = Vec2.get(w * 0.5 - 15, h * 0.5 + 4);
         fw.position = pos.add(offFw);
         fw.compound = compound;
 
         var bw = new Body(); // Rear wheel
-        bw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
-        var offBw = Vec2.get(-w * 0.5 + 5, h * 0.5 - 3);
+        bw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        var offBw = Vec2.get(-w * 0.5 + 5, h * 0.5 + 4);
         bw.position = pos.add(offBw);
         bw.compound = compound;
 
@@ -92,5 +92,12 @@ class CmpMoverTruckTractor extends CmpMover
     override function get_space() : Space
     {
         return compound.space;
+    }
+
+    public function addTrailer(trailer : CmpMoverTruckTrailer) : Void
+    {
+        var lj = new LineJoint(body, trailer.body, Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-GameConfig.truckTrailerMargin, 0), Vec2.weak(GameConfig.truckSemiTrailerDim.w*0.5+GameConfig.truckTrailerMargin, 0), Vec2.weak(1, 0), 0, 20);
+        lj.ignore = true;
+        lj.compound = compound;
     }
 }
