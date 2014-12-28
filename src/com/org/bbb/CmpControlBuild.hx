@@ -1027,7 +1027,7 @@ class CmpControlBuild extends CmpControl
         beamDeleteMode = false;
         material = m;
         var enumName = m.ename;
-        wcb.setMaterial(enumName);
+        if (wcb != null) wcb.setMaterial(enumName);
         return m;
     }
     
