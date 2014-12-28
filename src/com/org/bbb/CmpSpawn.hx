@@ -4,6 +4,7 @@ import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.space.Space;
 
+import com.org.bbb.EntFactory.TruckType;
 
 enum SpawnType
 {
@@ -11,6 +12,7 @@ enum SpawnType
     Train;
     Truck;
 }
+
 /**
  * ...
  * @author 
@@ -64,7 +66,9 @@ class CmpSpawn extends CmpPhys
                 }
                 curCount = totalCount;
             case Truck:
-                var arr = EntFactory.inst.createTruck(pos, dir, HEAVY_COMBINATION);
+                var i = Math.floor(Math.random() * Type.allEnums(TruckType).length);
+                var type = Type.createEnumIndex(TruckType, i);
+                var arr = EntFactory.inst.createTruck(pos, dir, type);
                 for (e in arr) {
                     entity.state.insertEnt(e);
                 }

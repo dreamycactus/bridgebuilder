@@ -15,7 +15,7 @@ import nape.shape.Circle;
 import nape.shape.Polygon;
 import nape.space.Space;
 
-class CmpMoverTruckTractor extends CmpMover
+class CmpMoverTruckRigid extends CmpMover
 {
     public var compound : Compound;
     var material : Material;
@@ -26,36 +26,31 @@ class CmpMoverTruckTractor extends CmpMover
 
     public var motorFront : MotorJoint;
     public var motorBack : MotorJoint;
-    public var trailers : Array<CmpMoverTruckTrailer> = new Array();
 
     public function new(pos : Vec2) 
     {
         super(null);
         this.compound = new Compound();
 
-        var w = GameConfig.truckTractorFrameDim.w;
-        var h = GameConfig.truckTractorFrameDim.h;
+        var w = GameConfig.truckRigidDim.w;
+        var h = GameConfig.truckRigidDim.h;
 
         body = new Body();
+        var shape = new Polygon(Polygon.box(w, h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
 
-        var cabShape = new Polygon(Polygon.box(GameConfig.truckTractorCabDim.w, GameConfig.truckTractorCabDim.h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
-        cabShape.transform(GameConfig.truckTractorCabOffset);
-        var frameShape = new Polygon(Polygon.box(w, h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
-
-        body.shapes.add(cabShape);
-        body.shapes.add(frameShape);
+        body.shapes.add(shape);
         body.cbTypes.add(GameConfig.cbTruck);
         body.compound = compound;
         body.position = pos;
 
         var fw = new Body(); // Front wheel
-        fw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        fw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
         var offFw = Vec2.get(w * 0.5 - 5, h * 0.5 - 3);
         fw.position = pos.add(offFw);
         fw.compound = compound;
 
         var bw = new Body(); // Rear wheel
-        bw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        bw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
         var offBw = Vec2.get(-w * 0.5 + 5, h * 0.5 - 3);
         bw.position = pos.add(offBw);
         bw.compound = compound;
@@ -71,11 +66,11 @@ class CmpMoverTruckTractor extends CmpMover
         offBw.dispose();
 
         motorFront = new MotorJoint(null, fw, 0);
-        motorFront.rate = 10;
+        motorFront.rate = 14;
         motorFront.compound = compound;
 
         motorBack = new MotorJoint(null, bw, 0);
-        motorBack.rate = 10;
+        motorBack.rate = 14;
         motorBack.compound = compound;
     }
 

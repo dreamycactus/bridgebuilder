@@ -98,7 +98,7 @@ class GameConfig
     
     public static var materialCar = Material.steel();
     public static var materialTrain = new Material(0.4, 0.2, 0.3, 10);
-    public static var materialTruck = new Material(0.4, 0.2, 0.3, 10); // TODO fixme
+    public static var materialTruck = new Material(0.4, 0.2, 0.3, 12);
     
     public static var trainEngineDim = { w : 100, h : 40 };
     public static var trainCarDim = { w : 130, h : 50 };
@@ -108,7 +108,7 @@ class GameConfig
     public static var truckTractorFrameDim = { w : 100, h : 10 };
     public static var truckTractorCabOffset = Mat23.translation( 25, -20 );
     public static var truckSemiTrailerDim = { w : 100, h : 40 }; // TODO fixme
-    public static var truckRigidCargoDim = { w : 100, h : 40 }; // TODO fixme
+    public static var truckRigidDim = { w : 100, h : 40 }; // TODO fixme
     
     // Moment Tension Compression Shear
     public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood
@@ -159,7 +159,7 @@ class GameConfig
                                        , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
                                        , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar, CmpRenderRain, CmpRenderPony]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
-                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpSpawn, CmpEnd]);
+                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
         Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
         Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp, CmpObjectiveBudget]);
