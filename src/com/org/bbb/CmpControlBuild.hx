@@ -82,7 +82,7 @@ class CmpControlBuild extends CmpControl
 
     public var camera : Camera;
     var camBody : Body;
-    var prevMouse : Vec2;
+    var prevMouse : Vec2 = new Vec2( 0, 0 );
     public var level : CmpLevel;
     
     public var editSpace : Space;
@@ -789,7 +789,7 @@ class CmpControlBuild extends CmpControl
     public function levelSelect()
     {
         cast(UIBuilder.get('levelEdit'), Floating).show();
-        if (!top.transitioning) {
+        if (top != null && !top.transitioning) {
             top.changeState(new StateTransPan(top, cast(top.state), new StateLevelSelect(top)), true);
         }
     }
