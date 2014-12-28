@@ -7,6 +7,7 @@ import nape.constraint.MotorJoint;
 import nape.constraint.PivotJoint;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
+import nape.geom.Mat23;
 import nape.phys.Body;
 import nape.phys.Compound;
 import nape.phys.Material;
@@ -32,12 +33,17 @@ class CmpMoverTruckTractor extends CmpMover
         super(null);
         this.compound = new Compound();
 
-        var w = GameConfig.truckTractorDim.w;
-        var h = GameConfig.truckTractorDim.h;
-        body = new Body(); // Chassis
-        var p = Polygon.box(w, h);
+        var w = GameConfig.truckTractorFrameDim.w;
+        var h = GameConfig.truckTractorFrameDim.h;
 
-        body.shapes.add(new Polygon(p, GameConfig.materialTrain, new InteractionFilter(GameConfig.cgLoad)));
+        body = new Body();
+
+        var cabShape = new Polygon(Polygon.box(GameConfig.truckTractorCabDim.w, GameConfig.truckTractorCabDim.h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
+        cabShape.transform(GameConfig.truckTractorCabOffset);
+        var frameShape = new Polygon(Polygon.box(w, h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
+
+        body.shapes.add(cabShape);
+        body.shapes.add(frameShape);
         body.cbTypes.add(GameConfig.cbTruck);
         body.compound = compound;
         body.position = pos;
@@ -67,11 +73,11 @@ class CmpMoverTruckTractor extends CmpMover
         offBw.dispose();
 
         motorFront = new MotorJoint(null, fw, 0);
-        motorFront.rate = 20;
+        motorFront.rate = 10;
         motorFront.compound = compound;
 
         motorBack = new MotorJoint(null, bw, 0);
-        motorBack.rate = 20;
+        motorBack.rate = 10;
         motorBack.compound = compound;
     }
 

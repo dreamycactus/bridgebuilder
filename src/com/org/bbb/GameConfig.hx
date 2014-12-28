@@ -9,6 +9,7 @@ import nape.callbacks.CbType;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
+import nape.geom.Mat23;
 import nape.geom.Vec2;
 import nape.phys.Material;
 import nape.shape.Circle;
@@ -103,7 +104,9 @@ class GameConfig
     public static var trainCarDim = { w : 130, h : 50 };
     public static var trainMargin = 15;
 
-    public static var truckTractorDim = { w : 100, h : 40 }; // TODO fixme
+    public static var truckTractorCabDim = { w : 50, h : 40 };
+    public static var truckTractorFrameDim = { w : 100, h : 10 };
+    public static var truckTractorCabOffset = Mat23.translation( 25, -20 );
     public static var truckSemiTrailerDim = { w : 100, h : 40 }; // TODO fixme
     public static var truckRigidCargoDim = { w : 100, h : 40 }; // TODO fixme
     
