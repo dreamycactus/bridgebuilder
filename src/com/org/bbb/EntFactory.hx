@@ -203,9 +203,14 @@ class EntFactory
     public function createTruck(pos : Vec2, dir : Int, type : TruckType ) : Array<Entity>
     {
         // ignore truck type for now
+        var ents = new Array<Entity>();
+        var e = state.createEnt();
+        var tractor = new CmpMoverTruckTractor( pos );
+        e.attachCmp( tractor );
+        ents.push( e );
         // create tractor
         // create semi trailer
-        return [];
+        return ents;
     }
     
     public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>

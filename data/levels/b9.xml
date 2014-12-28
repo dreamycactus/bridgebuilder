@@ -1,0 +1,9 @@
+<root w="30" h="15">
+    <material name="Steel"/>
+    <budget maxBudget="180" expectedBudget="180" minimum="54" />
+
+	<anchor x="23" y="8.81" w="6" h="8" type="end"/>
+	<anchor x="-22.6" y="8.81" w="29" h="8" type="start" />
+	<spawn x="2.35" y="9.77" dir="1" period="2000" count="3" type="Truck"/>
+	<end x="24.96" y="8" w="5" h="2.5" />
+</root>
