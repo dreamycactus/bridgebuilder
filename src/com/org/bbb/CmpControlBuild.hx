@@ -277,7 +277,7 @@ class CmpControlBuild extends CmpControl
         if (mousePos.y > 100 && mousePos.x < GameConfig.stageWidth - 100) {
             //TODO MOVE THIS
             if (state.getSystem(SysPhysics).paused) {
-                wcb.hide();
+                //wcb.hide();
             }
             //} else if (bb.length == 0) {
                 //togglePause();
@@ -734,7 +734,7 @@ class CmpControlBuild extends CmpControl
             for (e in frb) {
                 toggleBeamRoad(e);
             }
-            //cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
+            cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
         } else {
             restore();
             cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;

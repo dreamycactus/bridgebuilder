@@ -4,6 +4,7 @@
     <material name="Cable"/>
     <material name="Supercable"/>
     <material name="Concrete"/>
+    <budget maxBudget="180" expectedBudget="136" minimum="54" />
 
     <anchor x="29.99" y="14.74" w="10.72" h="9.02" type="end"/>
     <anchor x="-2.6" y="14.74" w="9.32" h="9.02" type="start" />
