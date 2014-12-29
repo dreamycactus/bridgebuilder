@@ -73,9 +73,9 @@ class SysRender extends System
     {
         camera.update();
 
-        debug.clear();
-        debug.draw(level.space);
-        debug.flush();
+        //debug.clear();
+        //debug.draw(level.space);
+        //debug.flush();
         
         someStats.text = 'State\nEntities Created: ${state.index}\nNum Entities: ${state.ents.length}';
         for (c in cmpsToRender) {

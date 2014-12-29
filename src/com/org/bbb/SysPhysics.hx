@@ -56,6 +56,10 @@ class SysPhysics extends System
         for (c in res) {
             c.space = level.space;
         }
+        var c = e.getCmp(CmpCable);
+        if (c != null) {
+            c.sendMsg(Msgs.CABLECREATE, c, null);
+        }
     }
     
     override public function removed(e : Entity)

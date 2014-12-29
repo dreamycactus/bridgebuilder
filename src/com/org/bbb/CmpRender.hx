@@ -41,7 +41,7 @@ class CmpRender extends Cmp
     public function tintColour(mr : Float, mg : Float, mb : Float, ma : Float) : Void
     {
         if (sprite != null) {
-            var col = new ColorTransform(mr, mg, mb, ma);
+            var col = new ColorTransform(mr/255, mg/255, mb/255, ma/255);
             sprite.transform.colorTransform = col;
         }
     }

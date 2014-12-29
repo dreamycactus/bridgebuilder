@@ -155,9 +155,9 @@ class CmpCable extends CmpBeamBase
             });
         }
         prevLen = len;
-        if (firstBuild) {
-            sendMsg(Msgs.CABLECREATE, this, null);
-        }
+        //if (firstBuild) {
+            //sendMsg(Msgs.CABLECREATE, this, null);
+        //}
         firstBuild = false;
     }
     

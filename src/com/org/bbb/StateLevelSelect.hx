@@ -20,7 +20,7 @@ import ru.stablex.ui.widgets.Widget;
 class StateLevelSelect extends BBBState
 {
     var sprite : Sprite;
-    var inited : Bool = false;
+    public var inited : Bool = false;
     var fun : MouseEvent -> Void;
     var enabled = false;
     

@@ -202,9 +202,9 @@ class CmpControlBuild extends CmpControl
 
         prevMouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
         
-        console.text = cmpGrid.getClosestCell(prevMouse) + '\n';
-        var res = level.space.bodiesUnderPoint(prevMouse);
-        res.foreach(ppp);
+        //console.text = cmpGrid.getClosestCell(prevMouse) + '\n';
+        //var res = level.space.bodiesUnderPoint(prevMouse);
+        //res.foreach(ppp);
 
     }
     function ppp(b) 
@@ -276,28 +276,29 @@ class CmpControlBuild extends CmpControl
 
         if (mousePos.y > 100 && mousePos.x < GameConfig.stageWidth - 100) {
             //TODO MOVE THIS
+            wcb.hide();
             if (state.getSystem(SysPhysics).paused) {
-                //wcb.hide();
+                
             }
             //} else if (bb.length == 0) {
                 //togglePause();
             //}
         }
+        spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
+
         if (beamDeleteMode || deckSelectMode) {
             spawn1 = mp;
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
-        } else {
-            spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
-        }
+        } 
         bb  = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
         var otherBody : Body = null;
         startBody = null;
         isDrawing = true;
         /* Prefer to join to shared joint if possible */
-        var sharedJointFilter = GameConfig.cgSharedJoint;
-        if (beamDeleteMode||deckSelectMode) {
-            sharedJointFilter = ~1;
-        }
+        //var sharedJointFilter = GameConfig.cgSharedJoint;
+        //if (beamDeleteMode||deckSelectMode) {
+            //sharedJointFilter = ~1;
+        //}
         
         for (b in bb) {
             if (b.shapes.at(0).filter.collisionGroup&cFilter != 0) {
@@ -357,12 +358,13 @@ class CmpControlBuild extends CmpControl
             spawn2 = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         }
         
-        var bb : BodyList = level.space.bodiesUnderPoint(spawn2, new InteractionFilter(GameConfig.cgSensor, cFilter) );
+        var bb : BodyList = level.space.bodiesUnderPoint(spawn2, new InteractionFilter(GameConfig.cgSensor, cFilter, 1, 0, 1, 0) );
         var endBody : Body = null;
         var otherBody : Body = null;
         
-        if (beamDeleteMode && startBody != null && !state.getSystem(SysPhysics).paused) {
+        if (beamDeleteMode && startBody != null && state.getSystem(SysPhysics).paused) {
             var ent : Entity = startBody.userData.entity;
+            var sameBody = false;
             if (ent != null && bb.has(startBody)) {
                 var cmpBeam : CmpBeamBase = ent.getCmpHavingAncestor(CmpBeamBase);
                 buildHistory.snapAndPush(builtBeams, lineChecker.copy());
@@ -424,7 +426,6 @@ class CmpControlBuild extends CmpControl
             var cab = EntFactory.inst.createCable(spawn1, spawn2, material);
             var cmp = cab.getCmp(CmpCable);
             cab.attachCmp(cmp);
-            state.insertEnt(cab);
             beamEnt = cab;
             cmp.sj1 = sharedJoint;
             cmp.sj2 = sharedJoint2;
@@ -438,6 +439,9 @@ class CmpControlBuild extends CmpControl
                 lastBody = beamStartBody;
                 beamStartBody = t;
             }
+            // Make sure to insert last because sysphysics will send msg once inserted
+            state.insertEnt(cab);
+
 
         default:
         }
@@ -727,7 +731,7 @@ class CmpControlBuild extends CmpControl
     {
         var sys = state.getSystem(SysPhysics);
         var cb = cast(UIBuilder.get('controlbar'), WControlBar);
-        cb.toggleVisible();
+        //cb.toggleVisible();
         if (sys.paused) {
             buildHistory.snapAndPush(builtBeams, lineChecker.copy());
             var frb = findRoadBeams();
@@ -755,7 +759,7 @@ class CmpControlBuild extends CmpControl
         var beam = beamz[0];
         if (beam.isRoad) {
             if (rends.length > 0) {
-                rends[0].tintColour(1.0, 1.0, 1.0, 1.0);
+                rends[0].tintColour(59, 60, 0.79, 255);
             }
             for (sj in beam.sharedJoints) {
                 if (sj.getAnchor() != null && sj.isRolling) {
@@ -765,7 +769,7 @@ class CmpControlBuild extends CmpControl
             beam.changeFilter(new InteractionFilter(GameConfig.cgBeam, GameConfig.cmBeam));
         } else {
             if (rends.length > 0) {
-                rends[0].tintColour(2.0, 2.0, 0.0, 1.0);
+                rends[0].tintColour(200, 200, 250, 255);
             }
             for (sj in beam.sharedJoints) {
                 var anc = sj.getAnchor();

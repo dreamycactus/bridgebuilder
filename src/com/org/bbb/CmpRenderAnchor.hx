@@ -9,16 +9,20 @@ import openfl.filters.GlowFilter;
 class CmpRenderAnchor extends CmpRender
 {
     var cmpAnchor : CmpAnchor;
+    var color = 0xFFFFFF;
     public function new(cmpAnchor : CmpAnchor) 
     {
         super(true);
         this.cmpAnchor = cmpAnchor;
         this.displayLayer = GameConfig.zAnchor;
+        if (cmpAnchor.fluid) {
+            color = 0x91c2c1;
+        }
         var g = sprite.graphics;
         //sprite.filters = [];
         //sprite.cacheAsBitmap = false;
         g.clear();
-        g.beginFill(0x404040);
+        g.beginFill(color);
         g.drawRect(cmpAnchor.pos.x, cmpAnchor.pos.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
         

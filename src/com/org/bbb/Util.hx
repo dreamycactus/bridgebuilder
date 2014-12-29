@@ -104,6 +104,8 @@ class Util
         }
     }
     
+    
+    public static function bodySameId(b1 : Body, b2 : Body) : Bool { return b1.id == b2.id; }
     public static function closestBodyToPoint(space : Space, point : Vec2
                                             , interactionFilter : InteractionFilter = null
                                             , fastExit : Bool = true

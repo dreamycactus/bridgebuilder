@@ -12,6 +12,7 @@ class CmpRenderCable extends CmpRender
     var sprites : Array<Sprite> = new Array();
     var cmpCable : CmpCable;
     var bitmap  :Bitmap;
+    var inited = false;
     public function new(cmpCable : CmpCable, bitmap : Bitmap)
     {
         super(true);
@@ -23,6 +24,10 @@ class CmpRenderCable extends CmpRender
     
     public function cableCreate() : Void
     {
+        if (inited) {
+            return;
+        }
+        inited = true;
         for (seg in cmpCable.compound.bodies) {
             var s = new Sprite();
             var tbit = new Bitmap(bitmap.bitmapData);
@@ -33,6 +38,7 @@ class CmpRenderCable extends CmpRender
     
     public function updateGraphics() : Void
     {
+        if (!inited) { return; }
         for (i in 0...cmpCable.compound.bodies.length) {
             var seg = cmpCable.compound.bodies.at(i);
             var s = cast(sprite.getChildAt(i), Sprite);
@@ -60,6 +66,9 @@ class CmpRenderCable extends CmpRender
     
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
+        if (sender.entity != this.entity) {
+            return;
+        }
         switch(msgType) {
         case Msgs.CABLECREATE:
             cableCreate();

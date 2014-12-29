@@ -73,7 +73,8 @@ class EntFactory
                 assetPath = "img/beam.png";
         }
         var bbit = GfxFactory.inst.createBeamBitmap(assetPath, width);
-        var cmprend = new CmpRenderMultiBeam([{bitmap : bbit, body : body} ], offset);
+        var cmprend = new CmpRenderMultiBeam([ { bitmap : bbit, body : body } ], offset);
+        cmprend.tintColour(86, 86, 115, 255);
         if (pos != null) {
             body.position = pos;
         }
@@ -118,7 +119,7 @@ class EntFactory
         var cmprender = new CmpRenderMultiBeam(
             GfxFactory.inst.breakBeamBitmap(cmpbeam.compound
                                           , oldrender.pairs[0].bitmap), oldrender.offset);
-        
+        cmprender.tintColour(86, 86, 115, 255);
         e.attachCmp(cmpbeam);
         e.attachCmp(cmprender);
         
@@ -130,6 +131,7 @@ class EntFactory
         var e = state.createEnt("sj");
         var sj = new CmpSharedJoint(pos, bodies);
         var rsj = new CmpRenderSharedJoint(sj);
+        rsj.tintColour(84, 84, 115, 255);
         
         e.attachCmp(sj);
         e.attachCmp(rsj);
@@ -271,7 +273,9 @@ class EntFactory
         anc.position = pos;
         var ent = state.createEnt();
         var cmpanc = new CmpAnchor(anc, ase);
+        cmpanc.fluid = fluid;
         var cmprender = new CmpRenderAnchor(cmpanc);
+        cmprender.tintColour(212, 23, 80, 255);
         
         ent.attachCmp(cmpanc);
         ent.attachCmp(cmprender);

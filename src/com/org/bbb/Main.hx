@@ -69,9 +69,10 @@ class Main extends Sprite
         GameConfig.init();
         top = new Top();
         EntFactory.inst.top = top;
-        var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b7.xml"));
+        //var bp = new StateTransPan(top, new BBBState(top), StateBridgeLevel.createLevelState(top, "levels/b7.xml"));
         //var bp = new StateMainMenu(top);
-        //var bp = new StateLevelSelect(top);
+        var bp = new StateLevelSelect(top);
+        bp.enableControl();
     
         top.changeState(bp, false);
         resize(null);

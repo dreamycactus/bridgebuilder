@@ -3,11 +3,11 @@
     <material name="Steel"/>
     <material name="Concrete"/>
     <material name="Cable"/>
-    <budget maxBudget="180" expectedBudget="136" minimum="54" />
+    <budget maxBudget="2000" expectedBudget="1700" minimum="1000" />
     
 	<anchor x="29" y="20.74" w="10.72" h="20.02" type="end"/>
-	<anchor x="-9.4" y="20.74" w="16.32" h="20.02" type="start"/>
-	<anchor x="15" y="8" w="7" h="8"/>
+	<anchor x="-10.4" y="20.74" w="16.8" h="20.02" type="start"/>
+	<anchor x="14" y="8" w="7" h="8"/>
 	<spawn x="2.01" y="22.36" dir="1" period="2000" count="9" type="Car"/>
 	<end x="31.95" y="22.75"/>
 </root>
