@@ -9,6 +9,7 @@ import nape.callbacks.CbType;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
+import nape.geom.Mat23;
 import nape.geom.Vec2;
 import nape.phys.Material;
 import nape.shape.Circle;
@@ -97,10 +98,20 @@ class GameConfig
     
     public static var materialCar = Material.steel();
     public static var materialTrain = new Material(0.4, 0.2, 0.3, 10);
+    public static var materialTruck = new Material(0.4, 0.2, 0.3, 12);
     
     public static var trainEngineDim = { w : 100, h : 40 };
     public static var trainCarDim = { w : 130, h : 50 };
     public static var trainMargin = 15;
+
+    public static var truckTractorCabDim = { w : 50, h : 40 };
+    public static var truckTractorFrameDim = { w : 100, h : 12 };
+    public static var truckTractorCabOffset = Mat23.translation( 25, -20 );
+    public static var truckSemiTrailerDim = { w : 150, h : 35 };
+    public static var truckSemiTrailerOffset = Mat23.translation(0, -25);
+    public static var truckRigidCabDim = { w : 40, h : 35 };
+    public static var truckRigidCargoDim = { w : 90, h : 45 };
+    public static var truckTrailerMaxMargin = 30;
     
     // Moment Tension Compression Shear
     public static var matWood : BuildMat = new BuildMat(twood, MaterialNames.WOOD, MatType.BEAM, materialWood
@@ -151,7 +162,7 @@ class GameConfig
                                        , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
                                        , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar, CmpRenderRain, CmpRenderPony]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
-                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpSpawn, CmpEnd]);
+                                       CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
         Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
         Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp, CmpObjectiveBudget]);

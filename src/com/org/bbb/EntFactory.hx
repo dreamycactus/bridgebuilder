@@ -25,6 +25,13 @@ import com.org.bbb.CmpMoverTrainEngine;
  * ...
  * @author 
  */
+
+enum TruckType {
+    RIGID;
+    TRACTOR_ONLY;
+    HEAVY_COMBINATION;
+}
+
 class EntFactory
 {
     public static var inst(get_inst, null) : EntFactory; // Forgive me..
@@ -193,6 +200,34 @@ class EntFactory
         e.attachCmp(cr);
         
         return e;
+    }
+
+    public function createTruck(pos : Vec2, dir : Int, type : TruckType) : Array<Entity>
+    {
+        var truck = new Array<Entity>();
+        switch(type) {
+            case TRACTOR_ONLY:
+                var e = state.createEnt();
+                var tractor = new CmpMoverTruckTractor(pos);
+                e.attachCmp(tractor);
+                truck.push(e);
+            case HEAVY_COMBINATION:
+                var e1 = state.createEnt();
+                var tractor = new CmpMoverTruckTractor(pos);
+                e1.attachCmp(tractor);
+                var e2 = state.createEnt();
+                var trailer = new CmpMoverTruckTrailer(pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-10, 0 )));
+                e2.attachCmp(trailer);
+                tractor.addTrailer(trailer);
+                truck.push(e1);
+                truck.push(e2);
+            case RIGID:
+                var e = state.createEnt();
+                var tractor = new CmpMoverTruckRigid(pos);
+                e.attachCmp(tractor);
+                truck.push(e);
+        }
+        return truck;
     }
     
     public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>

@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- NMML reference: https://gist.github.com/1763850 -->
-	
+
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
 	<meta title="BridgeBuilderBob" package="com.org.bbb" version="1.0.0" company="" />
-	
+
 	<!-- output -->
 	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
-    <app swf-version="11.8" /> 
-	
+
 	<window background="#eb9b9c" fps="60" vsync="false" />
+    <app swf-version="11.8" />
+
     <window width="0" height="0" orientation="landscape" unless="flash" />
     <window width="1024" height="576" />
     <window hardware="true" allow-shaders="true" if="cpp"/>
@@ -23,19 +24,20 @@
 	<haxelib name="nape" />
 	<haxelib name="spritesheet" />
     <haxelib name="hxcpp-debugger" />
-	
+
 	<!-- assets -->
 	<assets path="assets/img" rename="img" exclude="icon.svg" />
     <assets path="assets/fonts" rename="fonts" />
 	<assets path="data/levels" rename="levels" />
-    
+
     <android target-sdk-version="19" />
 	<android install-location="internalOnly" />
 	<!-- optimize output -->
     <haxeflag name="-dce std" />
     <haxeflag name="--no-opt " if="flash" />
+    <haxeflag name="-D fdb " if="flash debug"/>
     <haxeflag name="--no-traces " unless="debug" />
-    
+
     <haxedef name="HXCPP_DEBUGGER" if="debug" />
     <haxedef name="HXCPP_STACK_TRACE" />
     <haxedef name="NAPE_RELEASE_BUILD" if="release" />
