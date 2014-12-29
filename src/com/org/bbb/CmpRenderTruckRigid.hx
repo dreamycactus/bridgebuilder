@@ -60,10 +60,12 @@ class CmpRenderTruckRigid extends CmpRender
         var fwpos = cmpcar.compound.bodies.at(1).position;
         var bwpos = cmpcar.compound.bodies.at(0).position;
         
-        //rotDelta -= cmpcar.compound.bodies.at(2).rotation;
-        this.chassis.rotateSprite(Vec2.get(chassis.x, chassis.y), cmpcar.compound.bodies.at(2).rotation);
-        this.chassis.x = chassispos.x - 52; // FIXME make me standard and automatic, or specify-able by artist
-        this.chassis.y = chassispos.y - 80; // FIXME ibid
+        var rot = cmpcar.compound.bodies.at(2).rotation;
+        this.chassis.rotateSprite(Vec2.get(chassis.x, chassis.y), rot);
+
+        var offs = Vec2.weak(-40, -90);
+        this.chassis.x = chassispos.x + Math.cos(rot) * offs.x - Math.sin(rot) * offs.y; // FIXME make me standard and automatic, or specify-able by artist
+        this.chassis.y = chassispos.y + Math.sin(rot) * offs.x + Math.cos(rot) * offs.y; // FIXME ibid
         
         fw.rotateSprite(Vec2.get(fw.x, fw.y), cmpcar.compound.bodies.at(1).rotation);
         fw.x = fwpos.x;
