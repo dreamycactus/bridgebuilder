@@ -109,7 +109,8 @@ class GameConfig
     public static var truckTractorCabOffset = Mat23.translation( 25, -20 );
     public static var truckSemiTrailerDim = { w : 150, h : 35 };
     public static var truckSemiTrailerOffset = Mat23.translation(0, -25);
-    public static var truckRigidDim = { w : 100, h : 40 };
+    public static var truckRigidCabDim = { w : 40, h : 35 };
+    public static var truckRigidCargoDim = { w : 90, h : 45 };
     public static var truckTrailerMaxMargin = 30;
     
     // Moment Tension Compression Shear

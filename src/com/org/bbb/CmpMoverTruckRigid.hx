@@ -32,26 +32,33 @@ class CmpMoverTruckRigid extends CmpMover
         super(null);
         this.compound = new Compound();
 
-        var w = GameConfig.truckRigidDim.w;
-        var h = GameConfig.truckRigidDim.h;
+        var w = GameConfig.truckRigidCargoDim.w + GameConfig.truckRigidCabDim.w;
+        var h = GameConfig.truckRigidCargoDim.h;
 
         body = new Body();
-        var shape = new Polygon(Polygon.box(w, h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
 
-        body.shapes.add(shape);
+        var cab = new Polygon(Polygon.box(GameConfig.truckRigidCabDim.w, GameConfig.truckRigidCabDim.h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
+        var cargo = new Polygon(Polygon.box(GameConfig.truckRigidCargoDim.w, GameConfig.truckRigidCargoDim.h), GameConfig.materialTruck, new InteractionFilter(GameConfig.cgLoad));
+
+        // move cab to right so it's in front of cargo
+        // shift it down a bit so it's level with cargo at base
+        cab.transform(Mat23.translation(w * 0.5, 0.5 * (GameConfig.truckRigidCargoDim.h - GameConfig.truckRigidCabDim.h)));
+
+        body.shapes.add(cab);
+        body.shapes.add(cargo);
         body.cbTypes.add(GameConfig.cbTruck);
         body.compound = compound;
         body.position = pos;
 
         var fw = new Body(); // Front wheel
-        fw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
-        var offFw = Vec2.get(w * 0.5 - 5, h * 0.5 - 3);
+        fw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 9, 200), new InteractionFilter(GameConfig.cgLoad)));
+        var offFw = Vec2.get(w * 0.5 + 5, h * 0.5 - 5);
         fw.position = pos.add(offFw);
         fw.compound = compound;
 
         var bw = new Body(); // Rear wheel
-        bw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
-        var offBw = Vec2.get(-w * 0.5 + 5, h * 0.5 - 3);
+        bw.shapes.add(new Circle(12, null, new Material(0.15, 40, 200, 9, 200), new InteractionFilter(GameConfig.cgLoad)));
+        var offBw = Vec2.get(-GameConfig.truckRigidCargoDim.w * 0.5 + 25, h * 0.5 - 5);
         bw.position = pos.add(offBw);
         bw.compound = compound;
 
@@ -62,6 +69,7 @@ class CmpMoverTruckRigid extends CmpMover
         var bwj = new PivotJoint(body, bw, offBw, Vec2.weak());
         bwj.ignore = true;
         bwj.compound = compound;
+
         offFw.dispose();
         offBw.dispose();
 
