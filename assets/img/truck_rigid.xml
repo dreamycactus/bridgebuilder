@@ -1,0 +1,14 @@
+<root>
+    <spritesheet id="chassis" src="truck_rigid.png">
+        <slice rows="5" columns="5" frameW="128" frameH="128"/>
+        <anims>
+            <anim name="idle" start="0" end ="3" loop="1" fps="2" centerX="44" centerY="84" />
+        </anims>
+    </spritesheet>
+    <spritesheet id="wheel" src="truck_rigid_wheel.png">
+        <slice rows="4" columns="4" frameW="32" frameH="32"/>
+        <anims>
+            <anim name="idle" start="0" end ="0" loop="0" fps="1" centerX="16" centerY="16" />
+        </anims>
+    </spritesheet>
+</root>
