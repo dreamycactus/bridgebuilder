@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.bbb.AssetProcessor;
 import nape.geom.Vec2;
 import openfl.display.Sprite;
 import spritesheet.data.BehaviorData;
@@ -20,20 +21,29 @@ class CmpRenderTruckRigid extends CmpRender
     var chassis : AnimatedSprite;
     var fw : AnimatedSprite;
     var bw : AnimatedSprite;
+    static var sd : SpriteData = null;
     
-    public function new(cmpcar : CmpMoverTruckRigid, chassisBitmapData, wheelBitmapData)
+    public function new(cmpcar : CmpMoverTruckRigid, spriteSpecPath, chassisBitmapData, wheelBitmapData)
     {
         super(true);
+
+        if ( sd == null ) {
+            sd = AssetProcessor.processSpriteSpec( spriteSpecPath );
+        }
+
         this.cmpcar = cmpcar;
         displayLayer = GameConfig.zCar;
-        this.chassisSpritesheet = BitmapImporter.create(chassisBitmapData, 5, 5, 128, 128);
-        this.chassisSpritesheet.addBehavior(new BehaviorData("running",[0,1,2,3], true, 2, 64, 64));
+        this.chassisSpritesheet = BitmapImporter.create(sd.bmpDat, sd.slice.rows, sd.slice.cols, sd.slice.frameW, sd.slice.frameH);
+
+        for ( anim in sd.anims ) {
+            this.chassisSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));
+        }
 
         this.wheelSpritesheet = BitmapImporter.create(wheelBitmapData, 4, 4, 32, 32);
         this.wheelSpritesheet.addBehavior(new BehaviorData("running",[0], false, 1, 16, 16));
 
         chassis = new AnimatedSprite(this.chassisSpritesheet, true);
-        chassis.showBehavior("running");
+        chassis.showBehavior("idle");
 
         fw = new AnimatedSprite(this.wheelSpritesheet, true);
         fw.showBehavior("running");
@@ -55,9 +65,8 @@ class CmpRenderTruckRigid extends CmpRender
         var rot = cmpcar.compound.bodies.at(2).rotation;
         this.chassis.rotateSprite(Vec2.get(chassis.x, chassis.y), rot);
 
-        var offs = Vec2.weak(20, -20);
-        this.chassis.x = chassispos.x + Math.cos(rot) * offs.x - Math.sin(rot) * offs.y; // FIXME make me standard and automatic, or specify-able by artist
-        this.chassis.y = chassispos.y + Math.sin(rot) * offs.x + Math.cos(rot) * offs.y; // FIXME ibid
+        this.chassis.x = chassispos.x;
+        this.chassis.y = chassispos.y;
         
         fw.rotateSprite(Vec2.get(fw.x, fw.y), cmpcar.compound.bodies.at(1).rotation);
         fw.x = fwpos.x;

@@ -224,7 +224,7 @@ class EntFactory
             case RIGID:
                 var e = state.createEnt();
                 var mover = new CmpMoverTruckRigid(pos);
-                var render = new CmpRenderTruckRigid(mover, Assets.getBitmapData('img/truck_rigid.png'), Assets.getBitmapData('img/truck_rigid_wheel.png'));
+                var render = new CmpRenderTruckRigid(mover, "img/truck_rigid.xml", Assets.getBitmapData('img/truck_rigid.png'), Assets.getBitmapData('img/truck_rigid_wheel.png'));
                 e.attachCmp(mover);
                 e.attachCmp(render);
                 truck.push(e);
