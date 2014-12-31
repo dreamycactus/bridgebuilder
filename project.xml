@@ -29,6 +29,7 @@
 	<assets path="assets/img" rename="img" exclude="icon.svg" />
     <assets path="assets/fonts" rename="fonts" />
 	<assets path="data/levels" rename="levels" />
+	<assets path="shaders"/>
 
     <android target-sdk-version="19" />
 	<android install-location="internalOnly" />

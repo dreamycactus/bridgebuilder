@@ -35,7 +35,7 @@ class CmpRenderControlUI extends CmpRender
         if (rw != null) {
             rw.free(true);
         }
-        uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
+        //uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
         uiInstance = uiBuild({
             controlBuild : buildControl
         });

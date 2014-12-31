@@ -50,7 +50,7 @@ class GameConfig
     public static var beamStressHp = 900;
     public static var sharedJointRadius = 15;
     public static var multiBeamFrequencyDecay = 0.007;
-    public static var multiBeamJointDecay = 9e4;
+    public static var multiBeamJointDecay = 9e5;
     public static var distanceJointMin = 0;
     public static var distanceJointMax = 40;
     

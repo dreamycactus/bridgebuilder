@@ -1,0 +1,400 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"mailser",
+				"mailserver"
+			],
+			[
+				"to",
+				"toaddress"
+			],
+			[
+				"from",
+				"fromaddress"
+			],
+			[
+				"Mon",
+				"Monoid"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 81.0,
+		"selected_items":
+		[
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"package control re",
+				"Package Control: Remove Package"
+			],
+			[
+				"package control up",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"pack list",
+				"Package Control: List Packages"
+			],
+			[
+				"package control ins",
+				"Package Control: Install Package"
+			],
+			[
+				"package remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"syntax java",
+				"Set Syntax: Java"
+			],
+			[
+				"Package Install",
+				"Package Control: Install Package"
+			],
+			[
+				"package control remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"package list",
+				"Package Control: List Packages"
+			],
+			[
+				"Instal",
+				"Package Control: Install Package"
+			],
+			[
+				"Package In",
+				"Package Control: Install Package"
+			],
+			[
+				"Package",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 400.0
+	},
+	"console":
+	{
+		"height": 436.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"word count",
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/src/com/org/glengine/GLSLShader.hx",
+		"/C/Apps2/Sublime Text 3/changelog.txt",
+		"/C/Users/tannis-lap/Downloads/rain/rain/com/flashandmath/dg/dataStructures/LinkedList.as",
+		"/C/Users/tannis-lap/Downloads/rain/rain/com/flashandmath/dg/objects/LineRaindrop.as",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/bin/windows/cpp/obj/src/com/org/bbb/AnchorStartEnd.cpp",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/bin/windows/cpp/obj/src/nape/space/Space.cpp",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/bin/windows/cpp/obj/src/com/org/bbb/CmpControlBuild.cpp",
+		"/C/Users/tannis-lap/Downloads/rain/rain/com/flashandmath/dg/display/RainDisplay.as",
+		"/C/Users/tannis-lap/mm.cfg",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/README.md",
+		"/C/Users/tannis-lap/AppData/Local/Temp/Rar$DIa0.422/Main.as",
+		"/C/code/haxe/3.1.3/haxe/lib/flixel/3,3,5/flixel/FlxG.hx",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/goodies/HaxeFlixelGlitchRender/source/Main.hx",
+		"/C/code/haxe/3.1.3/haxe/lib/stablexui/git/src/ru/stablex/ui/skins/Skin.hx",
+		"/C/code/haxe/3.1.3/haxe/lib/stablexui/git/samples/03_position/Main.hx",
+		"/C/code/haxe/3.1.3/haxe/lib/stablexui/git/src/ru/stablex/ui/widgets/Widget.hx",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/bridgebuilder/data/test.xml",
+		"/C/code/haxe/3.1.3/haxe/lib/stablexui/git/src/ru/stablex/TweenSprite.hx",
+		"/C/code/haxe/3.1.3/haxe/lib/goodies/0,2,1/goodies/BitFields.hx",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/openflsamples/pp/Source/piratepig/PiratePig.hx",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/openflsamples/pp/Source/piratepig/PiratePigGame.hx",
+		"/C/code/miscdev/napesamples/www.napephys.com/samples/common/Template.hx",
+		"/C/code/miscdev/napesoft/ldEasyNape/LDEasyUserData.as",
+		"/C/code/miscdev/napesoft/ldEasyNape/LDEasyNape.as",
+		"/C/code/haxe/3.1.3/haxe/lib/stablexui/1,0,17/ru/stablex/ui/widgets/Widget.hx",
+		"/C/code/miscdev/napesoft/com/bit101/components/Calendar.as",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/goodies/goodies/BitFields.hx",
+		"/C/code/haxe/3.1.3/haxe/lib/goodies/0,2,1/haxelib.json",
+		"/C/Users/tannis-lap/Dropbox/Projects/BridgeBuilder/openflsamples/PiratePig/Source/piratepig/PiratePig.hx",
+		"/C/Users/tannis-lap/Dropbox/school/4c03/lab2/4c03 lab 2.txt",
+		"/C/Users/tannis-lap/Dropbox/school/4c03/lab2/pinger.py",
+		"/C/Users/tannis-lap/Dropbox/Projects/grd_resources/pathtrace/smallpt/smallpt.cpp",
+		"/C/Users/tannis-lap/Dropbox/school/4c03/alexmymail.py",
+		"/C/Users/tannis-lap/Dropbox/sys_env_path.txt",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo3_factorial/README",
+		"/C/Users/tannis-lap/Dropbox/school/TODO.txt",
+		"/C/Users/tannis-lap/Dropbox/Post Graduation .txt",
+		"/C/Users/tannis-lap/Dropbox/school/4c03/mymail.py",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/Project%20Topics.txt",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo3_factorial/J0Factorial.j0",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo4_linklist/demo4_linklist.j0",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo4_linklist/README",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo4_linklist/java_demo4_linklist.java",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo3_factorial/J0FactorialInstructor.j0",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo3_factorial/JavaFactorial.java",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo2_hello_name/java_demo2_hello_name.java",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo1_hello_world/J0HelloWorld.j0",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo1_hello_world/JavaHelloWorld.java",
+		"/C/Users/tannis-lap/Dropbox/school/4tb3/j0/demo/demo2_hello_name/demo2_hello_name.j0",
+		"/C/Users/tannis-lap/Dropbox/school/4db3/univ.ddl",
+		"/c/temp/text.diff",
+		"/C/Users/tannis-lap/Dropbox/school/4ga3/Hypermedia",
+		"/C/Apps2/CodeBlocks/themes/color.conf",
+		"/C/Users/tannis-lap/AppData/Local/Temp/Rar$DIa0.903/51_SDL_and_modern_opengl.cpp",
+		"/C/code/lua5.1/examples/quickluatour.lua",
+		"/C/Users/tannis-lap/AppData/Local/Temp/Rar$DIa0.906/51_SDL_and_modern_opengl.cpp",
+		"/C/Users/tannis-lap/Dropbox/school/4a03/LinksToReadUp.txt",
+		"/C/Users/tannis-lap/Downloads/udk/RPGInvStarterKit_v1.1/Development/Flash/AS2/CLIK/gfx/controls/eInventorySlot.as",
+		"/C/Users/tannis-lap/Downloads/lab7.c",
+		"/C/UDK/UDK-2013-07/README.md",
+		"/c/UDK/UDK-2013-07/UDKGame/Config/UDKInput.ini",
+		"/C/Apps/SteamApps/common/TeleglitchDME/settings.lua",
+		"/C/temp/a2",
+		"/C/temp/a1",
+		"/C/Users/tannis-lap/Dropbox/school/4a03/BookReview.txt",
+		"/C/UDK/UDK-2013-07/Development/Src/Tendrils.ucproj",
+		"/C/UDK/UDK-2013-07/.gitignore",
+		"/C/Users/tannis-lap/Dropbox/school/4hc3/project/summaries.txt",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/levelgenerator.lua",
+		"/C/Users/tannis-lap/Dropbox/school/4a03/a2_selfeval.txt",
+		"/C/UDK/UDK-2013-07/UDKGame/Logs/Launch.log",
+		"/C/Users/tannis-lap/Dropbox/school/4gp6_capstone/highconcept.md",
+		"/C/Users/tannis-lap/Dropbox/school/4aa4/labs/lab3/hello.c",
+		"/C/Users/tannis-lap/Dropbox/school/4aa4/labs/lab3/Makefile",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/luainit.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/converter.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/generated/levelitems.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/generated/levelmonsters.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/newmonsters.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsterstats.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/modulenames.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/levelnames.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/keys.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/shaders/radial_f.glsl",
+		"/C/Apps/SteamApps/common/TeleglitchDME/shaders/distortion_v.glsl",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/bosstest.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/_.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/out/l7_suur_hoov.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/out/l10_kytuse_terminal.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/out/palett.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/out/wtf.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/level1/script.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/level1/objects.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/l5_koridoride_ristmik_v2.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/l2b_10.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/mods/l2_k6rvaline_koht_v2_a.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/cfunctions.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters/squid.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters/zombie.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters/welder.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters/red_commander.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/lua/monsters/giant_soldat.lua",
+		"/C/Apps/SteamApps/common/TeleglitchDME/shaders/distortion_f.glsl",
+		"/C/Apps/SteamApps/common/TeleglitchDME/shaders/directional_f.glsl",
+		"/C/Apps/SteamApps/common/TeleglitchDME/shaders/directional_v.glsl",
+		"/C/UDK/UDK-2013-07/Development/Src/Core/Classes/Commandlet.uc",
+		"/C/UDK/UDK-2013-07/Development/Src/Makefile",
+		"/C/Users/tannis-lap/Dropbox/school/4a04.txt",
+		"/C/UDK/UDK-2013-07/Development/Src/Tendrils/Classes/MyGameInfo.uc",
+		"/C/code/haxe/projects/Gibbs/Garty/resource/item_jar.json",
+		"/C/code/haskell/mondads2.hs",
+		"/C/code/haskell/monads.hs",
+		"/C/code/haskell/helloworld.hs",
+		"/C/code/haskell/1.10.hs",
+		"/C/code/haskell/typeclass.hs",
+		"/C/code/haxe/projects/Gibbs/diff.diff",
+		"/C/code/haskell/euler.hs",
+		"/C/code/haskell/primes.hs",
+		"/C/Users/tannis-lap/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
+		"/C/Users/tannis-lap/AppData/Roaming/Sublime Text 3/Packages/User/Default (Windows).sublime-keymap",
+		"/C/Users/tannis-lap/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/code/haskell/shortlines.txt",
+		"/C/code/haskell/rpn.hs",
+		"/C/code/haskell/todo.txt",
+		"/C/Users/tannis-lap/AppData/Roaming/cabal/LambdaHack-0.2.6.5/ghc-7.6.3/Game/LambdaHack/Binding.hi",
+		"/C/code/haskell/Geometry.hs",
+		"/C/code/haskell/modules.hs"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"breakAwayTimeVariance",
+			"globalBre",
+			"nosplashes",
+			"fluid",
+			"update(",
+			"update",
+			"random",
+			"bool",
+			"random()",
+			"random",
+			"width",
+			"get_w",
+			"auto",
+			"child.",
+			"child",
+			"id",
+			"event",
+			"mingw",
+			"clientSocket",
+			"Energy",
+			"RIGHT",
+			"static char *my_string          = \"dummy\";\nmodule_param(my_string, charp, 0000);\nMODULE_PARAM_DESC(my_string, \"A character string\");",
+			"modules",
+			"SortModule",
+			"Iteration",
+			"state",
+			"PlaceModuleLevel",
+			"ConvexHullFits",
+			"PlaceModuleLevel",
+			"iteration",
+			"SplitterFunc",
+			"SortModule",
+			"RandomField",
+			"ProcessModuleList",
+			"/",
+			"UDK",
+			"EmptyGrid",
+			"System",
+			"primo",
+			"prob4",
+			"Vintage",
+			"landRight",
+			"x",
+			"    gen' <- newStdGen  \n    putStr $ take 20 (randomRs ('a','z') gen')  "
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"child12.",
+			"child12"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "BridgeBuilderBob.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

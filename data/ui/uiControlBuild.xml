@@ -1,7 +1,7 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
 <Widget id="'rootWidget'" widthPt="100" h="600">
-    <meta:inject code="var controlBuild : $CmpControlBuild = cast(@controlBuild, $CmpControlBuild);"/>
+    <meta:inject code="var controlBuild : CmpControlBuild = cast(@controlBuild, CmpControlBuild);"/>
     <!-- Buttons -->
     <!--<VBox autoHeight="true" childPadding="10" padding="10" left="150">
         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Toggle Edit'" autoHeight="true" 
@@ -10,23 +10,6 @@
     </VBox>-->
     <HBox id="'topbar'" right="0" align="'right,top'" padding="0">
     <WControlBar id="'controlbar'" control="@controlBuild">
-        <!--
-            <Button id="'steel'" skinName="'matBut'" w="100" h="50"  text="'Steel'"
-            on-click="@controlBuild.set_material($GameConfig.matSteel);">
-            </Button>
-            <Button id="'concrete'" skinName="'matBut'" w="100" h="50" text="'Concrete'"
-            on-click="@controlBuild.set_material($GameConfig.matConcrete);">
-            </Button>
-            <Button id="'wood'" skinName="'matBut'" w="100" h="50"  text="'Wood'"
-            on-click="@controlBuild.set_material($GameConfig.matWood);">
-            </Button>
-            <Button id="'supercable'" skinName="'matBut'" w="100" h="50" text="'Supercable'"
-             on-click="@controlBuild.set_material($GameConfig.matSuperCable);">
-            </Button>
-            <Button id="'cable'" skinName="'matBut'" w="100" h="50"  text="'Cable'"
-             on-click="@controlBuild.set_material($GameConfig.matCable);">
-            </Button>-->
-
     </WControlBar>
     <!--<Button id="'buttab2'" w="100" h="100" skin:Paint-border="0" skin:Paint-alpha="0.3" skin:Paint-color="0xb58900" on-click="@controlBuild.wcb.show();">
         <Bmp src="'img/tri.png'" w="20" h="100" stretch="true" keepAspect="true"/>

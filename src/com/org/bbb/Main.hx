@@ -1,5 +1,6 @@
 package com.org.bbb;
 
+import com.org.glengine.GLEngine;
 import com.org.mes.Entity;
 import com.org.mes.EntityType;
 import com.org.mes.Top;
@@ -113,14 +114,16 @@ class Main extends Sprite
 #if cpp
 
 #if (HXCPP_DEBUGGER && debug)
-        new debugger.Local(true);
+        //new debugger.Local(true);
 #end
 #if HXCPP_STACK_TRACE
         //cpp.vm.Profiler.start("log.txt");
 #end
         
 #end      
-        Lib.current.addChild(new Main());
+        //Lib.current.addChild(new Main());
+        var gl = new GLEngine();
+        Lib.current.addChild(gl.view);
     }
     
     
