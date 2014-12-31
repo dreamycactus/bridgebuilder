@@ -31,6 +31,7 @@ class SysRender extends System
     public var someStats : TextField;
     var debug:Debug;
     var cmpsToRender : Array<CmpRender>;
+    public var drawDebug : Bool = false;
     
     public function new(state : MESState, level : CmpLevel, stage : Stage)
     {
@@ -72,10 +73,12 @@ class SysRender extends System
     override public function update()
     {
         camera.update();
-
-        //debug.clear();
-        //debug.draw(level.space);
-        //debug.flush();
+        
+        debug.clear();
+        if (drawDebug) {
+            debug.draw(level.space);
+            debug.flush();
+        }
         
         someStats.text = 'State\nEntities Created: ${state.index}\nNum Entities: ${state.ents.length}';
         for (c in cmpsToRender) {
