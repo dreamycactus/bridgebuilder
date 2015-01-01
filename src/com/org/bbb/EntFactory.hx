@@ -216,10 +216,14 @@ class EntFactory
             case HEAVY_COMBINATION:
                 var e1 = state.createEnt();
                 var tractor = new CmpMoverTruckTractor(pos);
+                var render = new CmpRenderTruckTractor(tractor);
                 e1.attachCmp(tractor);
+                e1.attachCmp(render);
                 var e2 = state.createEnt();
                 var trailer = new CmpMoverTruckTrailer(pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-10, 0 )));
+                var renderTrailer = new CmpRenderTruckTrailer(trailer);
                 e2.attachCmp(trailer);
+                e1.attachCmp(renderTrailer);
                 tractor.addTrailer(trailer);
                 truck.push(e1);
                 truck.push(e2);
