@@ -1,8 +1,8 @@
 <root>
-    <spritesheet id="chassis" src="truck_rigid.png">
-        <slice rows="5" columns="5" frameW="128" frameH="128"/>
+    <spritesheet id="chassis" src="truck_tractor.png">
+        <slice rows="1" columns="1" frameW="128" frameH="128"/>
         <anims>
-            <anim name="idle" start="0" end ="3" loop="1" fps="2" centerX="44" centerY="84" />
+            <anim name="idle" start="0" end ="0" loop="0" fps="1" centerX="70" centerY="110" />
         </anims>
     </spritesheet>
     <spritesheet id="wheel" src="truck_wheel.png">

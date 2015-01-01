@@ -209,7 +209,9 @@ class EntFactory
             case TRACTOR_ONLY:
                 var e = state.createEnt();
                 var tractor = new CmpMoverTruckTractor(pos);
+                var render = new CmpRenderTruckTractor(tractor);
                 e.attachCmp(tractor);
+                e.attachCmp(render);
                 truck.push(e);
             case HEAVY_COMBINATION:
                 var e1 = state.createEnt();
