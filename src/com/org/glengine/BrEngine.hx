@@ -19,7 +19,7 @@ using com.org.glengine.GLUtils;
  * ...
  * @author ...
  */
-class GLEngine
+class BrEngine
 {
     private var bitmapData:BitmapData;
     private var imageUniform:GLUniformLocation;
@@ -33,7 +33,11 @@ class GLEngine
     private var vertexAttribute:Int;
     private var vertexBuffer:GLBuffer;
     private var vertexBuffer2:GLBuffer;
+    
+    
     var p : GLSLProgram;
+        var fb : BrScene;
+
     public function new() 
     {
         bitmapData = Assets.getBitmapData("img/openfl.png");
@@ -43,7 +47,7 @@ class GLEngine
             // Init shaders
             p = new GLSLProgram();
             p.compileShaderFromFile("shaders/vert.vert");
-            p.compileShaderFromFile("shaders/brga.frag");
+            p.compileShaderFromFile("shaders/basic.frag");
             p.validate();
             p.link();
             
@@ -55,10 +59,10 @@ class GLEngine
             
             // Init buffers
             var vertices = [
-                bitmapData.width, bitmapData.height, 0,
-                0, bitmapData.height, 0,
-                bitmapData.width, 0, 0,
-                0, 0, 0
+                bitmapData.width, bitmapData.height,
+                0, bitmapData.height,
+                bitmapData.width, 0,
+                0, 0
             ];
             
             vertexBuffer = GL.createBuffer ();
@@ -95,26 +99,25 @@ class GLEngine
             //}
             
             texture = new Texture2D();
-            texture.setWrap(GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE);
-            texture.upload(0, 0, bitmapData.width, bitmapData.height, GL.UNSIGNED_BYTE, pixelData);
+            texture.upload(0, 0, bitmapData.width, bitmapData.height, GL.UNSIGNED_BYTE, new Int32Array(cast GLUtils.getImgABGR(bitmapData)));
             texture.setFilter(GL.LINEAR, GL.LINEAR);
+            texture.setWrap(GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE);
+
             GL.bindTexture (GL.TEXTURE_2D, null);
             
         } else {
             trace("GL not supported");
         }
-        
+        fb = new BrScene(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
         fb.init();
         view.render = renderView;
     }
-    var fb = new Scene(300, 300);
     function renderView(rect:Rectangle):Void {
         GL.bindFramebuffer(GL.FRAMEBUFFER, fb.handle);
         GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
         
         GL.clearColor (1.0, 1.0, 1.0, 1.0);
         GL.clear (GL.COLOR_BUFFER_BIT);
-        GL.enable(GL.TEXTURE_2D);
         
         var stage = Lib.current.stage;
         var positionX = (stage.stageWidth - bitmapData.width) / 2;
@@ -128,9 +131,10 @@ class GLEngine
         
         GL.activeTexture (GL.TEXTURE0);
         texture.bind();
+        GL.enable(GL.TEXTURE_2D);
         
         GL.bindBuffer (GL.ARRAY_BUFFER, vertexBuffer);
-        GL.vertexAttribPointer (vertexAttribute, 3, GL.FLOAT, false, 0, 0);
+        GL.vertexAttribPointer (vertexAttribute, 2, GL.FLOAT, false, 0, 0);
         GL.bindBuffer (GL.ARRAY_BUFFER, texCoordBuffer);
         GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, 0, 0);
         
@@ -148,15 +152,14 @@ class GLEngine
         
         GL.disableVertexAttribArray (vertexAttribute);
         GL.disableVertexAttribArray (texCoordAttribute);
-        
-        // Draw fb to screen
         GL.useProgram (null);
-        GL.bindFramebuffer(GL.FRAMEBUFFER, null);
-        
-        
 
-        // Begin rendering fb
+        // Draw fb to screen
+        GL.bindFramebuffer(GL.FRAMEBUFFER, null);
+        GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+        
         GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
+        
         p.use();
         
         GL.activeTexture (GL.TEXTURE0);
@@ -165,13 +168,27 @@ class GLEngine
         
         GL.enableVertexAttribArray (vertexAttribute);
         GL.bindBuffer (GL.ARRAY_BUFFER, vertexBuffer2);
-        GL.vertexAttribPointer (vertexAttribute, 3, GL.FLOAT, false, 0, 0);
+        GL.vertexAttribPointer (vertexAttribute, 2, GL.FLOAT, false, 0, 0);
+        
+        GL.enableVertexAttribArray (texCoordAttribute);
+        GL.bindBuffer (GL.ARRAY_BUFFER, texCoordBuffer);
+        GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, 0, 0);
         
         GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
         GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (modelViewMatrix.rawData));
-        //GL.uniform1i (imageUniform, 0);
         
         GL.drawArrays (GL.TRIANGLE_STRIP, 0, 4);
+        
+        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        
+        GL.useProgram(null);
+        GL.disableVertexAttribArray (vertexAttribute);
+        GL.disableVertexAttribArray (texCoordAttribute);
+        
+        if (GL.getError() == GL.INVALID_FRAMEBUFFER_OPERATION)
+		{
+			trace("INVALID_FRAMEBUFFER_OPERATION!!");
+		}
     }
     
 }

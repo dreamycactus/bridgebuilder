@@ -11,30 +11,30 @@
     <movie version="3" />
     <movie minorVersion="0" />
     <movie platform="NME" />
-    <movie background="073642" />
+    <movie background="EB9B9C" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="C:\code\haxe\3.1.3\haxe\lib\openfl\git" />
-    <class path="C:\code\haxe\3.1.3\haxe\lib\lime\2,0,0-alpha,8" />
+    <class path="C:\code\haxe\3.1.3\haxe\lib\lime\git" />
     <class path="C:\code\haxe\3.1.3\haxe\lib\stablexui\git\src" />
     <class path="C:\code\haxe\3.1.3\haxe\lib\actuate\1,7,5" />
     <class path="C:\code\haxe\3.1.3\haxe\lib\nape\2,0,16" />
     <class path="C:\code\haxe\3.1.3\haxe\lib\spritesheet\1,2,0" />
     <class path="C:\code\haxe\3.1.3\haxe\lib\hxcpp-debugger\1,0,6" />
-    <class path="C:\code\haxe\3.1.3\haxe\lib\hxcpp\3,1,39" />
+    <class path="C:\code\haxe\3.1.3\haxe\lib\hxcpp\3,1,48" />
     <class path="src" />
-    <class path="C:\code\haxe\3.1.3\haxe\lib\lime\2,0,0-alpha,8\legacy" />
+    <class path="C:\code\haxe\3.1.3\haxe\lib\lime\git\legacy" />
     <class path="bin\windows\cpp\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=2.1.7&#xA;lime=2.0.0-alpha.8&#xA;stablexui&#xA;actuate=1.7.5&#xA;nape=2.0.16&#xA;spritesheet=1.2.0&#xA;hxcpp-debugger=1.0.6&#xA;hxcpp=3.1.39&#xA;HXCPP_DEBUGGER&#xA;tools=2.0.0-alpha.8&#xA;lime-legacy&#xA;HXCPP_STACK_TRACE&#xA;no-compilation&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
+    <option directives="openfl=2.1.8&#xA;lime=2.0.3&#xA;stablexui&#xA;actuate=1.7.5&#xA;nape=2.0.16&#xA;spritesheet=1.2.0&#xA;hxcpp-debugger=1.0.6&#xA;hxcpp=3.1.48&#xA;tools=2.0.3&#xA;lime-legacy&#xA;HXCPP_STACK_TRACE&#xA;no-compilation&#xA;NAPE_RELEASE_BUILD&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--remap flash:openfl&#xA;-dce std&#xA;--no-traces &#xA;#--macro keep(&quot;com.org.bbb.Main&quot;)" />
+    <option additional="--remap flash:openfl&#xA;-dce std&#xA;--no-traces &#xA;#--macro keep(&quot;Main&quot;)" />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

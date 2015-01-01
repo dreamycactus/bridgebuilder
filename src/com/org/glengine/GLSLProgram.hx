@@ -50,7 +50,8 @@ class GLSLProgram
         GL.compileShader(shaderHandle);
 
         if (GL.getShaderParameter(shaderHandle, GL.COMPILE_STATUS) == 0) {
-            throw "Error compiling shader: $source";
+            throw 'Error compiling shader:\n${GL.getShaderInfoLog(shaderHandle)}';
+            
         }
 
         GL.attachShader(handle, shaderHandle);

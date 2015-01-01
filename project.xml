@@ -6,7 +6,8 @@
 	<meta title="BridgeBuilderBob" package="com.org.bbb" version="1.0.0" company="" />
 
 	<!-- output -->
-	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin" />
+	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin/Debug" if="debug" />
+	<app main="com.org.bbb.Main" file="BridgeBuilderBob" path="bin/Release" if="!debug" />
 
 	<window background="#eb9b9c" fps="60" vsync="false" />
     <app swf-version="11.8" />

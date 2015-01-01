@@ -4,7 +4,7 @@ package com.org.glengine;
  * ...
  * @author ...
  */
-class Framebuffer
+class CompositeScene
 {
 
     public function new() 

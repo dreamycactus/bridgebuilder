@@ -2,6 +2,7 @@ package com.org.glengine;
 import com.org.glengine.GLSLProgram.GLSLShaderType;
 import haxe.ds.StringMap;
 import openfl.Assets;
+import openfl.display.BitmapData;
 import openfl.gl.GL;
 
 /**
@@ -47,6 +48,20 @@ class GLUtils
         }
         var glShaderType = shaderGLType.get(shaderType);
         program.compileFromString(source, glShaderType);
+    }
+    
+    public static function getImgABGR(bitmapData : BitmapData) : Array<Int>
+    {
+        var pixelData = new Array<Int>();
+        for (j in 0...bitmapData.height)
+            for (i in 0...bitmapData.width)
+            {
+                var argb = bitmapData.getPixel32 (i, j);
+                var abgr = (argb & 0xFF00FF00) | ((argb >> 16) & 0xFF) | ((argb & 0xFF) << 16);
+                pixelData.push (abgr);
+            }
+        
+        return pixelData;
     }
     
 }
