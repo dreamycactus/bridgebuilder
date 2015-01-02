@@ -209,15 +209,21 @@ class EntFactory
             case TRACTOR_ONLY:
                 var e = state.createEnt();
                 var tractor = new CmpMoverTruckTractor(pos);
+                var render = new CmpRenderTruckTractor(tractor);
                 e.attachCmp(tractor);
+                e.attachCmp(render);
                 truck.push(e);
             case HEAVY_COMBINATION:
                 var e1 = state.createEnt();
                 var tractor = new CmpMoverTruckTractor(pos);
+                var render = new CmpRenderTruckTractor(tractor);
                 e1.attachCmp(tractor);
+                e1.attachCmp(render);
                 var e2 = state.createEnt();
                 var trailer = new CmpMoverTruckTrailer(pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-10, 0 )));
+                var renderTrailer = new CmpRenderTruckTrailer(trailer);
                 e2.attachCmp(trailer);
+                e1.attachCmp(renderTrailer);
                 tractor.addTrailer(trailer);
                 truck.push(e1);
                 truck.push(e2);
@@ -237,26 +243,28 @@ class EntFactory
         var ents = new Array<Entity>();
         var e = state.createEnt();
         var cm = new CmpMoverTrainEngine(pos);
+        var ren = new CmpRenderTrainLocomotive(cm);
         var cm2 = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2), 0)));
+        var ren2 = new CmpRenderTrainCar(cm2); // WEIRD
         cm.addCar(cm2);
         ents.push(e);
         
         var prev : CmpMoverTrainCar = cm2;
         for (i in 0...count) {
             var cmt = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2 )* i, 0)));
+            var rtc = new CmpRenderTrainCar(cmt);
             var ee = state.createEnt();
             ee.attachCmp(cmt);
+            ee.attachCmp(rtc);
             prev.addCar(cmt);
             prev = cmt;
             ents.push(ee);
         }
-        //var cc = new CmpControlCar(cm);
-        
-        //cc.speed = GameConfig.carSpeed * dir;
-        
+
         e.attachCmp(cm);
         e.attachCmp(cm2);
-        //e.attachCmp(cc);
+        e.attachCmp(ren);
+        e.attachCmp(ren2);
         
         return ents;
     }

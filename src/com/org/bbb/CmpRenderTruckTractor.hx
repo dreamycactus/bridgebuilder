@@ -13,9 +13,9 @@ import spritesheet.AnimatedSprite;
  * @author ...
  */
 using com.org.bbb.Util;
-class CmpRenderTruckRigid extends CmpRender
+class CmpRenderTruckTractor extends CmpRender
 {
-    var cmpcar : CmpMoverTruckRigid;
+    var cmpcar : CmpMoverTruckTractor;
     var rotDelta : Float = 0;
     var chassisSpritesheet : Spritesheet;
     var wheelSpritesheet : Spritesheet;
@@ -23,9 +23,9 @@ class CmpRenderTruckRigid extends CmpRender
     var fw : AnimatedSprite;
     var bw : AnimatedSprite;
     static var sds : StringMap<SpriteData> = null;
-    static var spriteSpecPath: String = "vehicles/truck_rigid.xml";
+    static var spriteSpecPath: String = "vehicles/truck_tractor.xml";
 
-    public function new(cmpcar: CmpMoverTruckRigid)
+    public function new(cmpcar: CmpMoverTruckTractor)
     {
         super(true);
 
