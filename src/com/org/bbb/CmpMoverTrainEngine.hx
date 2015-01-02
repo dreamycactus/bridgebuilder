@@ -44,13 +44,13 @@ class CmpMoverTrainEngine extends CmpMover
         body.position = pos;
         
         var fw = new Body(); // Front wheel
-        fw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        fw.shapes.add(new Circle(10, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
         var offFw = Vec2.get(w * 0.5 - 5, h * 0.5 - 3);
         fw.position = pos.add(offFw);
         fw.compound = compound;
         
         var bw = new Body(); // Front wheel
-        bw.shapes.add(new Circle(15, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
+        bw.shapes.add(new Circle(10, null, new Material(0.15, 40, 200, 3, 200), new InteractionFilter(GameConfig.cgLoad)) );
         var offBw = Vec2.get(-w * 0.5 + 5, h * 0.5 - 3);
         bw.position = pos.add(offBw);
         bw.compound = compound;
@@ -64,6 +64,7 @@ class CmpMoverTrainEngine extends CmpMover
         //bwj.stiff = true;
         bwj.ignore = true;
         bwj.compound = compound;
+
         offFw.dispose();
         offBw.dispose();
        

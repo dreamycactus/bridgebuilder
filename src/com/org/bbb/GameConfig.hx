@@ -159,8 +159,10 @@ class GameConfig
     {
         Cmp.cmpManager = new CmpManager();
         Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
-                                       , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
-                                       , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderRain, CmpRenderPony]);
+                                      , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
+                                      , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable
+                                      , CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderTrainLocomotive, CmpRenderTrainCar
+                                      , CmpRenderRain, CmpRenderPony]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);

@@ -243,26 +243,28 @@ class EntFactory
         var ents = new Array<Entity>();
         var e = state.createEnt();
         var cm = new CmpMoverTrainEngine(pos);
+        var ren = new CmpRenderTrainLocomotive(cm);
         var cm2 = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2), 0)));
+        var ren2 = new CmpRenderTrainCar(cm2); // WEIRD
         cm.addCar(cm2);
         ents.push(e);
         
         var prev : CmpMoverTrainCar = cm2;
         for (i in 0...count) {
             var cmt = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2 )* i, 0)));
+            var rtc = new CmpRenderTrainCar(cmt);
             var ee = state.createEnt();
             ee.attachCmp(cmt);
+            ee.attachCmp(rtc);
             prev.addCar(cmt);
             prev = cmt;
             ents.push(ee);
         }
-        //var cc = new CmpControlCar(cm);
-        
-        //cc.speed = GameConfig.carSpeed * dir;
-        
+
         e.attachCmp(cm);
         e.attachCmp(cm2);
-        //e.attachCmp(cc);
+        e.attachCmp(ren);
+        e.attachCmp(ren2);
         
         return ents;
     }
