@@ -1,5 +1,6 @@
 package com.org.glengine;
-import lime.utils.UInt16Array;
+import openfl.utils.Int16Array;
+import openfl.geom.Matrix3D;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
 import openfl.gl.GLUniformLocation;
@@ -19,23 +20,25 @@ class BrSpriteBatch
     public var shader(default, set) : GLSLProgram;
     public var size : Int = 100;
     
+    public var transformMatrix : Matrix3D = new Matrix3D();
+    public var projectionMatrix : Matrix3D = new Matrix3D();
+    
     var indexBuffer : GLBuffer;
-    var indices : UInt16Array;
-    var lastIndexCount : Int = 0;
+    var indices : Int16Array;
+    var idx : Int = 0;
     var numItemsPerPack = 6;
 
-    
     var vertexBuffer : GLBuffer;
     var vertices : Float32Array;
     var stride : Int;
     
     // Shader Uniforms
+    var vertexAttribute : GLUniformLocation;
+    var texCoordAttribute : GLUniformLocation;
+    var colorAttribute : GLUniformLocation;
     var projectionMatrixUniform : GLUniformLocation;
-    var vertexAttribute : GLUniformLocation;= p.getAttribLocation("aVertexPosition");
-    var texCoordAttribute : GLUniformLocation;= p.getAttribLocation ("aTexCoord");
-    var projectionMatrixUniform : GLUniformLocation;= p.getUniformLocation ("uProjectionMatrix");
-    var modelViewMatrixUniform : GLUniformLocation;= p.getUniformLocation ("uModelViewMatrix");
-    var imageUniform : GLUniformLocation;= p.getUniformLocation ("uImage0");
+    var modelViewMatrixUniform : GLUniformLocation;
+    var imageUniform : GLUniformLocation;
     
     public function new() 
     {
@@ -44,7 +47,7 @@ class BrSpriteBatch
         var numIndicies = size * numItemsPerPack;
 
         vertices = new Float32Array(numVerts);
-        indices = new UInt16Array(numIndicies);
+        indices = new Int16Array (numIndicies);
         
         var i = 0;
         var j = 0;
@@ -57,7 +60,7 @@ class BrSpriteBatch
             indices[i + 4] = j + 2;
             indices[i + 5] = j + 3;
             i += 6;
-            j += j;
+            j += 4;
         }
         
         buildBuffers();
@@ -81,7 +84,7 @@ class BrSpriteBatch
     public function draw(texture : Texture2D, x : Float, y : Float, options : Dynamic=null) : Void
     {
         if (texture != currentTexture) {
-            
+            switchTexture(texture);
         }
         
         var drawVertices = this.vertices;
@@ -89,12 +92,57 @@ class BrSpriteBatch
         if (idx == vertices.length) {
             flush();
         }
+
+        var fx = 0.0;
+        var fy = 0.0;
+        var fx2 = x + texture.width;
+        var fy2 = y + texture.height;
+        var u = 0.0;
+        var v = 1.0;
+        var u2 = 1.0;
+        var v2 = 0.0;
         
-        vertices.push(x1);
-        vertices.push(y1);
-        vertices.push(color);
-        vertices.push(u);
-        vertices.push(v);
+        var p1x = texture.height;
+        
+        var x1 = x;
+        var y1 = y;
+        
+        var x2 = fx2;
+        var y2 = fy2;
+        
+        var color = 0xffffff;
+        
+        vertices[idx++] = x1;
+        vertices[idx++] = y1;
+        vertices[idx++] = u;
+        vertices[idx++] = v;
+        vertices[idx++] = color;
+        vertices[idx++] = 0xFFFFFFFF;
+
+        
+        vertices[idx++] = x2;
+        vertices[idx++] = fy2;
+        vertices[idx++] = u;
+        vertices[idx++] = v2;
+        vertices[idx++] = color;
+        vertices[idx++] = 0xFFFFFFFF;
+
+        
+        vertices[idx++] = fx2;
+        vertices[idx++] = fy2;
+        vertices[idx++] = u2;
+        vertices[idx++] = v2;
+        vertices[idx++] = color;
+        vertices[idx++] = 0xFFFFFFFF;
+
+        
+        vertices[idx++] = fx2;
+        vertices[idx++] = y;
+        vertices[idx++] = u2;
+        vertices[idx++] = v;
+        vertices[idx++] = color;
+        vertices[idx++] = 0xFFFFFFFF;
+
         
         idx += 20; // 5 * 4
         
@@ -114,7 +162,7 @@ class BrSpriteBatch
     
     public function flush() : Void
     {
-        if (currentBatchSize == 0) return;
+        if (idx == 0) return;
         
         shader.use();
         
@@ -125,11 +173,34 @@ class BrSpriteBatch
             GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
             GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
             
-            GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (modelViewMatrix.rawData));
+            GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
+            GL.uniformMatrix4fv(modelViewMatrixUniform, false, new Float32Array(transformMatrix.rawData));
             
             var stride = numItemsPerPack * 4;
+
+            GL.vertexAttribPointer (vertexAttribute, 2, GL.FLOAT, false, stride, 0);
+            GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, stride, 2 * 4);
+            GL.vertexAttribPointer (colorAttribute, 2, GL.FLOAT, false, stride, 4 * 4);
+            GL.uniform1i (imageUniform, 0);
+            
         }
         
+        //if (currentBatchSize > (size * 0.5)||true) {
+            GL.bufferSubData(GL.ARRAY_BUFFER, 0, vertices);
+        //}
+        //else {
+            //var view = vertices.subarray (0, currentBatchSize * 4 * numItemsPerPack);
+            //GL.bufferSubData(GL.ARRAY_BUFFER, 0, view);
+        //}
+        
+        var batchSize = 0;
+        var start = 0;
+        
+        currentTexture.bind();
+        GL.drawElements(GL.TRIANGLES, size * numItemsPerPack, GL.UNSIGNED_SHORT, 0);
+        
+        currentBatchSize = 0;
+        idx = 0;
     }
     
     public function dispose() : Void
@@ -150,10 +221,17 @@ class BrSpriteBatch
             projectionMatrixUniform = s.getAttribLocation('uProjectionMatrix');
             vertexAttribute = s.getAttribLocation("aVertexPosition");
             texCoordAttribute = s.getAttribLocation ("aTexCoord");
+            colorAttribute = s.getAttribLocation ("aColor");
             projectionMatrixUniform = s.getUniformLocation ("uProjectionMatrix");
             modelViewMatrixUniform = s.getUniformLocation ("uModelViewMatrix");
             imageUniform = s.getUniformLocation ("uImage0");
         }
         return s;
+    }
+    
+    function switchTexture(texture : Texture2D) : Void
+    {
+        flush();
+        currentTexture = texture;
     }
 }

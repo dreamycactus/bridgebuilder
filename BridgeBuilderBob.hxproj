@@ -29,7 +29,7 @@
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=2.1.8&#xA;lime=2.0.3&#xA;stablexui&#xA;actuate=1.7.5&#xA;nape=2.0.16&#xA;spritesheet=1.2.0&#xA;hxcpp-debugger=1.0.6&#xA;hxcpp=3.1.48&#xA;tools=2.0.3&#xA;lime-legacy&#xA;HXCPP_STACK_TRACE&#xA;no-compilation&#xA;NAPE_RELEASE_BUILD&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
+    <option directives="openfl=2.1.8&#xA;lime=2.0.3&#xA;stablexui&#xA;actuate=1.7.5&#xA;nape=2.0.16&#xA;spritesheet=1.2.0&#xA;hxcpp-debugger=1.0.6&#xA;hxcpp=3.1.48&#xA;tools=2.0.3&#xA;lime-legacy&#xA;HXCPP_STACK_TRACE&#xA;openfl_next&#xA;no-compilation&#xA;NAPE_RELEASE_BUILD&#xA;native&#xA;lime-native&#xA;openfl-native&#xA;windows&#xA;desktop" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />

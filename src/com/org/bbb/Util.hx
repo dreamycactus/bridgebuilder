@@ -184,18 +184,18 @@ class Util
     }
     // Bubble sort.. Insert sort would be better, prolly... maybe... not sure.
     public static function sortZ (dParent : DisplayObjectContainer) : Void {
-        for (t in 0...dParent.numChildren) {
-            var i = dParent.numChildren - t - 1;
-            var bFlipped = false;
-            for (o in 0...i) {
-                if (dParent.getChildAt(o).z < dParent.getChildAt(o+1).z) {
-                    dParent.swapChildrenAt(o,o+1);
-                    bFlipped = true;
-                }
-            }
-            if (!bFlipped)
-                return;
-        }
+        //for (t in 0...dParent.numChildren) {
+            //var i = dParent.numChildren - t - 1;
+            //var bFlipped = false;
+            //for (o in 0...i) {
+                //if (dParent.getChildAt(o).z < dParent.getChildAt(o+1).z) {
+                    //dParent.swapChildrenAt(o,o+1);
+                    //bFlipped = true;
+                //}
+            //}
+            //if (!bFlipped)
+                //return;
+        //}
     }
     
     public static function rotateSprite(sp : DisplayObject, point : Vec2, angle : Float)
