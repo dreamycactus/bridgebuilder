@@ -21,7 +21,7 @@ class CmpRenderCar extends CmpRender
     var chassis : AnimatedSprite;
     var rotDelta : Float = 0;
     static var sds : StringMap<SpriteData> = null;
-    static var spriteSpecPath: String = "img/car.xml";
+    static var spriteSpecPath: String = "vehicles/car.xml";
 
     public function new(cmpcar : CmpMoverCar) 
     {

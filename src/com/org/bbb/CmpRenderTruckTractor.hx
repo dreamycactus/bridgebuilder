@@ -23,7 +23,7 @@ class CmpRenderTruckTractor extends CmpRender
     var fw : AnimatedSprite;
     var bw : AnimatedSprite;
     static var sds : StringMap<SpriteData> = null;
-    static var spriteSpecPath: String = "img/truck_tractor.xml";
+    static var spriteSpecPath: String = "vehicles/truck_tractor.xml";
 
     public function new(cmpcar: CmpMoverTruckTractor)
     {

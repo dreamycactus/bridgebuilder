@@ -114,7 +114,7 @@ class CmpLevel extends Cmp
                     bg.attachCmp(new CmpRenderBg(bmpDat, pos, w, h, parallaxK));
                     level.ents.push(bg);
                 }
-                // the depth ordering is so weird...
+                // backwards depth ordering is so weird...
                 if (e.get("color") != null) {
                     var sanitizedColor = StringTools.replace(e.get("color"), "#", "0x");
                     var bgbmp = new BitmapData(Math.round(level.width), Math.round(level.height), false, Std.parseInt(sanitizedColor));

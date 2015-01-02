@@ -2,11 +2,10 @@ package com.org.bbb;
 import com.org.mes.Cmp;
 import nape.geom.Vec2;
 import openfl.display.Sprite;
-import spritesheet.data.BehaviorData;
-import spritesheet.importers.BitmapImporter;
-import spritesheet.Spritesheet;
-import spritesheet.AnimatedSprite;
+import openfl.display.Bitmap;
+import openfl.display.PixelSnapping;
 
+// NOTE: this just renders ONE LAYER
 class CmpRenderBg extends CmpRender
 {
     public var parallaxK : Float;
@@ -14,9 +13,10 @@ class CmpRenderBg extends CmpRender
     public var height : Float;
     public var depth : Float;
     public var numLayers : Float;
-    public var animated: AnimatedSprite;
 
     var camPos : Vec2;
+    var bmp : Bitmap;
+    var scrollPos : Vec2;
 
     public function new(bmpDat, pos : Vec2, w : Int, h : Int, parallaxK : Float) {
         super(true);
@@ -27,20 +27,16 @@ class CmpRenderBg extends CmpRender
         displayLayer = GameConfig.zBG;
 
         camPos = Vec2.get();
+        bmp = new Bitmap(bmpDat, PixelSnapping.ALWAYS);
 
-        var bgSpritesheet = BitmapImporter.create(bmpDat, 1, 1, w, h);
-        bgSpritesheet.addBehavior(new BehaviorData("idle", [0], true, 1, 0, 0));
-        animated = new AnimatedSprite(bgSpritesheet, true); // FIXME this _probably_ doesn't need to be a an animatedsprite???
-        animated.x = pos.x;
-        animated.y = pos.y;
-        animated.showBehavior("idle");
+        bmp.x = pos.x;
+        bmp.y = pos.y;
 
-        sprite.addChild(animated);
+        sprite.addChild(bmp);
     }
 
     override public function render(dt : Float) : Void
     {
-        animated.update(Math.round(dt));
     }
 
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void

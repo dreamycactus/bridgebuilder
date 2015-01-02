@@ -68,7 +68,7 @@ class CmpSpawn extends CmpPhys
             case Truck:
                 var i = Math.floor(Math.random() * Type.allEnums(TruckType).length);
                 var type = Type.createEnumIndex(TruckType, i);
-                var arr = EntFactory.inst.createTruck(pos, dir, HEAVY_COMBINATION);
+                var arr = EntFactory.inst.createTruck(pos, dir, type);
                 for (e in arr) {
                     entity.state.insertEnt(e);
                 }
