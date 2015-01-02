@@ -12,6 +12,7 @@ import nape.phys.BodyType;
 import nape.shape.Polygon;
 import nape.space.Space;
 import openfl.Assets;
+import openfl.display.BitmapData;
 
 class CmpLevel extends Cmp
 {
@@ -104,7 +105,6 @@ class CmpLevel extends Cmp
                         continue;
                     }
                     var pos = Vec2.weak(Std.parseFloat(layer.get("x")), Std.parseFloat(layer.get("y")));
-                    trace(pos);
                     var parallaxK = Std.parseFloat(layer.get("parallaxK"));
                     var bmpDat = Assets.getBitmapData("img/" + layer.get("src"));
                     var w = bmpDat.width;
@@ -112,6 +112,14 @@ class CmpLevel extends Cmp
 
                     var bg = state.createEnt();
                     bg.attachCmp(new CmpRenderBg(bmpDat, pos, w, h, parallaxK));
+                    level.ents.push(bg);
+                }
+                // the depth ordering is so weird...
+                if (e.get("color") != null) {
+                    var sanitizedColor = StringTools.replace(e.get("color"), "#", "0x");
+                    var bgbmp = new BitmapData(Math.round(level.width), Math.round(level.height), false, Std.parseInt(sanitizedColor));
+                    var bg = state.createEnt();
+                    bg.attachCmp(new CmpRenderBg(bgbmp, Vec2.weak(0, 0), Math.round(level.width), Math.round(level.height), 1));
                     level.ents.push(bg);
                 }
             default:

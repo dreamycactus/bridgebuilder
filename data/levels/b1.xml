@@ -11,7 +11,7 @@
     <city x="-1" y="5" w="7" h="5" buildingW="0.9" layers="2" parallaxK="1.0" />
     <city x="17" y="5" w="4" h="5" buildingW="0.9" layers="2" parallaxK="1.0" />
     <bg color="#E898E1">
-        <layer src="l1_2.png" x="0" y="280" w="800" h="200" parallaxK="0.8" />
         <layer src="l1.png" x="0" y="280" w="800" h="200" parallaxK="1.0" />
+        <layer src="l1_2.png" x="0" y="260" w="800" h="200" parallaxK="0.5" />
     </bg>
 </root>

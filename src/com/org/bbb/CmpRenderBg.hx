@@ -14,14 +14,12 @@ class CmpRenderBg extends CmpRender
     public var height : Float;
     public var depth : Float;
     public var numLayers : Float;
-    public var pos : Vec2;
     public var animated: AnimatedSprite;
 
     var camPos : Vec2;
 
     public function new(bmpDat, pos : Vec2, w : Int, h : Int, parallaxK : Float) {
         super(true);
-        this.pos = pos;
         this.parallaxK = parallaxK;
         this.width = w;
         this.height = h;
