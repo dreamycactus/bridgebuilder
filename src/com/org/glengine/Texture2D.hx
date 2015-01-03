@@ -1,7 +1,7 @@
 package com.org.glengine;
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLTexture;
-import lime.utils.ArrayBufferView;
+import openfl.gl.GL;
+import openfl.gl.GLTexture;
+import openfl.utils.ArrayBufferView;
 
 /**
  * ...

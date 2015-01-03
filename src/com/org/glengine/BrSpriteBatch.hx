@@ -173,7 +173,7 @@ class BrSpriteBatch
             GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
             GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
             
-            GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
+            GL.uniformMatrix4fv(projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
             GL.uniformMatrix4fv(modelViewMatrixUniform, false, new Float32Array(transformMatrix.rawData));
             
             var stride = numItemsPerPack * 4;
@@ -182,6 +182,36 @@ class BrSpriteBatch
             GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, stride, 2 * 4);
             GL.vertexAttribPointer (colorAttribute, 2, GL.FLOAT, false, stride, 4 * 4);
             GL.uniform1i (imageUniform, 0);
+            
+            var positionX = (1024 - bitmapData.width) / 2;
+        var positionY = (576 - bitmapData.height) / 2;
+        var projectionMatrix = Matrix3D.createOrtho (0, rect.width, 0, rect.height, 10, -10);
+        //var modelViewMatrix = Matrix3D.create2D (1, 1, 1, 0);
+        
+        p.use();
+
+        GL.enableVertexAttribArray(vertexAttribute);
+        GL.enableVertexAttribArray(colorAttribute);
+
+        var g = new Float32Array([]);
+        GL.bindBuffer(GL.ARRAY_BUFFER, BufferId);
+        GL.vertexAttribPointer (vertexAttribute, 4, GL.FLOAT, false, 8 * 4, 0);
+        GL.vertexAttribPointer (colorAttribute, 4, GL.FLOAT, false, 8 * 4, 4 * g.BYTES_PER_ELEMENT);
+        
+        //trace(projectionMatrix.rawData);
+        GL.uniformMatrix4fv (MVPUniform, false, new Float32Array (projectionMatrix.rawData));
+        
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, IndexBufferId);
+        
+        GL.drawElements(GL.TRIANGLES, 48, GL.UNSIGNED_SHORT, 0);
+
+        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+        
+        GL.disableVertexAttribArray(vertexAttribute);
+        GL.disableVertexAttribArray(colorAttribute);
+        
+        GL.useProgram(null);
             
         }
         
