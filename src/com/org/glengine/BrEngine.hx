@@ -38,73 +38,23 @@ class BrEngine
     
     var p : GLSLProgram;
     var fb : BrScene;
-    
-    var Vertices = [
-       0.0, 0.0, 0.0, 1.0 ,  1.0, 1.0, 1.0, 1.0  ,
-	// Top
-	  -0.2, 0.8, 0.0, 1.0 ,  0.0, 1.0, 0.0, 1.0  ,
-	  0.2, 0.8, 0.0, 1.0 ,  0.0, 0.0, 1.0, 1.0  ,
-	  0.0, 0.8, 0.0, 1.0 ,  0.0, 1.0, 1.0, 1.0  ,
-	  0.0, 1.0, 0.0, 1.0 ,  1.0, 0.0, 0.0, 1.0  ,
-	// Bottom
-	  -0.2, -0.8, 0.0, 1.0 ,  0.0, 0.0, 1.0, 1.0  ,
-	  0.2, -0.8, 0.0, 1.0 ,  0.0, 1.0, 0.0, 1.0  ,
-	  0.0, -0.8, 0.0, 1.0 ,  0.0, 1.0, 1.0, 1.0  ,
-	  0.0, -1.0, 0.0, 1.0 ,  1.0, 0.0, 0.0, 1.0  ,
-	// Left
-	  -0.8, -0.2, 0.0, 1.0 ,  0.0, 1.0, 0.0, 1.0  ,
-	  -0.8, 0.2, 0.0, 1.0 ,  0.0, 0.0, 1.0, 1.0  ,
-	  -0.8, 0.0, 0.0, 1.0 ,  0.0, 1.0, 1.0, 1.0  ,
-	  -1.0, 0.0, 0.0, 1.0 ,  1.0, 0.0, 0.0, 1.0  ,
-	// Right
-	  0.8, -0.2, 0.0, 1.0 ,  0.0, 0.0, 1.0, 1.0  ,
-	  0.8, 0.2, 0.0, 1.0 ,  0.0, 1.0, 0.0, 1.0  ,
-	  0.8, 0.0, 0.0, 1.0 ,  0.0, 1.0, 1.0, 1.0  ,
-	  1.0, 0.0, 0.0, 1.0 ,  1.0, 0.0, 0.0, 1.0  
-    ];
-    
-    var Indices = [
-    0, 1, 3,
-    0, 3, 2,
-    3, 1, 4,
-    3, 4, 2,
-
-    // Bottom
-    0, 5, 7,
-    0, 7, 6,
-    7, 5, 8,
-    7, 8, 6,
-
-    // Left
-    0, 9, 11,
-    0, 11, 10,
-    11, 9, 12,
-    11, 12, 10,
-
-    // Right
-    0, 13, 15,
-    0, 15, 14,
-    15, 13, 16,
-    15, 16, 14
-    ];
-    var IndexBufferId : GLBuffer;
-    var BufferId : GLBuffer;
-    var BufferSize : Int;
+    var tr : TextureRegion;
+    var batch : BrSpriteBatch;
 
     public function new() 
     {
-        bitmapData = Assets.getBitmapData("img/openfl.png");
+        bitmapData = Assets.getBitmapData("img/smurf.png");
         if (OpenGLView.isSupported) {
             view = new OpenGLView();
 
             // Init shaders
             p = new GLSLProgram();
-            p.compileShaderFromFile("shaders/TVert.vert");
-            p.compileShaderFromFile("shaders/TFrag.frag");
+            p.compileShaderFromFile("shaders/vert.vert");
+            p.compileShaderFromFile("shaders/basic.frag");
             p.validate();
             p.link();
             
-            p.use();
+            p.begin();
             
             vertexAttribute = p.getAttribLocation("aVertexPosition");
             //texCoordAttribute = p.getAttribLocation ("aTexCoord");
@@ -145,7 +95,7 @@ class BrEngine
             texture.upload(0, 0, bitmapData.width, bitmapData.height, GL.UNSIGNED_BYTE, new Int32Array(cast GLUtils.getImgABGR(bitmapData)));
             texture.setFilter(GL.LINEAR, GL.LINEAR);
             texture.setWrap(GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE);
-
+            
             GL.bindTexture (GL.TEXTURE_2D, null);
             
         } else {
@@ -153,59 +103,32 @@ class BrEngine
         }
         
         view.render = renderView;
-        
-        BufferId = GL.createBuffer();
-        GL.bindBuffer(GL.ARRAY_BUFFER, BufferId);
-        GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(Vertices), GL.STATIC_DRAW);
-       
-        var indd = new Int16Array(Indices);
-        IndexBufferId = GL.createBuffer();
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, IndexBufferId);
-        GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indd, GL.STATIC_DRAW);
 
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
-        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        tr = new TextureRegion();
+        tr.initUV(texture, 0, 0, 0.25, 0.25);
+        batch = new BrSpriteBatch();
+        batch.shader = p;
     }
-    
+    var boo = true;
     function renderView(rect:Rectangle):Void {
-        
         GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
         
         GL.clearColor (1.0, 1.0, 0.5, 1.0);
+        
         GL.clear (GL.COLOR_BUFFER_BIT);
         
-        var positionX = (1024 - bitmapData.width) / 2;
-        var positionY = (576 - bitmapData.height) / 2;
-        var projectionMatrix = Matrix3D.createOrtho (0, rect.width, rect.height, 0, 10000, -10000);
-        var modelViewMatrix = Matrix3D.create2D (0, 0, 1, 0);
+        var projectionMatrix = Matrix3D.createOrtho (0, 1.78, 1, 0, 1000, -1000);
+        var modelViewMatrix = Matrix3D.create2D (0, 0, 1/1024, 0);
+        batch.projectionMatrix = projectionMatrix;
+        batch.modelViewMatrix = modelViewMatrix;
         
-        projectionMatrix.identity();
-        modelViewMatrix.identity();
-        
-        p.use();
-
-        GL.enableVertexAttribArray(vertexAttribute);
-        GL.enableVertexAttribArray(colorAttribute);
-
-        var g = new Float32Array([]);
-        GL.bindBuffer(GL.ARRAY_BUFFER, BufferId);
-        GL.vertexAttribPointer (vertexAttribute, 4, GL.FLOAT, false, 8 * 4, 0);
-        GL.vertexAttribPointer (colorAttribute, 4, GL.FLOAT, false, 8 * 4, 4 * g.BYTES_PER_ELEMENT);
-        
-        GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
-        GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (modelViewMatrix.rawData));
-        
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, IndexBufferId);
-        
-        GL.drawElements(GL.TRIANGLES, 48, GL.UNSIGNED_SHORT, 0);
-
-        GL.bindBuffer(GL.ARRAY_BUFFER, null);
-        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
-        
-        GL.disableVertexAttribArray(vertexAttribute);
-        GL.disableVertexAttribArray(colorAttribute);
-        
-        GL.useProgram(null);
+        batch.begin();
+            batch.draw(texture, 0, 0, 100, 100);
+            batch.draw(texture, 320 ,0, 100, 100);
+            batch.draw(texture, 924, 500, 100, 100);
+            batch.draw(texture, 2, 300, 100, 100);
+            batch.drawTextureRegion(tr, 100, 300, 200, 200, Math.PI * 0.5);
+        batch.end();
         
         return;
         GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
@@ -216,10 +139,10 @@ class BrEngine
         var stage = Lib.current.stage;
         var positionX = (stage.stageWidth - bitmapData.width) / 2;
         var positionY = (stage.stageHeight - bitmapData.height) / 2;
-        var projectionMatrix = Matrix3D.createOrtho (0, rect.width, rect.height, 0, 10000, -10000);
+        var projectionMatrix = Matrix3D.createOrtho (0, rect.width, rect.height, 0, 1000, -1000);
         var modelViewMatrix = Matrix3D.create2D (positionX, positionY, 1, 0);
         
-        p.use();
+        p.begin();
         
         GL.enableVertexAttribArray (vertexAttribute);
         GL.enableVertexAttribArray (texCoordAttribute);

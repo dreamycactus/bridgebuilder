@@ -1,9 +1,11 @@
 package com.org.glengine;
 
+import openfl.geom.Matrix3D;
 import openfl.gl.GL;
 import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
+import openfl.utils.Float32Array;
 
 
 enum GLSLShaderType
@@ -69,12 +71,20 @@ class GLSLProgram
         isLinked = true;
     }
     
-    public function use() : Void
+    public function begin() : Void
     {
         if (handle == null || !isLinked) {
             throw "Shader has not been linked";
         }
         GL.useProgram(handle);
+    }
+    
+    public function end() : Void
+    {
+        if (handle == null || !isLinked) {
+            throw "Shader has not been linked";
+        }
+        GL.useProgram(null);
     }
     
     public function validate() : Void
@@ -110,6 +120,11 @@ class GLSLProgram
     public function getUniformLocation(name : String) : GLUniformLocation
     {
         return GL.getUniformLocation(handle, name);
+    }
+    
+    public function setUniformMatrix(uniform : GLUniformLocation, matrix : Matrix3D)
+    {
+        GL.uniformMatrix4fv (uniform, false, new Float32Array (matrix.rawData));
     }
     
     function getShaderLog(shaderHandle : GLShader) : String
