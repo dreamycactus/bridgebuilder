@@ -2,6 +2,7 @@ package com.org.bbb;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import com.org.mes.Top;
 import nape.callbacks.InteractionCallback;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
@@ -262,7 +263,7 @@ class CmpMultiBeam extends CmpBeamBase
         if (compound == null) {
             return;
         }
-        var dt = entity.state.top.dt;
+        var dt = Top.dt;
 
         for (c in constraints) {
             var f = c.frequency - GameConfig.multiBeamFrequencyDecay * dt;

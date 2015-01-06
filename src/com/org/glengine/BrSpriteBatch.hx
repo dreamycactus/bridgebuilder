@@ -12,13 +12,14 @@ import openfl.utils.Float32Array;
  */
 class BrSpriteBatch
 {
+    public var maxSize : Int = 100;
+
     public var isDrawing(default, null) : Bool = false;
     public var currentBatchSize(default, null) : Int = 0;
     public var currentTexture(default, null) : Texture2D = null;
+    
     public var color : Int = 0xFFFFFF;
-    public var dirty : Bool = false;
     public var shader(default, set) : GLSLProgram;
-    public var maxSize : Int = 30;
     
     public var blendingEnabled(default, set) : Bool = true;
     public var blendingSrcFunction = GL.SRC_ALPHA;
@@ -28,7 +29,8 @@ class BrSpriteBatch
     public var projectionMatrix(default, set) : Matrix3D = new Matrix3D();
     
     var combinedMatrix : Matrix3D = new Matrix3D();
-    
+    var dirty : Bool = false;
+
     var idx : Int = 0;
     var numItemsPerPack = 5;
     var stride : Int;

@@ -6,6 +6,7 @@ import haxe.ds.ObjectMap;
 import nape.phys.Body;
 using Lambda;
 using com.org.bbb.Util;
+using com.org.utils.ArrayHelper;
 /**
  * ...
  * @author 
@@ -127,7 +128,7 @@ class BuildHistory
         
         stack.push( { ents: snapshot, lines : linechecker.copy() } );
         if (stack.length >= maxStackDepth) {
-            Util.popLast(stack);
+            stack.popLast();
         }
     }
     

@@ -21,6 +21,7 @@ using Lambda;
  * @author 
  */
 using com.org.bbb.Util;
+using com.org.utils.ArrayHelper;
  
 class SysRender extends System
 {
@@ -79,7 +80,7 @@ class SysRender extends System
         
         someStats.text = 'State\nEntities Created: ${state.index}\nNum Entities: ${state.ents.length}';
         for (c in cmpsToRender) {
-            c.render(state.top.dt);
+            c.render(Top.dt);
         }
         
     }

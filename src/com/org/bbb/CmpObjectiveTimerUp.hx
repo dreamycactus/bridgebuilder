@@ -1,4 +1,5 @@
 package com.org.bbb;
+import com.org.mes.Top;
 import openfl.utils.Float32Array;
 
 /**
@@ -19,7 +20,7 @@ class CmpObjectiveTimerUp extends CmpObjective
     {
         if (!active) { return; }
         
-        var dt = entity.state.top.dt;
+        var dt = Top.dt;
         
         elapsedTime += dt;
         

@@ -41,7 +41,7 @@ class SysPhysics extends System
         if (paused) {
             return;
         }
-        var deltaTime : Float = state.top.dt;
+        var deltaTime : Float = Top.dt;
         if (deltaTime > (1000 / 60)) {
             deltaTime = (1000 / 60);
         }

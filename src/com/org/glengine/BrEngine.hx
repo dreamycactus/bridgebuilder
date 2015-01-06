@@ -2,6 +2,8 @@ package com.org.glengine;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLView;
+import openfl.events.Event;
+import openfl.events.KeyboardEvent;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
@@ -10,6 +12,7 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLTexture;
 import openfl.gl.GLUniformLocation;
 import openfl.Lib;
+import openfl.ui.Keyboard;
 import openfl.utils.Float32Array;
 import openfl.utils.Int16Array;
 import openfl.utils.Int32Array;
@@ -38,13 +41,17 @@ class BrEngine
     
     var p : GLSLProgram;
     var pp : GLSLProgram;
-    var fb : BrScene;
+    var fb : BrPostProcess;
+    var fb2 : BrPostProcess;
     var tr : TextureRegion;
     var batch : BrSpriteBatch;
-
+    var fragStrings = ["scanline.frag", "hq2x.frag", "grain.frag", "blur.frag", "color/deuteranopia.frag", "color/grayscale.frag",
+                 "color/protanopia.frag", "color/tritanopia.frag", "basic.frag"];
+    var fragPrograms : Array<GLSLProgram> = new Array();
+    var fragIndex = 0;
     public function new() 
     {
-        bitmapData = Assets.getBitmapData("img/smurf.png");
+        bitmapData = Assets.getBitmapData("img/trucks4.png");
         if (OpenGLView.isSupported) {
             view = new OpenGLView();
 
@@ -55,11 +62,14 @@ class BrEngine
             p.validate();
             p.link();
             
-            //pp = new GLSLProgram();
-            //pp.compileShaderFromFile("shaders/hxp/defaultVert.vert");
-            //pp.compileShaderFromFile("shaders/hxp/grain.frag");
-            //pp.validate();
-            //pp.link();
+            for (s in fragStrings) {
+                var pp = new GLSLProgram();
+                pp.compileShaderFromFile("shaders/hxp/defaultVert.vert");
+                pp.compileShaderFromFile('shaders/hxp/$s');
+                pp.validate();
+                pp.link();
+                fragPrograms.push(pp);
+            }
             
             // Create texture
             texture = new Texture2D();
@@ -74,13 +84,19 @@ class BrEngine
         }
         
         view.render = renderView;
-        //fb = new BrScene(1024, 576);
-        //fb.shader = pp;
-        //fb.init();
+        fb = new BrPostProcess(1024, 576);
+        fb.shader = fragPrograms[0];
+        fb.init();
+        fb2 = new BrPostProcess(1024, 576);
+        fb2.shader = fragPrograms[0];
+        fb2.init();
+        fb.renderTo = fb2;
         tr = new TextureRegion();
         tr.initUV(texture, 0, 0, 0.25, 0.25);
         batch = new BrSpriteBatch();
         batch.shader = p;
+        Lib.current.addEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+        
     }
     
     function renderView(rect:Rectangle):Void {
@@ -95,17 +111,28 @@ class BrEngine
         //modelViewMatrix.identity();
         batch.projectionMatrix = projectionMatrix;
         batch.modelViewMatrix = modelViewMatrix;
-        //fb.capture();
+        
+        fb.capture();
         batch.begin();
-            batch.draw(texture, -2, -2, 200, 200);
-            batch.draw(texture, 320 ,300, 100, 100);
-            batch.draw(texture, 924, 500, 100, 100);
-            batch.draw(texture, 2, 300, 100, 100);
-            batch.drawTextureRegion(tr, -2, 200, 200, 400, Math.PI * 0.5);
+            batch.draw(texture, 0, 0, 1024, 576);
+            //batch.draw(texture, 320 ,300, 100, 100);
+            //batch.draw(texture, 924, 500, 100, 100);
+            //batch.draw(texture, 2, 300, 100, 100);
+            //batch.drawTextureRegion(tr, -2, 200, 200, 400, Math.PI * 0.5);
         batch.end();
         
-        //fb.render();
+        fb.render();
+        fb2.render();
         
     }
     
+    public function keyDown(ev:KeyboardEvent)
+    {
+        if (ev.keyCode == Keyboard.SPACE) {
+            if (++fragIndex == fragPrograms.length) {
+                fragIndex = 0;
+            }
+            fb.shader = fragPrograms[fragIndex];
+        }
+    }
 }

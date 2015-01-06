@@ -42,6 +42,7 @@ import ru.stablex.ui.widgets.InputText;
 import ru.stablex.ui.widgets.Text;
 
 using com.org.bbb.Util;
+using com.org.utils.ArrayHelper;
 
 class CmpControlBuild extends CmpControl
 {

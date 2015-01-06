@@ -3,6 +3,7 @@ import com.org.bbb.CmpMultiBeam.SplitType;
 import com.org.bbb.GameConfig.JointType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import com.org.mes.Top;
 import nape.geom.Vec3;
 import nape.phys.MassMode;
 import nape.space.Space;
@@ -51,7 +52,7 @@ class CmpBeam extends CmpBeamBase
     }
     override public function update()
     {
-        var dt = entity.state.top.dt;
+        var dt = Top.dt;
         
         var w = width;
         var h = material.height;

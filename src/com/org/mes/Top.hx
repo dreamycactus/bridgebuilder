@@ -6,6 +6,9 @@ package com.org.mes;
  */
 class Top
 {
+    public static var dt : Float = 0;
+    public static var elapsed : Float = 0;
+    
     public var state : MESState;
     var ents : List<Entity>;
     var sys : List<System>;
@@ -14,7 +17,6 @@ class Top
     var cmpManager : CmpManager;
     
     public var prevTime : Int;
-    public var dt : Float;
     //public var entCount(get_entCount, null) : Int;
     
     public var transitioning(get_transitioning, null) : Bool = false;
@@ -40,7 +42,8 @@ class Top
     
     public function update(dt : Float)
     {
-        this.dt = dt;
+        Top.dt = dt;
+        Top.elapsed += dt;
         
         state.update();
     }

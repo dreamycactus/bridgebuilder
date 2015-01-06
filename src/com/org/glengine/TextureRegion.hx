@@ -42,4 +42,9 @@ class TextureRegion
         regionWidth = Std.int(Math.abs(u2 - u) * texture.width);
         regionHeight = Std.int(Math.abs(v2 - v) * texture.height);
     }
+    
+    public function dispose()
+    {
+        if (texture != null) { texture.dispose(); }
+    }
 }

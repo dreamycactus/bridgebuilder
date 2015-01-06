@@ -1,5 +1,6 @@
 package com.org.bbb;
 import com.org.mes.Cmp;
+import com.org.mes.Top;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.space.Space;
@@ -45,7 +46,7 @@ class CmpSpawn extends CmpPhys
     override public function update() : Void
     {
         if (!active) { return; }
-        var dt = entity.state.top.dt;
+        var dt = Top.dt;
         
         spawnCD -= 30;
         pos = body.position;

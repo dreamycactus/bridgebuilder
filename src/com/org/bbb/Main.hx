@@ -8,6 +8,7 @@ import openfl.display.OpenGLView;
 import openfl.display.Sprite;
 import openfl.display.StageDisplayState;
 import openfl.events.Event;
+import openfl.events.KeyboardEvent;
 import openfl.gl.GL;
 import openfl.Lib;
 import openfl.display.StageAlign;
@@ -94,15 +95,18 @@ class Main extends Sprite
     public function new() 
     {
         super();    
-        
+
         addEventListener(Event.ADDED_TO_STAGE, added);
     }
 
     function added(e) 
     {
         removeEventListener(Event.ADDED_TO_STAGE, added);
-        stage.addEventListener(Event.RESIZE, resize);
-        init();
+        //stage.addEventListener(Event.RESIZE, resize);
+        //init();
+        var gl = new BrEngine();
+        stage.addEventListener(KeyboardEvent.KEY_DOWN, gl.keyDown);
+        Lib.current.addChild(gl.view);
     }
     
     public static function main() 
@@ -121,9 +125,8 @@ class Main extends Sprite
 #end
         
 #end      
-        //Lib.current.addChild(new Main());
-        var gl = new BrEngine();
-        Lib.current.addChild(gl.view);
+        Lib.current.addChild(new Main());
+        
     }
     
     
