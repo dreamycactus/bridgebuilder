@@ -12,9 +12,9 @@ import openfl.utils.Float32Array;
  */
 class BrSpriteBatch
 {
-    public var isDrawing : Bool = false;
-    public var currentBatchSize : Int = 0;
-    public var currentTexture : Texture2D = null;
+    public var isDrawing(default, null) : Bool = false;
+    public var currentBatchSize(default, null) : Int = 0;
+    public var currentTexture(default, null) : Texture2D = null;
     public var color : Int = 0xFFFFFF;
     public var dirty : Bool = false;
     public var shader(default, set) : GLSLProgram;
@@ -24,8 +24,8 @@ class BrSpriteBatch
     public var blendingSrcFunction = GL.SRC_ALPHA;
     public var blendingDstFunction = GL.ONE_MINUS_SRC_ALPHA;
 
-    public var modelViewMatrix : Matrix3D = new Matrix3D();
-    public var projectionMatrix : Matrix3D = new Matrix3D();
+    public var modelViewMatrix(default, set) : Matrix3D = new Matrix3D();
+    public var projectionMatrix(default, set) : Matrix3D = new Matrix3D();
     
     var combinedMatrix : Matrix3D = new Matrix3D();
     
@@ -77,6 +77,7 @@ class BrSpriteBatch
     public function begin() : Void
     {
         GL.depthMask(false);
+        shader.begin();
         setupMatrices();
         
         isDrawing = true;
@@ -354,7 +355,6 @@ class BrSpriteBatch
     
     function set_shader(s : GLSLProgram) : GLSLProgram
     {
-        
         if (isDrawing) {
             flush();
             GL.useProgram(null);

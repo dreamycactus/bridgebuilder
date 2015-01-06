@@ -82,28 +82,26 @@ class BrEngine
         batch = new BrSpriteBatch();
         batch.shader = p;
     }
-    var boo = true;
+    
     function renderView(rect:Rectangle):Void {
         GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
         
         GL.clearColor (1.0, 1.0, 0.5, 1.0);
-        
         GL.clear (GL.COLOR_BUFFER_BIT);
         
-        var projectionMatrix = Matrix3D.createOrtho (0, 1.78, 1, 0, 1000, -1000);
-        var modelViewMatrix = Matrix3D.create2D (0, 0, 1.0 / 1024, 0);
-        projectionMatrix.identity();
-        modelViewMatrix.identity();
+        var projectionMatrix = Matrix3D.createOrtho (0, 1024, 576, 0, 1000, -1000);
+        var modelViewMatrix = Matrix3D.create2D (0, 0, 1.0, 0);
+        //projectionMatrix.identity();
+        //modelViewMatrix.identity();
         batch.projectionMatrix = projectionMatrix;
         batch.modelViewMatrix = modelViewMatrix;
-        
         //fb.capture();
         batch.begin();
-            batch.draw(texture, 0, 0, 100, 100);
-            batch.draw(texture, 320 ,0, 100, 100);
+            batch.draw(texture, -2, -2, 200, 200);
+            batch.draw(texture, 320 ,300, 100, 100);
             batch.draw(texture, 924, 500, 100, 100);
             batch.draw(texture, 2, 300, 100, 100);
-            batch.drawTextureRegion(tr, 100, 300, 200, 200, Math.PI * 0.5);
+            batch.drawTextureRegion(tr, -2, 200, 200, 400, Math.PI * 0.5);
         batch.end();
         
         //fb.render();

@@ -6,6 +6,7 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
+import openfl.Vector;
 
 
 enum GLSLShaderType
@@ -103,14 +104,15 @@ class GLSLProgram
     {
         GL.bindAttribLocation(handle, location, name);
     }
-    public function bindFragDataLocation(location : Int, name : String) : Void
-    {
-    }
-
-    public function setUniform3f(name : String, x : Float, y : Float, z : Float) : Void
-    {
-
-    }
+    
+    //public function bindFragDataLocation(location : Int, name : String) : Void
+    //{
+    //}
+//
+    //public function setUniform3f(name : String, x : Float, y : Float, z : Float) : Void
+    //{
+//
+    //}
 
     public function getAttribLocation(name : String) : GLUniformLocation
     {
@@ -124,7 +126,7 @@ class GLSLProgram
     
     public function setUniformMatrix(uniform : GLUniformLocation, matrix : Matrix3D)
     {
-        GL.uniformMatrix4fv (uniform, false, new Float32Array (matrix.rawData));
+        GL.uniformMatrix4fv (uniform, false, new Float32Array(matrix.rawData));
     }
     
     function getShaderLog(shaderHandle : GLShader) : String
