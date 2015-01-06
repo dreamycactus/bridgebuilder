@@ -39,8 +39,6 @@ class BrSpriteBatch
     var vertexBuffer : GLBuffer;
     var vertices : Float32Array;
     
-
-    
     // Shader Uniforms
     var vertexAttribute : GLUniformLocation;
     var texCoordAttribute : GLUniformLocation;
@@ -349,7 +347,7 @@ class BrSpriteBatch
     function setupMatrices() : Void
     {
         combinedMatrix.copyFrom(projectionMatrix);
-        combinedMatrix.prepend(modelViewMatrix);
+        combinedMatrix.append(modelViewMatrix);
         shader.setUniformMatrix(projectionTransformMatrixUniform, combinedMatrix);
         
     }
@@ -359,7 +357,7 @@ class BrSpriteBatch
         
         if (isDrawing) {
             flush();
-            shader.end();
+            GL.useProgram(null);
         }
         shader = s;
         if (s != null) {

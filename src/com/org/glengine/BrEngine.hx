@@ -37,6 +37,7 @@ class BrEngine
     private var vertexBuffer:GLBuffer;
     
     var p : GLSLProgram;
+    var pp : GLSLProgram;
     var fb : BrScene;
     var tr : TextureRegion;
     var batch : BrSpriteBatch;
@@ -54,41 +55,11 @@ class BrEngine
             p.validate();
             p.link();
             
-            p.begin();
-            
-            vertexAttribute = p.getAttribLocation("aVertexPosition");
-            //texCoordAttribute = p.getAttribLocation ("aTexCoord");
-            projectionMatrixUniform = p.getUniformLocation("uProjectionMatrix");
-            modelViewMatrixUniform = p.getUniformLocation("uModelViewMatrix");
-            //colorAttribute = p.getAttribLocation ("aColor");
-            //MVPUniform = p.getUniformLocation ("uMVP");
-            imageUniform = p.getUniformLocation ("uImage0");
-            
-            // Init buffers
-            var vertices = [
-                bitmapData.width, bitmapData.height,
-                0, bitmapData.height,
-                bitmapData.width, 0,
-                0, 0
-            ];
-            
-            vertexBuffer = GL.createBuffer ();
-            GL.bindBuffer (GL.ARRAY_BUFFER, vertexBuffer);
-            GL.bufferData (GL.ARRAY_BUFFER, new Float32Array (cast vertices), GL.STATIC_DRAW);
-            GL.bindBuffer (GL.ARRAY_BUFFER, null);
-            
-            var texCoords = [
-                1, 1, 
-                0, 1, 
-                1, 0, 
-                0, 0, 
-            ];
-            
-            texCoordBuffer = GL.createBuffer ();
-            GL.bindBuffer (GL.ARRAY_BUFFER, texCoordBuffer);
-            GL.bufferData (GL.ARRAY_BUFFER, new Float32Array (cast texCoords), GL.STATIC_DRAW);
-            GL.bindBuffer (GL.ARRAY_BUFFER, null);
-            
+            //pp = new GLSLProgram();
+            //pp.compileShaderFromFile("shaders/hxp/defaultVert.vert");
+            //pp.compileShaderFromFile("shaders/hxp/grain.frag");
+            //pp.validate();
+            //pp.link();
             
             // Create texture
             texture = new Texture2D();
@@ -103,7 +74,9 @@ class BrEngine
         }
         
         view.render = renderView;
-
+        //fb = new BrScene(1024, 576);
+        //fb.shader = pp;
+        //fb.init();
         tr = new TextureRegion();
         tr.initUV(texture, 0, 0, 0.25, 0.25);
         batch = new BrSpriteBatch();
@@ -118,10 +91,13 @@ class BrEngine
         GL.clear (GL.COLOR_BUFFER_BIT);
         
         var projectionMatrix = Matrix3D.createOrtho (0, 1.78, 1, 0, 1000, -1000);
-        var modelViewMatrix = Matrix3D.create2D (0, 0, 1/1024, 0);
+        var modelViewMatrix = Matrix3D.create2D (0, 0, 1.0 / 1024, 0);
+        projectionMatrix.identity();
+        modelViewMatrix.identity();
         batch.projectionMatrix = projectionMatrix;
         batch.modelViewMatrix = modelViewMatrix;
         
+        //fb.capture();
         batch.begin();
             batch.draw(texture, 0, 0, 100, 100);
             batch.draw(texture, 320 ,0, 100, 100);
@@ -130,45 +106,8 @@ class BrEngine
             batch.drawTextureRegion(tr, 100, 300, 200, 200, Math.PI * 0.5);
         batch.end();
         
-        return;
-        GL.viewport (Std.int (rect.x), Std.int (rect.y), Std.int (rect.width), Std.int (rect.height));
+        //fb.render();
         
-        GL.clearColor (1.0, 1.0, 1.0, 1.0);
-        GL.clear (GL.COLOR_BUFFER_BIT);
-        
-        var stage = Lib.current.stage;
-        var positionX = (stage.stageWidth - bitmapData.width) / 2;
-        var positionY = (stage.stageHeight - bitmapData.height) / 2;
-        var projectionMatrix = Matrix3D.createOrtho (0, rect.width, rect.height, 0, 1000, -1000);
-        var modelViewMatrix = Matrix3D.create2D (positionX, positionY, 1, 0);
-        
-        p.begin();
-        
-        GL.enableVertexAttribArray (vertexAttribute);
-        GL.enableVertexAttribArray (texCoordAttribute);
-        
-        GL.activeTexture (GL.TEXTURE0);
-        texture.bind();
-        
-        GL.bindBuffer (GL.ARRAY_BUFFER, vertexBuffer);
-        GL.vertexAttribPointer (vertexAttribute, 2, GL.FLOAT, false, 0, 0);
-        GL.bindBuffer (GL.ARRAY_BUFFER, texCoordBuffer);
-        GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, 0, 0);
-        
-        //modelViewMatrix.identity();
-        GL.uniformMatrix4fv (projectionMatrixUniform, false, new Float32Array (projectionMatrix.rawData));
-        GL.uniformMatrix4fv (modelViewMatrixUniform, false, new Float32Array (modelViewMatrix.rawData));
-        GL.uniform1i (imageUniform, 0);
-        
-        GL.drawArrays (GL.TRIANGLE_STRIP, 0, 4);
-        
-        GL.bindBuffer (GL.ARRAY_BUFFER, null);
-        GL.bindTexture (GL.TEXTURE_2D, null);
-        
-        GL.disableVertexAttribArray (vertexAttribute);
-        GL.disableVertexAttribArray (texCoordAttribute);
-        
-        GL.useProgram (null);
     }
     
 }
