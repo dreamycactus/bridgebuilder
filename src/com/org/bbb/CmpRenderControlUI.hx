@@ -35,7 +35,13 @@ class CmpRenderControlUI extends CmpRender
         if (rw != null) {
             rw.free(true);
         }
-        //uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
+
+        UIBuilder.regClass('CmpControlBuild');
+        UIBuilder.regClass('GameConfig');
+        UIBuilder.regClass('WControlBar');
+        UIBuilder.regClass('WBottomBar');
+        UIBuilder.regClass('WSideBar');
+        uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
         uiInstance = uiBuild({
             controlBuild : buildControl
         });

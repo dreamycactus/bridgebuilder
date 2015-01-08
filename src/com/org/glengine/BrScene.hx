@@ -6,7 +6,7 @@ using com.org.utils.ArrayHelper;
 class BrScene
 {   
     public var batch : BrSpriteBatch = new BrSpriteBatch();
-    public var sprites : Array<BrSprite> = new Array();
+    public var children : Array<BrBatchDrawable> = new Array();
     
     public function new() 
     {
@@ -16,24 +16,24 @@ class BrScene
     public function render() : Void
     {
         batch.begin();
-            for (s in sprites) {
+            for (s in children) {
                 s.drawBatched(batch);
             }
         batch.end();
     }
     
-    public function addToScene(sprite : BrSprite) : Void
+    public function addToScene(d : BrBatchDrawable) : Void
     {
-        sprites.insertInPlace(sprite, higherDrawLayer);
+        children.insertInPlace(d, higherDrawLayer);
     }
     
     //TODO remove using binary search
-    public function removeFromScene(sprite : BrSprite) : Bool
+    public function removeFromScene(d : BrBatchDrawable) : Bool
     {
-        return sprites.remove(sprite);
+        return children.remove(d);
     }
     
-    function higherDrawLayer(a : BrDrawable, b : BrDrawable) : Bool
+    function higherDrawLayer(a : BrBatchDrawable, b : BrBatchDrawable) : Bool
     {
         return a.drawLayer > b.drawLayer;
     }

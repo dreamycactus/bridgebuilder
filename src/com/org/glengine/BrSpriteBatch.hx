@@ -1,4 +1,5 @@
 package com.org.glengine;
+import openfl.utils.ByteArray;
 import openfl.utils.Int16Array;
 import openfl.geom.Matrix3D;
 import openfl.gl.GL;
@@ -28,6 +29,8 @@ class BrSpriteBatch
     public var modelViewMatrix(default, set) : Matrix3D = new Matrix3D();
     public var projectionMatrix(default, set) : Matrix3D = new Matrix3D();
     
+    static var FLOAT_SIZE = Float32Array.SBYTES_PER_ELEMENT;
+    
     var combinedMatrix : Matrix3D = new Matrix3D();
     var dirty : Bool = false;
 
@@ -54,7 +57,7 @@ class BrSpriteBatch
         var numVerts = maxSize * 4 * numItemsPerPack;
         var numIndicies = maxSize * numItemsPerPack;
         
-        stride = numItemsPerPack * Float32Array.SBYTES_PER_ELEMENT;
+        stride = numItemsPerPack * FLOAT_SIZE;
 
         vertices = new Float32Array(numVerts);
         indices = new Int16Array (numIndicies);
@@ -149,8 +152,6 @@ class BrSpriteBatch
         vertices[idx++] = u2;
         vertices[idx++] = v;
         vertices[idx++] = color;
-        
-        currentBatchSize++;
         
         dirty = true;
 
@@ -264,10 +265,44 @@ class BrSpriteBatch
         vertices[idx++] = color;
         
         this.idx = idx;
-        currentBatchSize++;
         
         dirty = true;
 
+    }
+    
+    public function drawBatched(texture : Texture2D, spriteVertices : Float32Array, offset : Int, count : Int)
+    {
+        if (!isDrawing) {
+            throw "Sprite batch is not drawing";
+        }
+        var verticesLength = vertices.length;
+        var remainingVertices = verticesLength - idx;
+        if (texture != currentTexture) {
+            switchTexture(texture);
+        } else {
+            if (remainingVertices == 0) {
+                flush();
+                remainingVertices = verticesLength;
+            }
+        }
+        // Draw as much as possible by using the full remaining buffer if needed
+        var copyCount = Std.int(Math.min(remainingVertices, count));
+        vertices.buffer.blit(idx * FLOAT_SIZE, spriteVertices.buffer, offset, copyCount * FLOAT_SIZE);
+        idx += copyCount;
+        count -= copyCount;
+        
+        // If there are still vertices to be sent, flush and upload again
+        while (count > 0) {
+            offset += copyCount;
+            flush();
+            copyCount = Std.int(Math.min(verticesLength, count));
+            vertices.buffer.blit(idx * FLOAT_SIZE, spriteVertices.buffer, offset, copyCount * FLOAT_SIZE);
+            idx += copyCount;
+            count -= copyCount;
+        }
+        
+        dirty = true;
+        
     }
     
     function buildBuffers() : Void
@@ -302,9 +337,7 @@ class BrSpriteBatch
             GL.enableVertexAttribArray(texCoordAttribute);
             GL.enableVertexAttribArray(colorAttribute);
             
-            GL.activeTexture(GL.TEXTURE0);
-            currentTexture.bind();
-            GL.uniform1i (imageUniform, 0);
+
 
             GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
             // Upload Data.. creating new buffer if the current buffer exceeds a size
@@ -315,24 +348,28 @@ class BrSpriteBatch
             //}
             
             GL.vertexAttribPointer (vertexAttribute, 2, GL.FLOAT, false, stride, 0);
-            GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, stride, 2 * Float32Array.SBYTES_PER_ELEMENT);
-            GL.vertexAttribPointer (colorAttribute, 1, GL.FLOAT, false, stride, 4 * Float32Array.SBYTES_PER_ELEMENT);
-            
-            GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
-            GL.drawElements(GL.TRIANGLES, 6*currentBatchSize, GL.UNSIGNED_SHORT, 0);
-
-            GL.bindBuffer(GL.ARRAY_BUFFER, null);
-            GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
-            
-            GL.disableVertexAttribArray(vertexAttribute);
-            GL.disableVertexAttribArray(texCoordAttribute);
-            GL.disableVertexAttribArray(colorAttribute);
-            
-            GL.useProgram(null);
-            
+            GL.vertexAttribPointer (texCoordAttribute, 2, GL.FLOAT, false, stride, 2 * FLOAT_SIZE);
+            GL.vertexAttribPointer (colorAttribute, 1, GL.FLOAT, false, stride, 4 * FLOAT_SIZE);
         }
         
-        currentBatchSize = 0;
+        GL.activeTexture(GL.TEXTURE0);
+        currentTexture.bind();
+        GL.uniform1i (imageUniform, 0);
+        
+        GL.bindBuffer(GL.ARRAY_BUFFER, vertexBuffer);
+        
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        GL.drawElements(GL.TRIANGLES, idx, GL.UNSIGNED_SHORT, 0);
+
+        GL.bindBuffer(GL.ARRAY_BUFFER, null);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+        
+        GL.disableVertexAttribArray(vertexAttribute);
+        GL.disableVertexAttribArray(texCoordAttribute);
+        GL.disableVertexAttribArray(colorAttribute);
+        
+        GL.useProgram(null);
+        
         idx = 0;
     }
     

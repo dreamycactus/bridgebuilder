@@ -1,6 +1,5 @@
 package com.org.bbb;
 
-import com.org.glengine.BrEngine;
 import com.org.mes.Entity;
 import com.org.mes.EntityType;
 import com.org.mes.Top;
@@ -14,11 +13,12 @@ import openfl.Lib;
 import openfl.display.StageAlign;
 import openfl.display.StageScaleMode;
 import openfl.geom.Matrix;
-import openfl.utils.Float32Array;
 import ru.stablex.ui.UIBuilder;
 
 #if cpp
 import cpp.vm.Profiler;
+import com.org.glengine.BrEngine;
+
 #end
 
 import nape.geom.Vec2;
@@ -53,20 +53,18 @@ class Main extends Sprite
     
     function init() 
     {
+
+        UIBuilder.regSkins('data/ui/skins.xml');
+        UIBuilder.init("data/ui/defaults.xml");
         if (inited) return;
         inited = true;
         
         Lib.current.stage.align = StageAlign.TOP_LEFT;
         Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
         
-        UIBuilder.regClass('CmpControlBuild');
-        UIBuilder.regClass('GameConfig');
-        UIBuilder.regClass('WControlBar');
-        UIBuilder.regClass('WBottomBar');
-        UIBuilder.regClass('WSideBar');
-        UIBuilder.regSkins('data/ui/skins.xml');
-        UIBuilder.init("data/ui/defaults.xml");
+        
         this.stage.addEventListener(Event.ENTER_FRAME, enterFrame);
+
 
         GameConfig.init();
         top = new Top();
@@ -102,11 +100,11 @@ class Main extends Sprite
     function added(e) 
     {
         removeEventListener(Event.ADDED_TO_STAGE, added);
-        //stage.addEventListener(Event.RESIZE, resize);
-        //init();
-        var gl = new BrEngine();
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, gl.keyDown);
-        Lib.current.addChild(gl.view);
+        stage.addEventListener(Event.RESIZE, resize);
+        init();
+        //var gl = new BrEngine();
+        //stage.addEventListener(KeyboardEvent.KEY_DOWN, gl.keyDown);
+        //Lib.current.addChild(gl.view);
     }
     
     public static function main() 

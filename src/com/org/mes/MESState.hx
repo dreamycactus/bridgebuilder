@@ -153,10 +153,12 @@ class MESState
     public function distributeMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         var subscribers = msgSubscribers.get(msgType);
+        #if debug
         if (subscribers == null || subscribers.length == 0) {
             trace('No msg subscribers exist of type $msgType');
             return;
         }
+        #end
         for (s in subscribers) {
             s.recieveMsg(msgType, sender, options);
         }

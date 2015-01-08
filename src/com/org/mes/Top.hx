@@ -1,4 +1,5 @@
 package com.org.mes;
+import com.org.glengine.BrEngine;
 
 /**
  * ...
@@ -10,9 +11,7 @@ class Top
     public static var elapsed : Float = 0;
     
     public var state : MESState;
-    var ents : List<Entity>;
-    var sys : List<System>;
-    var entIndex : Int;
+    public var glengine : BrEngine;
     
     var cmpManager : CmpManager;
     
@@ -20,12 +19,16 @@ class Top
     //public var entCount(get_entCount, null) : Int;
     
     public var transitioning(get_transitioning, null) : Bool = false;
-    public var transition : Transition;
+    
+    var ents : List<Entity>;
+    var sys : List<System>;
+    var entIndex : Int;
     
     public function new() 
     {
         ents = new List();
         sys = new List();
+        glengine = new BrEngine();
         entIndex = 0;
     }
         

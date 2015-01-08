@@ -90,7 +90,7 @@ class BrEngine
         fb2 = new BrPostProcess(1024, 576);
         fb2.shader = fragPrograms[0];
         fb2.init();
-        fb.renderTo = fb2;
+        //fb.renderTo = fb2;
         tr = new TextureRegion();
         tr.initUV(texture, 0, 0, 0.25, 0.25);
         batch = new BrSpriteBatch();
@@ -112,9 +112,14 @@ class BrEngine
         batch.projectionMatrix = projectionMatrix;
         batch.modelViewMatrix = modelViewMatrix;
         
+        var sp = new BrSprite();
+        sp.initUV(texture, 0 , 0, 1, 1);
+        
         fb.capture();
         batch.begin();
-            batch.draw(texture, 0, 0, 1024, 576);
+            //batch.draw(texture, 0, 0, 1024, 576);
+            sp.drawBatched(batch);
+
             //batch.draw(texture, 320 ,300, 100, 100);
             //batch.draw(texture, 924, 500, 100, 100);
             //batch.draw(texture, 2, 300, 100, 100);
@@ -122,7 +127,7 @@ class BrEngine
         batch.end();
         
         fb.render();
-        fb2.render();
+        //fb2.render();
         
     }
     
