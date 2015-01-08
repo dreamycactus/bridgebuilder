@@ -13,17 +13,19 @@ import spritesheet.AnimatedSprite;
  * @author ...
  */
 using com.org.bbb.Util;
-class CmpRenderCar extends CmpRender
+class CmpRenderTruckTractor extends CmpRender
 {
-    var cmpcar : CmpMoverCar;
+    var cmpcar : CmpMoverTruckTractor;
+    var rotDelta : Float = 0;
+    var chassisSpritesheet : Spritesheet;
+    var wheelSpritesheet : Spritesheet;
+    var chassis : AnimatedSprite;
     var fw : AnimatedSprite;
     var bw : AnimatedSprite;
-    var chassis : AnimatedSprite;
-    var rotDelta : Float = 0;
     static var sds : StringMap<SpriteData> = null;
-    static var spriteSpecPath: String = "vehicles/car.xml";
+    static var spriteSpecPath: String = "vehicles/truck_tractor.xml";
 
-    public function new(cmpcar : CmpMoverCar) 
+    public function new(cmpcar: CmpMoverTruckTractor)
     {
         super(true);
 
@@ -33,37 +35,38 @@ class CmpRenderCar extends CmpRender
 
         this.cmpcar = cmpcar;
         displayLayer = GameConfig.zCar;
-
         var specChassis = sds.get("chassis");
-        var chassisSpritesheet = BitmapImporter.create(specChassis.bmpDat,
+        this.chassisSpritesheet = BitmapImporter.create(specChassis.bmpDat,
                                                         specChassis.slice.rows,
                                                         specChassis.slice.cols,
                                                         specChassis.slice.frameW,
                                                         specChassis.slice.frameH);
 
         for (anim in specChassis.anims) {
-            chassisSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));
+            this.chassisSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));
         }
 
-        chassis = new AnimatedSprite(chassisSpritesheet, true);
+        var wheelChassis = sds.get("wheel");
+        if (wheelChassis != null) {
+            this.wheelSpritesheet = BitmapImporter.create(wheelChassis.bmpDat,
+                                                          wheelChassis.slice.rows,
+                                                          wheelChassis.slice.cols,
+                                                          wheelChassis.slice.frameW,
+                                                          wheelChassis.slice.frameH);
+            for (anim in wheelChassis.anims) {
+                this.wheelSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));
+            }
+        }
+
+        chassis = new AnimatedSprite(this.chassisSpritesheet, true);
         chassis.showBehavior("idle");
         sprite.addChild(chassis);
 
-        var specWheel = sds.get("wheel");
-        if (specWheel != null) {
-            var wheelSpritesheet = BitmapImporter.create(specWheel.bmpDat,
-                                                         specWheel.slice.rows,
-                                                         specWheel.slice.cols,
-                                                         specWheel.slice.frameW,
-                                                         specWheel.slice.frameH);
-            for (anim in specWheel.anims) {
-                wheelSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));
-            }
-
-            fw = new AnimatedSprite(wheelSpritesheet, true);
+        if (this.wheelSpritesheet != null) {
+            fw = new AnimatedSprite(this.wheelSpritesheet, true);
             fw.showBehavior("idle");
 
-            bw = new AnimatedSprite(wheelSpritesheet, true);
+            bw = new AnimatedSprite(this.wheelSpritesheet, true);
             bw.showBehavior("idle");
 
             sprite.addChild(fw);
@@ -74,6 +77,8 @@ class CmpRenderCar extends CmpRender
     override public function render(dt : Float) : Void
     {
         var chassispos = cmpcar.compound.bodies.at(2).position;
+        var fwpos = cmpcar.compound.bodies.at(1).position;
+        var bwpos = cmpcar.compound.bodies.at(0).position;
 
         var rot = cmpcar.compound.bodies.at(2).rotation;
         this.chassis.rotateSprite(Vec2.get(chassis.x, chassis.y), rot);
@@ -84,19 +89,14 @@ class CmpRenderCar extends CmpRender
         var delta = Math.round(dt);
         this.chassis.update(delta);
 
-        var fwpos = cmpcar.compound.bodies.at(1).position;
-        var bwpos = cmpcar.compound.bodies.at(0).position;
-        if (this.fw != null) {
+        if (this.wheelSpritesheet != null) {
             fw.rotateSprite(Vec2.get(fw.x, fw.y), cmpcar.compound.bodies.at(1).rotation);
             fw.x = fwpos.x;
             fw.y = fwpos.y;
-            this.fw.update(delta);
-        }
-
-        if (this.bw != null) {
             bw.rotateSprite(Vec2.get(fw.x, fw.y), cmpcar.compound.bodies.at(1).rotation);
             bw.x = bwpos.x;
             bw.y = bwpos.y;
+            this.fw.update(delta);
             this.bw.update(delta);
         }
     }

@@ -2,6 +2,8 @@
 bin/
 Debug/
 Release/
+
+>>>>>>> master
 # Other files and folders
 .settings/
 

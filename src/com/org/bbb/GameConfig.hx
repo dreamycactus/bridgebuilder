@@ -142,6 +142,7 @@ class GameConfig
     public static var tdelete = "Delete";
     
     public static var zStars : Int = 20;
+    public static var zBG : Int = 10;
     public static var zCity : Int = 7;
     public static var zAnchor : Int = 9;
     public static var zBeam : Int = 5;
@@ -159,8 +160,10 @@ class GameConfig
     {
         Cmp.cmpManager = new CmpManager();
         Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
-                                       , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBgStarfield, CmpRenderBgCityfield
-                                       , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderCar, CmpRenderRain, CmpRenderPony]);
+                                      , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBg, CmpRenderBgStarfield, CmpRenderBgCityfield
+                                      , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable
+                                      , CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderTrainLocomotive, CmpRenderTrainCar
+                                      , CmpRenderRain, CmpRenderPony]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);

@@ -1064,6 +1064,9 @@ class CmpControlBuild extends CmpControl
             //GameConfig.resize(stage.stageWidth, stage.stageHeight);
             //state.getSystem(SysRender).resize(stage.stageWidth, stage.stageHeight);
         }
+        if (ev.keyCode == Keyboard.L) {
+            state.getSystem(SysRender).drawDebug = !state.getSystem(SysRender).drawDebug;
+        }
         
         if (lastSelectedBody == null) return;
         
@@ -1095,9 +1098,7 @@ class CmpControlBuild extends CmpControl
         } else if (ev.keyCode == Keyboard.RIGHT) {
             inX.text = cast(x+rate);
         }
-        if (ev.keyCode == Keyboard.P) {
-            
-        }
+        
         setPos();        
         setBox();
     }

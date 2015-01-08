@@ -13,17 +13,17 @@ import spritesheet.AnimatedSprite;
  * @author ...
  */
 using com.org.bbb.Util;
-class CmpRenderCar extends CmpRender
+class CmpRenderTrainCar extends CmpRender
 {
-    var cmpcar : CmpMoverCar;
+    var cmpcar : CmpMoverTrainCar;
     var fw : AnimatedSprite;
     var bw : AnimatedSprite;
     var chassis : AnimatedSprite;
     var rotDelta : Float = 0;
     static var sds : StringMap<SpriteData> = null;
-    static var spriteSpecPath: String = "vehicles/car.xml";
+    static var spriteSpecPath: String = "vehicles/train_car.xml";
 
-    public function new(cmpcar : CmpMoverCar) 
+    public function new(cmpcar : CmpMoverTrainCar) 
     {
         super(true);
 
@@ -36,10 +36,10 @@ class CmpRenderCar extends CmpRender
 
         var specChassis = sds.get("chassis");
         var chassisSpritesheet = BitmapImporter.create(specChassis.bmpDat,
-                                                        specChassis.slice.rows,
-                                                        specChassis.slice.cols,
-                                                        specChassis.slice.frameW,
-                                                        specChassis.slice.frameH);
+                                                       specChassis.slice.rows,
+                                                       specChassis.slice.cols,
+                                                       specChassis.slice.frameW,
+                                                       specChassis.slice.frameH);
 
         for (anim in specChassis.anims) {
             chassisSpritesheet.addBehavior(new BehaviorData(anim.name, anim.frames, anim.loop, anim.fps, anim.centerX, anim.centerY));

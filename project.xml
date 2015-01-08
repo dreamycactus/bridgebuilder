@@ -31,9 +31,10 @@
     <assets path="assets/fonts" rename="fonts" />
 	<assets path="data/levels" rename="levels" />
 	<assets path="shaders"/>
-    <!--
+	<assets path="data/vehicles" rename="vehicles" />
+
     <android target-sdk-version="19" />
-	<android install-location="internalOnly" />-->
+	<android install-location="internalOnly" />
 	<!-- optimize output -->
     <haxeflag name="-dce std " />
     <haxeflag name="--no-opt " if="flash" />
