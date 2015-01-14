@@ -27,7 +27,7 @@ class SysControl extends System
     {
         var res = e.getCmpsHavingAncestor(CmpControl);
         for (c in res) {
-            //c.init();
+            c.init();
         }
     }
     

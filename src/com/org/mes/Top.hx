@@ -1,5 +1,5 @@
 package com.org.mes;
-import com.org.glengine.BrEngine;
+import com.org.glengine.RenderContext;
 
 /**
  * ...
@@ -11,7 +11,7 @@ class Top
     public static var elapsed : Float = 0;
     
     public var state : MESState;
-    public var glengine : BrEngine;
+    public var glengine : RenderContext;
     
     var cmpManager : CmpManager;
     
@@ -28,7 +28,7 @@ class Top
     {
         ents = new List();
         sys = new List();
-        glengine = new BrEngine();
+        glengine = new RenderContext();
         entIndex = 0;
     }
         

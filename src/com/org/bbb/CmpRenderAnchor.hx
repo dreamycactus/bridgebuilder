@@ -1,6 +1,7 @@
 package com.org.bbb;
 import openfl.filters.BitmapFilter;
 import openfl.filters.GlowFilter;
+import openfl.geom.Rectangle;
 
 /**
  * ...
@@ -25,6 +26,8 @@ class CmpRenderAnchor extends CmpRender
         g.beginFill(color);
         g.drawRect(cmpAnchor.pos.x, cmpAnchor.pos.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
+        
+        sprite.cacheAsBitmap = true;
         
     }
     

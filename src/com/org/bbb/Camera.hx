@@ -1,7 +1,9 @@
 package com.org.bbb;
 import nape.geom.Vec2;
 import openfl.display.Sprite;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 using com.org.bbb.Util;
 /**
  * ...
@@ -19,7 +21,7 @@ class Camera
     @:isVar public var dragBounds(default, set_dragBounds) : Bounds;
     public var isUnlocked : Bool = false;
     public var sysRender : SysRender;
-    
+    var rect = new Rectangle(0, 0, 1024,576 );
     public function new(sysRender : SysRender) 
     {
         this.sysRender = sysRender;
@@ -35,9 +37,16 @@ class Camera
         //pos.x = sprite.transform.matrix.tx;
         //pos.y = sprite.transform.matrix.ty;
         sprite.sortZ();
-        sprite.x = pos.x;
-        sprite.y = pos.y;
+        var spos = pos.mul(1/zoom);
+        sprite.scrollRect = new Rectangle( -pos.x, -pos.y, 1024, 576);
+        //sprite.scrollRect.x += -pos.x;
+        //sprite.scrollRect.y += -pos.y;
+        
+        //sprite.x = pos.x;
+        //sprite.y = pos.y;
         clampPos();
+        
+        spos.dispose();
         //sprite.x = pos.x;
         //sprite.y = pos.y;
         

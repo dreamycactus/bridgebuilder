@@ -85,6 +85,7 @@ class GameConfig
     public static var cmAnchor = ~(GameConfig.cgBeam | GameConfig.cgBeamSplit | GameConfig.cgDeck);
     
     public static var cbCable = new CbType();
+    public static var cbOneWay = new CbType();
     public static var cbMulti = new CbType();
     public static var cbCar = new CbType();
     public static var cbTruck = new CbType();
@@ -167,7 +168,7 @@ class GameConfig
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
-        Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide]);
+        Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlSlide, CmpControlCarPlayer]);
         Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp, CmpObjectiveBudget]);
         Cmp.cmpManager.adopt(CmpSpawn, []);
         

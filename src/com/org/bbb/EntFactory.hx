@@ -89,6 +89,7 @@ class EntFactory
         body.userData.width = width;
         body.userData.height = material.height;
         body.userData.matType = material.matType;
+        body.cbTypes.add(GameConfig.cbOneWay);
         
         if (body.rotation > Math.PI/2 && body.rotation < Math.PI*1.5) {
             body.rotation += Math.PI;
@@ -185,18 +186,23 @@ class EntFactory
         return e;
     }
     
-    public function createCar(pos :Vec2, dir : Int) : Entity
+    public function createCar(pos :Vec2, dir : Int, playerControlled : Bool = false) : Entity
     {
         var e = state.createEnt();
         
         var cm = new CmpMoverCar(pos);
-        var cc = new CmpControlCar(cm);
+        if (!playerControlled) {
+            var cc = new CmpControlCar(cm);
+            cc.speed = GameConfig.carSpeed * dir;
+            e.attachCmp(cc);
+        }   
+        else {
+            var cc = new CmpControlCarPlayer(Lib.current.stage, cm);
+            e.attachCmp(cc);
+        }
         var cr = new CmpRenderCar(cm);
         
-        cc.speed = GameConfig.carSpeed * dir;
-        
         e.attachCmp(cm);
-        e.attachCmp(cc);
         e.attachCmp(cr);
         
         return e;

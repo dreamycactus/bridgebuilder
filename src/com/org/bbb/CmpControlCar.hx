@@ -19,10 +19,6 @@ class CmpControlCar extends CmpControl
     
     override public function update() : Void
     {
-        if (mover.body.position.y > Lib.current.stage.stageHeight + 1000) {
-            entity.delete();
-        }
-        
         //if (mover.body.rotation < Math.PI / 3) {
             //mover.motorFront.active = true;
             //mover.motorBack.active = false;
@@ -34,8 +30,7 @@ class CmpControlCar extends CmpControl
     
     function set_speed(s : Float) : Float
     {
-        mover.motorFront.rate = s;
-        mover.motorBack.rate = s;
+        mover.moveHor(1.0);
         return s;
     }
 }

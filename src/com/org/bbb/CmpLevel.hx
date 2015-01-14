@@ -10,6 +10,7 @@ import nape.geom.Vec3;
 import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.shape.Polygon;
+import nape.space.Broadphase;
 import nape.space.Space;
 import openfl.Assets;
 import openfl.display.BitmapData;
@@ -34,7 +35,7 @@ class CmpLevel extends Cmp
     public static function genLevelFromString(state : MESState, content : String) : CmpLevel
     {
         var level = new CmpLevel();
-        level.space = new Space(Vec2.weak(0, 600) );
+        level.space = new Space(Vec2.weak(0, 600),Broadphase.DYNAMIC_AABB_TREE);
         
         var xml = Xml.parse(content);
         var root = xml.elementsNamed("root").next();

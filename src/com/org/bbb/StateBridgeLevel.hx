@@ -50,6 +50,9 @@ class StateBridgeLevel extends BBBState
     var inited = false;
     @:isVar public var level(default, set_level) : CmpLevel;
     
+    var camera : Camera;
+    var playerCar : CmpMoverCar;
+    
     var prev : Body = null;
     var stage : Stage;
 
@@ -89,6 +92,8 @@ class StateBridgeLevel extends BBBState
         s1.getSystem(SysLevelDirector).level = cl;
         s1.getSystem(SysRuntimeOverlord).level = cl;
         
+        s1.camera = s1.getSystem(SysRender).camera;
+        
         var controllerEnt = s1.createEnt();
         var cmpControl = new CmpControlBuild(Lib.current.stage, cmpGrid, cl);
         s1.cmpControl = cmpControl;
@@ -111,6 +116,7 @@ class StateBridgeLevel extends BBBState
         eobj.attachCmp(new CmpObjectiveAllPass(cl));
         s1.insertEnt(eobj);
         
+        
         //var starbg = s1.createEnt();
         //starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
         //s1.insertEnt(starbg);
@@ -129,7 +135,6 @@ class StateBridgeLevel extends BBBState
     public function new(top : Top) 
     {
         super(top);
-        
         textField = new TextField();
         textField.defaultTextFormat = new TextFormat("Arial", null, 0xffffff);
         textField.selectable = false;
@@ -167,6 +172,11 @@ class StateBridgeLevel extends BBBState
     override function update() 
     {
         super.update();
+        
+        if (playerCar != null) {
+            camera.pos = playerCar.body.position.mul(-1).add(Vec2.weak(512, 288));
+        }
+        
     }
     
     function set_level(cl : CmpLevel) : CmpLevel
@@ -177,5 +187,15 @@ class StateBridgeLevel extends BBBState
         cmpControl.level = cl;
         return cl;
     }
+    
+    override public function distributeMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    {
+        switch(msgType) {
+        case Msgs.NEWPLAYER:
+            playerCar = options.cmpMover;
+        }
+        super.distributeMsg(msgType, sender, options);
+    }
+
 
 }

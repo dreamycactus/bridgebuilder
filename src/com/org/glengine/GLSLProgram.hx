@@ -53,11 +53,12 @@ class GLSLProgram
         GL.compileShader(shaderHandle);
 
         if (GL.getShaderParameter(shaderHandle, GL.COMPILE_STATUS) == 0) {
-            throw 'Error compiling shader:\n${GL.getShaderInfoLog(shaderHandle)}';
+            throw 'Error compiling shader:${GL.getShaderInfoLog(shaderHandle)}';
             
         }
 
         GL.attachShader(handle, shaderHandle);
+        GL.deleteShader(shaderHandle);
     }
     
     public function link() : Void
@@ -90,13 +91,13 @@ class GLSLProgram
     
     public function validate() : Void
     {
-        if (isLinked) {
+        if (!isLinked) {
             throw "Program is not linked";
         }
         GL.validateProgram(handle);
         var status = GL.getProgramParameter(handle, GL.VALIDATE_STATUS);
         if (status == 0) {
-            throw "Program failed to validate + ${GetShaderLog()}";
+            throw ('Program failed to validate: ${GL.getProgramParameter(handle, GL.VALIDATE_STATUS)}\nERROR: ${GL.getError ()}\nProgram Info:${GL.getProgramInfoLog(handle)}')   ;
         }
     }
 

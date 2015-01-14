@@ -17,10 +17,14 @@ class CmpMover extends CmpPhys
         this.body = body;
     }
     
-    public function moveHor(force : Float) : Void
+    public function moveHor(extent : Float) : Void
     {
-        var dir = body.worldVectorToLocal(Vec2.weak(force, 0) );
+        var dir = body.worldVectorToLocal(Vec2.weak(extent, 0) );
         body.applyImpulse(dir);
+    }
+    
+    public function moverNeutral() : Void
+    {
     }
     
     override function set_space(space : Space) : Space

@@ -39,9 +39,11 @@ class SysLevelDirector extends System
         var cars : Array<Entity> = state.getEntitiesOfType(GameConfig.tCar);
         for (c in cars) {
             var mover = c.getCmp(CmpMoverCar);
-            mover.compound.visitBodies(function(b) {
-                b.setShapeFilters(new InteractionFilter(GameConfig.cgLoad, 0));
-            });
+            if (!mover.body.userData.isPlayer) {
+                mover.compound.visitBodies(function(b) {
+                        b.setShapeFilters(new InteractionFilter(GameConfig.cgLoad, 0));
+                });
+            }
             
         }
         for (e in level.ents) {

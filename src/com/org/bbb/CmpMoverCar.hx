@@ -10,6 +10,7 @@ import nape.phys.Material;
 import nape.shape.Circle;
 import nape.shape.Polygon;
 import nape.space.Space;
+import openfl.Lib;
 
 /**
  * ...
@@ -36,7 +37,7 @@ class CmpMoverCar extends CmpMover
         var p = Polygon.box(40, 20);
         
         body.shapes.add(new Polygon(p, null, new InteractionFilter(GameConfig.cgLoad)));
-        body.shapes.at(0).material = Material.steel();
+        body.shapes.at(0).material = Material.rubber();
         body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
         body.position = pos;
@@ -61,15 +62,18 @@ class CmpMoverCar extends CmpMover
         bwj.ignore = true;
         bwj.compound = compound;
         
-        motorFront = new MotorJoint(null, fw, 0);
+        motorFront = new MotorJoint(body, fw, 0);
         motorFront.compound = compound;
         
-        motorBack = new MotorJoint(null, bw, 0);
+        motorBack = new MotorJoint(body, bw, 0);
         motorBack.compound = compound;
     }
     
     override function update()
     {
+        if (body.position.y > Lib.current.stage.stageHeight + 1000) {
+            entity.delete();
+        }
         //if (body.rotation > Math.PI / 6) {
             //body.rotation = Math.PI / 6;
         //}
@@ -78,12 +82,22 @@ class CmpMoverCar extends CmpMover
         //}
     }
     
+    override public function moveHor(extent : Float) : Void
+    {
+        motorFront.active = true;
+        motorBack.active = true;
+        motorFront.rate = GameConfig.carSpeed * extent;
+        motorBack.rate = GameConfig.carSpeed * extent;
+    }
+    
+    override public function moverNeutral() : Void
+    {
+        motorFront.active = false;
+        motorBack.active = false;
+    }
+    
     override function set_space(space : Space) : Space
     {
-        if (space != null) {
-            motorFront.body1 = space.world;
-            motorBack.body1 = space.world;
-        }
         compound.space = space;
         return space;
     }

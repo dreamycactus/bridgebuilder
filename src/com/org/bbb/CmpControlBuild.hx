@@ -740,6 +740,7 @@ class CmpControlBuild extends CmpControl
                 toggleBeamRoad(e);
             }
             cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
+            state.insertEnt(EntFactory.inst.createCar(Vec2.get(40.5, 270.5), 1, true));
         } else {
             restore();
             cmpGrid.entity.getCmp(CmpRenderGrid).visible = true;

@@ -15,4 +15,6 @@ class Msgs
     public static var CABLEUPDATE = "cableupdate";
     public static var CABLECREATE = "cablecreate";
     
+    public static var NEWPLAYER = "newplayer";
+    
 }
