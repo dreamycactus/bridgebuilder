@@ -59,15 +59,15 @@ class BrEngine
             p = new GLSLProgram();
             p.compileShaderFromFile("shaders/vert.vert");
             p.compileShaderFromFile("shaders/basic.frag");
-            p.validate();
             p.link();
+            p.validate();
             
             for (s in fragStrings) {
                 var pp = new GLSLProgram();
                 pp.compileShaderFromFile("shaders/hxp/defaultVert.vert");
                 pp.compileShaderFromFile('shaders/hxp/$s');
-                pp.validate();
                 pp.link();
+                pp.validate();
                 fragPrograms.push(pp);
             }
             

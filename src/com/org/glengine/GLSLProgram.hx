@@ -25,6 +25,7 @@ enum GLSLShaderType
 class GLSLProgram
 {
     public var handle : GLProgram;
+    public var shaderHandle: GLShader;
     public var isLinked = false;
     
     public function new() 
@@ -48,7 +49,7 @@ class GLSLProgram
             if (handle == null) throw "Unable to create shader program";
         }
 
-        var shaderHandle = GL.createShader(type);
+        shaderHandle = GL.createShader(type);
         GL.shaderSource(shaderHandle, source);
         GL.compileShader(shaderHandle);
 
@@ -66,8 +67,9 @@ class GLSLProgram
         if (handle == null) throw "Shader has not been compiled";
 
         GL.linkProgram(handle);
-        if (GL.getProgramParameter (handle, GL.LINK_STATUS) == 0) {
-            throw "Unable to initialize the shader program";
+
+        if (GL.getProgramParameter(handle, GL.LINK_STATUS) == 0) {
+            throw 'Unable to link shader program ${GL.getProgramInfoLog( handle )}';
         }
         isLinked = true;
     }
@@ -90,13 +92,13 @@ class GLSLProgram
     
     public function validate() : Void
     {
-        if (isLinked) {
+        if (!isLinked) {
             throw "Program is not linked";
         }
         GL.validateProgram(handle);
         var status = GL.getProgramParameter(handle, GL.VALIDATE_STATUS);
         if (status == 0) {
-            throw "Program failed to validate + ${GetShaderLog()}";
+            throw 'Program failed to validate ${getShaderLog( shaderHandle )}\n${GL.getProgramInfoLog( handle )}';
         }
     }
 
