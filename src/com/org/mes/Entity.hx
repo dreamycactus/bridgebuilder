@@ -9,6 +9,7 @@ import haxe.ds.StringMap;
 class Entity
 {
     var cmps : StringMap<Cmp>;
+    var toDelete : Bool = false;
         
     public var id(default, null) : Int;
     public var name : String;
@@ -97,7 +98,6 @@ class Entity
     {
         for (c in cmps.iterator()) {
             for (s in c.subscriptions) {
-                trace(s);
                 state.registerSubscriber(s, c);
             }
         }

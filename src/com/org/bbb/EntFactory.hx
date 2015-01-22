@@ -191,6 +191,7 @@ class EntFactory
         var e = state.createEnt();
         
         var cm = new CmpMoverCar(pos);
+        cm.set_entity(e);
         if (!playerControlled) {
             var cc = new CmpControlCar(cm);
             cc.speed = GameConfig.carSpeed * dir;

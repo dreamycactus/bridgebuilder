@@ -4,6 +4,7 @@ import com.org.bbb.CmpSpawn.SpawnType;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
+import haxe.xml.Fast;
 import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 import nape.geom.Vec3;
@@ -25,6 +26,7 @@ class CmpLevel extends Cmp
     public var id : Int;
     public var ents : List<Entity> = new List();
     public var materialsAllowed : Array<String> = new Array();
+    
     public function new(id : Int = -1) 
     {
         super();
@@ -32,119 +34,6 @@ class CmpLevel extends Cmp
         this.id = id;
     }
     
-    public static function genLevelFromString(state : MESState, content : String) : CmpLevel
-    {
-        var level = new CmpLevel();
-        level.space = new Space(Vec2.weak(0, 600),Broadphase.DYNAMIC_AABB_TREE);
-        
-        var xml = Xml.parse(content);
-        var root = xml.elementsNamed("root").next();
-        var dim = level.worldDim( Std.parseFloat(root.get("w")),  Std.parseFloat(root.get("h"))  );
-        level.width = dim.w;
-        level.height = dim.h;
-        var gridOffset = Vec2.get(0, -(GameConfig.gridCellWidth-GameConfig.matSteel.height)*0.5);
-        for (e in root) {
-            if (e.nodeType == Xml.PCData) {
-                continue;
-            }
-            switch(e.nodeName.toLowerCase()) {
-            case "anchor":
-                var tdim = level.worldDim(Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h"))  );
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), tdim);
-                var startend = e.get("type");
-                var ase = AnchorStartEnd.NONE;
-                if (startend != null) {
-                   if (startend == "start") ase = AnchorStartEnd.START;
-                   else if (startend == "end") ase = AnchorStartEnd.END;
-                }
-                var fluid = false;
-                if (e.get('fluid') != null) {
-                    fluid = true;
-                }
-                var ent = EntFactory.inst.createAnchor(pos, tdim, fluid, ase, e.get('taperEnd')!=null);
-                level.ents.push(ent);
-            case "budget":
-                var ent = state.createEnt();
-                ent.attachCmp(new CmpObjectiveBudget(level
-                    , Std.parseInt(e.get('maxBudget'))
-                    , Std.parseInt(e.get('expectedBudget'))
-                    , Std.parseInt(e.get('minBudget'))));
-                level.ents.push(ent);
-            case "material":
-                var matName = e.get("name");
-                level.materialsAllowed.push(matName);
-            case "spawn":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), {w : 1, h : 1});
-                var dir = Std.parseInt(e.get("dir"));
-                var period = Std.parseFloat(e.get("period"));
-                var count = Std.parseInt(e.get("count"));
-                var spawnTypeName  = e.get("type");
-
-                var spawnType : SpawnType = Type.createEnum(SpawnType, spawnTypeName);
-                var spawn = EntFactory.inst.createSpawn(spawnType, pos.addeq(gridOffset), dir, period, count);
-                level.spawns.push(spawn.getCmp(CmpSpawn));
-                level.ents.push(spawn);
-                
-            case "end":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), {w : 200, h : 100});
-                var end = state.createEnt();
-                end.attachCmp(new CmpEnd(pos.add(gridOffset)));
-                level.ents.push(end);
-            case "city":
-                var pos = level.worldCoords(Std.parseFloat(e.get("x")), Std.parseFloat(e.get("y")), { w : 0, h : 0 } );
-                var tdim = level.worldDim(Std.parseFloat(e.get("w")),  Std.parseFloat(e.get("h")));
-                var buildingW = level.worldDim(Std.parseFloat(e.get("buildingW")), 0).w;
-                var layers = Std.parseInt(e.get('layers'));
-                var parallaxK = Std.parseFloat(e.get('parallaxK'));
-                
-                var citybg1 = state.createEnt();
-                citybg1.attachCmp(new CmpRenderBgCityfield(pos, tdim.w, tdim.h, buildingW, layers, parallaxK));
-                level.ents.push(citybg1);
-            case "bg":
-                for (layer in e) {
-                    if (layer.nodeType == Xml.PCData) {
-                        continue;
-                    }
-                    var pos = Vec2.weak(Std.parseFloat(layer.get("x")), Std.parseFloat(layer.get("y")));
-                    var parallaxK = Std.parseFloat(layer.get("parallaxK"));
-                    var bmpDat = Assets.getBitmapData("img/" + layer.get("src"));
-                    var w = bmpDat.width;
-                    var h = bmpDat.height;
-
-                    var bg = state.createEnt();
-                    bg.attachCmp(new CmpRenderBg(bmpDat, pos, w, h, parallaxK));
-                    level.ents.push(bg);
-                }
-                // backwards depth ordering is so weird...
-                if (e.get("color") != null) {
-                    var sanitizedColor = StringTools.replace(e.get("color"), "#", "0x");
-                    var bgbmp = new BitmapData(Math.round(level.width), Math.round(level.height), false, Std.parseInt(sanitizedColor));
-                    var bg = state.createEnt();
-                    bg.attachCmp(new CmpRenderBg(bgbmp, Vec2.weak(0, 0), Math.round(level.width), Math.round(level.height), 1));
-                    level.ents.push(bg);
-                }
-            default:
-                 
-            }
-        }
-        return level;
-    }
-    
-
-    
-    public static function loadLevelXml(state : MESState, xmlAssetPath : String) : CmpLevel
-    {
-        var content = Assets.getText(xmlAssetPath);
-        var level = genLevelFromString(state, content);
-        var r = ~/([0-9]+)/;
-        
-        if (r.match(xmlAssetPath)) {
-            var levelcount = Std.parseInt(r.matched(1));
-            level.id = levelcount;
-            trace(levelcount);  
-        }
-        return level;
-    }
     
     public function generateLevelXML(w : Float, h : Float) : Xml
     {

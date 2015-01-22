@@ -1,11 +1,7 @@
-<root w="500" h="12">
-    <material name="Wood"/>
-    <material name="Concrete"/>
-    <material name="Steel"/>
-    <material name="Cable"/>
-    <anchor x="-8.7" y="5" w="500" h="7" type="start" />
-
-    <end x="21" y="5"/>
+<root w="50" h="20">
+    <terrain src="map.png" x="0" y="0"/>
+    <sublevel src="b1.xml" x="1024" y="-270" />
+    
     <bg color="#E898E1">
         <layer src="l1.png" x="0" y="280" w="800" h="200" parallaxK="1.0" />
         <layer src="l1_2.png" x="0" y="260" w="800" h="200" parallaxK="0.5" />

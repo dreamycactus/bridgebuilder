@@ -27,7 +27,7 @@ class CmpRenderAnchor extends CmpRender
         g.drawRect(cmpAnchor.pos.x, cmpAnchor.pos.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
         
-        sprite.cacheAsBitmap = true;
+        //sprite.cacheAsBitmap = true;
         
     }
     

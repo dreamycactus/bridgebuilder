@@ -12,7 +12,7 @@
 	<window background="#eb9b9c"/>
     <app swf-version="11.8" />
 
-    <window width="1024" height="576" />
+    <window width="1024" height="576" fps="60" />
     <window allow-shaders="true" require-shaders="true" if="cpp"/>
 	<!--<window width="0" height="0" unless="flash" />-->
 	<!-- classpath, haxe libs -->

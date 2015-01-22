@@ -1,5 +1,7 @@
 package com.org.bbb;
+import com.org.mes.Entity;
 import haxe.ds.Vector;
+import nape.callbacks.InteractionType;
 import nape.constraint.MotorJoint;
 import nape.constraint.PivotJoint;
 import nape.dynamics.InteractionFilter;
@@ -27,6 +29,9 @@ class CmpMoverCar extends CmpMover
     
     public var motorFront : MotorJoint;
     public var motorBack : MotorJoint;
+    public var onGround : Bool;
+    public var fw : Body;
+    public var bw : Body;
     
     public function new(pos : Vec2)
     {
@@ -41,16 +46,19 @@ class CmpMoverCar extends CmpMover
         body.cbTypes.add(GameConfig.cbCar);
         body.compound = compound;
         body.position = pos;
+        body.inertia = 100;
         
-        var fw = new Body(); // Front wheel
-        fw.shapes.add( new Circle(GameConfig.carWheelRadius, null, null, new InteractionFilter(GameConfig.cgLoad)) );
+        fw = new Body(); // Front wheel
+        fw.shapes.add(new Circle(GameConfig.carWheelRadius, null, null, new InteractionFilter(GameConfig.cgLoad)) );
         fw.shapes.at(0).material = Material.rubber();
         fw.position = pos.add(Vec2.weak(15, 9));
+        fw.cbTypes.add(GameConfig.cbCar);
         fw.compound = compound;
         
-        var bw = new Body(); // Front wheel
+        bw = new Body(); // Front wheel
         bw.shapes.add(new Circle(GameConfig.carWheelRadius, null, null, new InteractionFilter(GameConfig.cgLoad)) );
         bw.shapes.at(0).material = Material.rubber();
+        bw.cbTypes.add(GameConfig.cbCar);
         bw.position = pos.add(Vec2.weak(-15, 9));
         bw.compound = compound;
         
@@ -69,11 +77,26 @@ class CmpMoverCar extends CmpMover
         motorBack.compound = compound;
     }
     
+    override public function set_entity(e : Entity) : Entity
+    {
+        entity = e;
+        fw.userData.entity = e;
+        bw.userData.entity = e;
+        body.userData.entity = e;
+        return e;
+    }
+    
     override function update()
     {
         if (body.position.y > Lib.current.stage.stageHeight + 1000) {
             entity.delete();
         }
+        
+        //if (body.rotation > Math.PI/8) {
+            //body.applyAngularImpulse( -Math.PI / 20);
+        //} else if (body.rotation < -Math.PI / 8) {
+            //body.applyAngularImpulse( Math.PI / 20);
+        //}
         //if (body.rotation > Math.PI / 6) {
             //body.rotation = Math.PI / 6;
         //}
@@ -98,6 +121,13 @@ class CmpMoverCar extends CmpMover
     
     override function set_space(space : Space) : Space
     {
+        if (space != null) {
+            motorFront.body1 = space.world;
+            motorBack.body1 = space.world;
+        } else {
+            motorFront.body1 = body;
+            motorBack.body1 = body;
+        }
         compound.space = space;
         return space;
     }

@@ -50,9 +50,10 @@ class SysRender extends System
     
     override public function init()
     {
-        this.debug = new ShapeDebug(1300, 800, Lib.current.stage.color);
+        this.debug = new ShapeDebug(2048, 2048, Lib.current.stage.color);
         this.debug.drawConstraints = true;
         this.debug.cullingEnabled = true;
+        this.debug.display.cacheAsBitmap = true;
         
         this.mainSprite = new Sprite();
         
@@ -74,6 +75,7 @@ class SysRender extends System
     override public function update()
     {
         camera.update();
+        debug.cullingEnabled = true;
 
         debug.clear();
         if (drawDebug) {

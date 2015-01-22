@@ -33,7 +33,9 @@ class SysLevelDirector extends System
             spawns.push(s);
         }
     }
-    
+    override public function removed(e : Entity) : Void
+    {
+    }
     public function runExecution(b : Bool) : Void
     {
         var cars : Array<Entity> = state.getEntitiesOfType(GameConfig.tCar);

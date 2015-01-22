@@ -52,8 +52,8 @@ class StateLevelSelect extends BBBState
                 var p = new Paint();
                 p.border = 1;
                 var b = UIBuilder.create(Button, {
-                    w : 50,
-                    h : 50,
+                    //w : 50,
+                    //h : 50,
                     text : levelIndex++,
                     skinName : 'matBut'
                 }); 

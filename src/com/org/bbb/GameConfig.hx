@@ -55,7 +55,7 @@ class GameConfig
     public static var distanceJointMax = 40;
     
     public static var spawnCDCar = 2000;
-    public static var carSpeed = 15;
+    public static var carSpeed = 25;
     public static var carWheelRadius = 8;
     
     public static var gridCellWidth = 40;
@@ -85,6 +85,7 @@ class GameConfig
     public static var cmAnchor = ~(GameConfig.cgBeam | GameConfig.cgBeamSplit | GameConfig.cgDeck);
     
     public static var cbCable = new CbType();
+    public static var cbGround = new CbType();
     public static var cbOneWay = new CbType();
     public static var cbMulti = new CbType();
     public static var cbCar = new CbType();

@@ -4,8 +4,13 @@ import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.System;
 import com.org.mes.Top;
+import nape.callbacks.Callback;
+import nape.callbacks.CbEvent;
 import nape.callbacks.CbType;
+import nape.callbacks.InteractionCallback;
+import nape.callbacks.InteractionListener;
 import nape.callbacks.InteractionType;
+import nape.callbacks.Listener;
 import nape.callbacks.PreCallback;
 import nape.callbacks.PreFlag;
 import nape.callbacks.PreListener;
@@ -116,8 +121,26 @@ class SysPhysics extends System
                 GameConfig.cbOneWay,
                 CbType.ANY_BODY,
                 oneWayHandler));
+            space.listeners.add(new InteractionListener(
+                CbEvent.BEGIN, 
+                InteractionType.COLLISION, 
+                GameConfig.cbCar, 
+                GameConfig.cbGround,
+                carOnGroundHandler.bind(true)));
+            space.listeners.add(new InteractionListener(
+                CbEvent.END, 
+                InteractionType.COLLISION, 
+                GameConfig.cbCar, 
+                GameConfig.cbGround,
+                carOnGroundHandler.bind(false)));
         }
         return l;
+    }
+    
+    function carOnGroundHandler(touching : Bool, cb : InteractionCallback)
+    {
+        var cmpcar = cb.int1.castBody.userData.entity.getCmp(CmpMoverCar);
+        cmpcar.onGround = touching;
     }
     
     var velIterations : Int = 10;

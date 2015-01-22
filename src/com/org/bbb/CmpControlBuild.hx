@@ -135,7 +135,9 @@ class CmpControlBuild extends CmpControl
         }
         regEvents();
         
-        material = GameConfig.nameToMat(level.materialsAllowed[0]); 
+    material = level.materialsAllowed.length > 0 ?
+        GameConfig.nameToMat(level.materialsAllowed[0]) :
+        GameConfig.matSteel;
         this.camBody.inertia = 50; 
 
         camera = state.getSystem(SysRender).camera;
@@ -605,8 +607,8 @@ class CmpControlBuild extends CmpControl
         UIBuilder.get('levelEdit').free(true);
 
         if (state == null) { state = new StateBridgeLevel(top); }
-        
-        var l = CmpLevel.genLevelFromString(state, loadText);
+        var levelserializer = new LevelSerializer(state);
+        var l = levelserializer.loadLevelXml(loadText);
         
         top.changeState(new StateTransPan(top, cast(top.state), StateBridgeLevel.createFromLevel(state, top, l)));
     }

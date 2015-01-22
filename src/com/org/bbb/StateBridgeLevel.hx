@@ -12,7 +12,10 @@ import flash.display.Stage;
 import haxe.macro.Context;
 import haxe.Resource;
 import nape.dynamics.InteractionFilter;
+import nape.geom.AABB;
 import openfl.Assets;
+import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
@@ -60,7 +63,8 @@ class StateBridgeLevel extends BBBState
     {
         var state = new StateBridgeLevel(top);
         EntFactory.inst.state = state;
-        var cl = CmpLevel.loadLevelXml(state, levelPath);
+        var levelserializer = new LevelSerializer(state);
+        var cl = levelserializer.loadLevelXml(levelPath);
         return createFromLevel(state, top, cl);
     }
     
@@ -107,6 +111,7 @@ class StateBridgeLevel extends BBBState
             s1.insertEnt(e);
         }
         
+
         //var cob = s1.createEnt();
         //var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
         //cob.attachCmp(cmpCob);

@@ -1,12 +1,13 @@
 package com.org.mes;
+import com.org.bbb.EntFactory;
 import haxe.ds.StringMap;
-
+@:access(com.org.mes.Entity)
 class MESState
 {
     public var entityTypeManager : EntityTypeManager = new EntityTypeManager();
     public var renderSys : System;
     public var sys : Array<System>;
-    public var ents : List<Entity>;
+    public var ents : Array<Entity>;
     public var top : Top;
     public var isTransitioning : Bool = false;
     public var msgSubscribers : StringMap<Array<Subscriber>> = new StringMap();
@@ -16,7 +17,7 @@ class MESState
     {
         this.top = top;
         this.sys = new Array();
-        this.ents = new List();
+        this.ents = new Array();
     }
     
     public function init()
@@ -39,13 +40,20 @@ class MESState
     
     public function update() : Void 
     {
+        var i = 0;
         for (s in sys) {
             s.update();
         }
-        
-        for (e in ents) {
-            e.update();
+        while (i < ents.length) {
+            var e = ents[i];
+            if (e.toDelete) {
+                reallyDelete(e);
+            } else {
+                e.update();
+                i++;
+            }
         }
+
     }
     
     public function createEnt(name : String = "") : Entity
@@ -62,7 +70,7 @@ class MESState
     
     public function insertEnt(e : Entity)
     {
-        ents.add(e);
+        ents.push(e);
         if (e.state != null && e.state != this) {
             trace('overwriting entity ${e.id} state ${e.state} with ${this}');
         }
@@ -73,14 +81,10 @@ class MESState
         }
     }
     
-    public function getEntitiesOfType(name : String) : Array <Entity>
+    public function removeEnt(e : Entity) : Entity
     {
-        return entityTypeManager.getEntitiesOfType(name);
-    }
-    
-    public function deleteEnt(e : Entity)
-    {
-        if (e.state == null) { return; }
+        entityTypeManager.onRemoved(e);
+        if (e.state == null) { return e; }
         ents.remove(e);
         e.state = null;
         entityTypeManager.onRemoved(e);
@@ -88,8 +92,22 @@ class MESState
         for (s in sys) {
             s.onRemoved(e);
         }
+        return e;
+    }
+    
+    public function getEntitiesOfType(name : String) : Array <Entity>
+    {
+        return entityTypeManager.getEntitiesOfType(name);
+    }
+    
+    public function deleteEnt(e : Entity)
+    {
+        e.toDelete = true;
+    }
+    
+    inline function reallyDelete(e : Entity) {
+        removeEnt(e);
         //TODO assign indicies to entities that are reusable like artemis to allow fast access and removal
-        
     }
     
     public function onEntChanged(e : Entity)

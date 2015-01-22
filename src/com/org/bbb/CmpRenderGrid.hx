@@ -26,8 +26,7 @@ class CmpRenderGrid extends CmpRender
         var w = cmpGrid.width;
         var h = cmpGrid.height;
         var ox = cmpGrid.offset.x - GameConfig.gridCellWidth*0.5;
-        var oy = cmpGrid.offset.y - GameConfig.gridCellWidth*0.5;
-
+        var oy = cmpGrid.offset.y - GameConfig.gridCellWidth * 0.5;
         g.clear();
         g.beginFill(0xFFFFFF, 1.0);
         for (x in 0...cmpGrid.columns) {
@@ -49,10 +48,19 @@ class CmpRenderGrid extends CmpRender
             g.lineTo(w+ox, y * cellsz+oy);
         }
         g.endFill();
+    
+
+        
     }
 
     override public function render(dt : Float) : Void
     {
+        var g = sprite.graphics;
+        var cellsz = cmpGrid.cellSize;
+                var w = cmpGrid.width;
+        var h = cmpGrid.height;
+        var ox = cmpGrid.offset.x - GameConfig.gridCellWidth*0.5;
+        var oy = cmpGrid.offset.y - GameConfig.gridCellWidth*0.5;
         
     }
     

@@ -1,9 +1,9 @@
-<root w="23" h="12">
+<sublevel w="23" h="12">
     <material name="Wood"/>
     <material name="Concrete"/>
     <material name="Steel"/>
     <material name="Cable"/>
-    <budget maxBudget="180" expectedBudget="136" minimum="54" />
+    <budget maxBudget="180" expectedBudget="136" minBudget="54" />
     <anchor x="17" y="5" w="10" h="7" type="end" />
     <anchor x="-8.7" y="5" w="15" h="7" type="start" />
     <spawn x="1" y="5" dir="1" period="2000" count="5" type="Car" />
@@ -14,4 +14,4 @@
         <layer src="l1.png" x="0" y="280" w="800" h="200" parallaxK="1.0" />
         <layer src="l1_2.png" x="0" y="260" w="800" h="200" parallaxK="0.5" />
     </bg>
-</root>
+</sublevel>

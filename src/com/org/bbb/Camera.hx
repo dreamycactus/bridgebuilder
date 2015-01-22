@@ -38,12 +38,12 @@ class Camera
         //pos.y = sprite.transform.matrix.ty;
         sprite.sortZ();
         var spos = pos.mul(1/zoom);
-        sprite.scrollRect = new Rectangle( -pos.x, -pos.y, 1024, 576);
+        //sprite.scrollRect = new Rectangle( -pos.x, -pos.y, 1024, 576);
         //sprite.scrollRect.x += -pos.x;
         //sprite.scrollRect.y += -pos.y;
         
-        //sprite.x = pos.x;
-        //sprite.y = pos.y;
+        sprite.x = pos.x;
+        sprite.y = pos.y;
         clampPos();
         
         spos.dispose();
