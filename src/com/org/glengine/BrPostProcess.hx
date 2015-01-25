@@ -1,5 +1,5 @@
 package com.org.glengine;
-import com.org.bbb.BuildHistory.BuildState;
+import com.org.bbb.control.BuildHistory.BuildState;
 import com.org.glengine.BrCompositeScene.CompositeScene;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;

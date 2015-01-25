@@ -1,9 +1,35 @@
 package com.org.bbb;
-import com.org.bbb.CmpAnchor.AnchorStartEnd;
-import com.org.bbb.CmpMultiBeam.SplitType;
-import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
-import com.org.bbb.CmpSpawn.SpawnType;
+import com.org.bbb.control.CmpControlCar;
+import com.org.bbb.control.CmpControlCarPlayer;
+import com.org.bbb.level.CmpGrid;
+import com.org.bbb.level.CmpSpawn;
+import com.org.bbb.physics.BuildMat;
+import com.org.bbb.physics.CmpAnchor;
+import com.org.bbb.physics.CmpAnchor.AnchorStartEnd;
+import com.org.bbb.physics.CmpBeam;
+import com.org.bbb.physics.CmpCable;
+import com.org.bbb.physics.CmpMoverCar;
+import com.org.bbb.physics.CmpMoverTrainCar;
+import com.org.bbb.physics.CmpMoverTruckRigid;
+import com.org.bbb.physics.CmpMoverTruckTractor;
+import com.org.bbb.physics.CmpMoverTruckTrailer;
+import com.org.bbb.physics.CmpMultiBeam;
+import com.org.bbb.physics.CmpMultiBeam.SplitType;
+import com.org.bbb.physics.CmpSharedJoint;
+import com.org.bbb.render.CmpRenderAnchor;
+import com.org.bbb.render.CmpRenderCable;
+import com.org.bbb.render.CmpRenderCar;
+import com.org.bbb.render.CmpRenderGrid;
+import com.org.bbb.render.CmpRenderMultiBeam;
+import com.org.bbb.render.CmpRenderMultiBeam.BodyBitmap;
+import com.org.bbb.level.CmpSpawn.SpawnType;
 import com.org.bbb.GameConfig.JointType;
+import com.org.bbb.render.CmpRenderSharedJoint;
+import com.org.bbb.render.CmpRenderTrainCar;
+import com.org.bbb.render.CmpRenderTrainLocomotive;
+import com.org.bbb.render.CmpRenderTruckRigid;
+import com.org.bbb.render.CmpRenderTruckTractor;
+import com.org.bbb.render.CmpRenderTruckTrailer;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.Top;
@@ -19,7 +45,7 @@ import nape.shape.Polygon;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import openfl.Lib;
-import com.org.bbb.CmpMoverTrainEngine;
+import com.org.bbb.physics.CmpMoverTrainEngine;
 
 /**
  * ...
@@ -61,7 +87,6 @@ class EntFactory
     {
         var e = state.createEnt("be");
         var cmpbeam = new CmpBeam(p1, p2, body, width, material);
-        var cmptrans = new CmpTransform(pos);
         
         //var length = body.shapes.at(0).bounds.width;
         var assetPath : String = "";
@@ -98,7 +123,6 @@ class EntFactory
         }
         
         e.attachCmp(cmpbeam);
-        e.attachCmp(cmptrans);
         e.attachCmp(cmprend);
         
         return e;
@@ -166,10 +190,8 @@ class EntFactory
         joint2.compound = compound;
         
         var cmpbeam = new CmpMultiBeam(pos1, pos2, compound);
-        var cmptrans = new CmpTransform(pos1);
         
         e.attachCmp(cmpbeam);
-        e.attachCmp(cmptrans);
         
         return e;
     }

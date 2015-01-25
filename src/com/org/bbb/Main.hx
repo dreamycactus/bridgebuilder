@@ -1,5 +1,9 @@
 package com.org.bbb;
 
+import com.org.bbb.editor.EditorClassImporter;
+import com.org.bbb.physics.CmpAnchor;
+import com.org.bbb.states.StateLevelSelect;
+import com.org.bbb.systems.SysRender;
 import com.org.mes.Entity;
 import com.org.mes.EntityType;
 import com.org.mes.Top;
@@ -53,9 +57,9 @@ class Main extends Sprite
     
     function init() 
     {
+        
 
-        UIBuilder.regSkins('data/ui/skins.xml');
-        UIBuilder.init("data/ui/defaults.xml");
+
         if (inited) return;
         inited = true;
         
@@ -122,7 +126,14 @@ class Main extends Sprite
         //cpp.vm.Profiler.start("log.txt");
 #end
         
-#end      
+#end    
+        UIBuilder.saveCodeTo(".");
+
+        UIBuilder.init("data/ui/defaults.xml");
+        
+        UIBuilder.regSkins('data/ui/skins.xml');
+        //EditorEntityCreator.test('CmpAnchor');
+        EditorClassImporter.createClassEditorInstance('CmpAnchor');
         Lib.current.addChild(new Main());
         
     }

@@ -1,5 +1,5 @@
 package com.org.bbb;
-import com.org.bbb.CmpRenderMultiBeam.BodyBitmap;
+import com.org.bbb.render.CmpRenderMultiBeam.BodyBitmap;
 import nape.geom.Vec2;
 import nape.phys.Compound;
 import openfl.Assets;
