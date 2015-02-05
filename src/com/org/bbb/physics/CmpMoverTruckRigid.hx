@@ -27,9 +27,9 @@ class CmpMoverTruckRigid extends CmpMover
     public var motorFront : MotorJoint;
     public var motorBack : MotorJoint;
 
-    public function new(pos : Vec2) 
+    public function new(trans : CmpTransform, pos : Vec2) 
     {
-        super(null);
+        super(trans, null);
         this.compound = new Compound();
 
         var w = GameConfig.truckRigidCargoDim.w + GameConfig.truckRigidCabDim.w;

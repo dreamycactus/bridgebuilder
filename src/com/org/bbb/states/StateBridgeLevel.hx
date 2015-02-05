@@ -2,16 +2,21 @@ package com.org.bbb.states ;
 
 import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.control.CmpControlBuild;
+import com.org.bbb.editor.CmpAnchorInstance;
+import com.org.bbb.editor.CmpControlEditor;
 import com.org.bbb.editor.LevelSerializer;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.level.CmpObjectiveAllPass;
+import com.org.bbb.physics.CmpAnchor;
 import com.org.bbb.physics.CmpMoverCar;
 import com.org.bbb.physics.CmpMultiBeam.SplitType;
 import com.org.bbb.GameConfig.JointType;
+import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.Camera;
 import com.org.bbb.render.CmpRenderControlBuild;
 import com.org.bbb.render.CmpRenderControlUI;
+import com.org.bbb.render.CmpRenderEditorUI;
 import com.org.bbb.systems.SysControl;
 import com.org.bbb.systems.SysLevelDirector;
 import com.org.bbb.systems.SysObjective;
@@ -35,6 +40,7 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import ru.stablex.ui.UIBuilder;
+import ru.stablex.ui.widgets.Text;
 //import com.org.mes.Entity;
 //import com.org.mes.Top;
 import openfl.display.Sprite;
@@ -115,11 +121,13 @@ class StateBridgeLevel extends BBBState
         
         var controllerEnt = s1.createEnt();
         var cmpBuilder = new CmpBridgeBuild(top, s1, cl, s1.camera, cmpGrid);
-        var cmpControl = new CmpControlBuild(cmpBuilder);
-        s1.cmpControl = cmpControl;
+        //var cmpControl = new CmpControlBuild(cmpBuilder);
+        var cmpControl = new CmpControlEditor(cmpBuilder);
+        //s1.cmpControl = cmpControl;
         controllerEnt.attachCmp(cmpControl);
-        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
-        controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
+        //controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
+        controllerEnt.attachCmp(new CmpRenderEditorUI(cl, 1024, 576) );
+        //controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
         s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
         
@@ -166,6 +174,7 @@ class StateBridgeLevel extends BBBState
         this.stage = Lib.current.stage;
         var etCar = new EntityType(GameConfig.tCar, [CmpMoverCar], [], []);
         entityTypeManager.registerType(etCar);
+        entityTypeManager.registerType(new EntityType(GameConfig.tTransform, [CmpTransform], [], []));
         //this.stage.addChild(textField);
         
     }

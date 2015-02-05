@@ -8,7 +8,10 @@
                      on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
         <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>
     </VBox>-->
+    
     <HBox id="'topbar'" right="0" align="'right,top'" padding="0">
+    <MyInputText skin:Paint-color="0xFFFFFF" text="'hello'" w="100" h="100" on-change="trace('hello');" />
+
     <WControlBar id="'controlbar'" control="@controlBuild">
     </WControlBar>
     <!--<Button id="'buttab2'" w="100" h="100" skin:Paint-border="0" skin:Paint-alpha="0.3" skin:Paint-color="0xb58900" on-click="@controlBuild.wcb.show();">

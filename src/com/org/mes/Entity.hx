@@ -8,7 +8,7 @@ import haxe.ds.StringMap;
  */
 class Entity
 {
-    var cmps : StringMap<Cmp>;
+    public var cmps : StringMap<Cmp>;
     var toDelete : Bool = false;
         
     public var id(default, null) : Int;

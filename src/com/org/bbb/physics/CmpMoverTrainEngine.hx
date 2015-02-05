@@ -28,9 +28,9 @@ class CmpMoverTrainEngine extends CmpMover
     public var motorBack : MotorJoint;
     public var children : Array<CmpMoverTrainCar> = new Array();
     
-    public function new(pos : Vec2) 
+    public function new(trans : CmpTransform, pos : Vec2) 
     {
-        super(null);
+        super(trans, null);
         this.compound = new Compound();
         
         var w = GameConfig.trainEngineDim.w;

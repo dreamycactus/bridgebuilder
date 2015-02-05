@@ -1,5 +1,6 @@
 package com.org.bbb.level ;
 import com.org.bbb.physics.CmpPhys;
+import com.org.bbb.physics.CmpTransform;
 import com.org.mes.Cmp;
 import com.org.mes.Top;
 import nape.geom.Vec2;
@@ -31,9 +32,9 @@ class CmpSpawn extends CmpPhys
     public var spawnCD : Float;
     public var active(default, set_active) : Bool = false;
     
-    public function new(spawnType : SpawnType, pos : Vec2, dir : Int, body : Body, totalCount : Int, period : Float)
+    public function new(trans : CmpTransform, spawnType : SpawnType, pos : Vec2, dir : Int, body : Body, totalCount : Int, period : Float)
     {
-        super();
+        super(trans);
         this.pos = pos;
         this.dir = dir;
         this.spawnType = spawnType;
@@ -62,11 +63,11 @@ class CmpSpawn extends CmpPhys
                 entity.state.insertEnt(EntFactory.inst.createCar(pos, dir));
                 curCount++;
             case Train:
-                var arr = EntFactory.inst.createTrain(pos, dir, totalCount);
-                for (e in arr) {
-                    entity.state.insertEnt(e);
-                }
-                curCount = totalCount;
+                //var arr = EntFactory.inst.createTrain(pos, dir, totalCount);
+                //for (e in arr) {
+                    //entity.state.insertEnt(e);
+                //}
+                //curCount = totalCount;
             case Truck:
                 var i = Math.floor(Math.random() * Type.allEnums(TruckType).length);
                 var type = Type.createEnumIndex(TruckType, i);

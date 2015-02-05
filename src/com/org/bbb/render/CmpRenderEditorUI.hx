@@ -12,50 +12,37 @@ import ru.stablex.ui.widgets.Widget;
  * ...
  * @author 
  */
-class CmpRenderControlUI extends CmpRender
+class CmpRenderEditorUI extends CmpRender
 {
     public var uiBuild : Dynamic -> Widget;
-    var buildControl : CmpControlBuild;
     public var uiInstance : Sprite;
     var width : Float;
     var height : Float;
     var level : CmpLevel;
     
-    public function new(buildControl : CmpControlBuild, level : CmpLevel, width : Float, height : Float ) 
+    public function new(level : CmpLevel, width : Float, height : Float ) 
     {
         super(false);
         this.displayLayer = GameConfig.zRenderControlUI;
-        this.buildControl = buildControl;
         this.level = level;
         this.width = width;
         this.height = height;
+
     }
     
     override public function addToScene(scene : DisplayObjectContainer, index : Int) : Void 
     {
         super.addToScene(scene, index);
-        var rw = UIBuilder.get('rootWidget');
-        
-        if (rw != null) {
-            rw.free(true);
-        }
         UIBuilder.saveCodeTo('.');
-        UIBuilder.regClass('com.org.bbb.widgets.WControlBar');
-        UIBuilder.regClass('com.org.bbb.widgets.MyInputText');
-        UIBuilder.regClass('CmpControlBuild');
-        UIBuilder.regClass('GameConfig');
-        UIBuilder.regClass('com.org.bbb.widgets.WBottomBar');
-        UIBuilder.regClass('com.org.bbb.widgets.WSideBar');
-        uiBuild = UIBuilder.buildFn('data/ui/uiControlBuild.xml');
+        uiBuild = UIBuilder.buildFn('data/ui/uiLevelEditor.xml');
         uiInstance = uiBuild({
-            controlBuild : buildControl
         });
         sprite.addChild(uiInstance);
+        
         var rw = UIBuilder.get('rootWidget');
         rw.resize(width, height, true);
         
-        var cb = cast(UIBuilder.get('controlbar'), WControlBar);
-        cb.addMaterialButtons(level.materialsAllowed);
+
         
     }
     

@@ -15,9 +15,9 @@ class CmpEnd extends CmpPhys
 {
     public var body : Body;
     public var pos(get_pos, null) : Vec2;
-    public function new(pos : Vec2) 
+    public function new(trans : CmpTransform, pos : Vec2) 
     {
-        super();
+        super(trans);
         this.body = new Body(BodyType.STATIC, pos);
         var shape = new Polygon(Polygon.box(200, 100), null, new InteractionFilter(GameConfig.cgEnd, GameConfig.cmEditable));
         shape.sensorEnabled = true;

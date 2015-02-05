@@ -4,8 +4,8 @@
     <material name="Steel"/>
     <material name="Cable"/>
     <budget maxBudget="180" expectedBudget="136" minBudget="54" />
-    <anchor x="17" y="5" w="10" h="7" type="end" />
     <anchor x="-8.7" y="5" w="15" h="7" type="start" />
+    <anchor x="17" y="5" w="10" h="7" type="end" />
     <spawn x="1" y="5" dir="1" period="2000" count="5" type="Car" />
     <end x="21" y="5"/>
     <city x="-1" y="5" w="7" h="5" buildingW="0.9" layers="2" parallaxK="1.0" />

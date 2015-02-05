@@ -19,7 +19,6 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-import ru.stablex.ui.widgets.Widget;
 
 using Lambda;
 
@@ -281,6 +280,10 @@ class Util
         return blist;
     }
     
+    public static function pointInRect(p : Vec2, rect : AABB) : Bool 
+    {
+        return (p.x > rect.x && p.x < rect.x + rect.width) && (p.y > rect.y && p.y < rect.y + rect.height);
+    }
 
     
 

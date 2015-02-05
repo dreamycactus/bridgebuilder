@@ -17,17 +17,18 @@ enum AnchorStartEnd
 }
 
 @author("Harry")
+@editor
 class CmpAnchor extends CmpPhys implements BridgeNode
 {
-    public var body : Body;
+    public var body(default, set) : Body;
     public var startEnd : AnchorStartEnd;
     public var tapered : Bool;
     public var fluid : Bool;
     
     @editor
-    public var width : Float;
+    public var width(default, set) : Float;
     @editor
-    public var height : Float;
+    public var height(default, set) : Float;
     
     @editor
     public var x(get, set) : Float;
@@ -35,9 +36,9 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     public var y(get, set) : Float;
     
     @:isVar public var sharedJoints(default, default) : Array<CmpSharedJoint> = new Array();
-    public function new(body : Body, ase : AnchorStartEnd, tapered : Bool=false) 
+    public function new(trans : CmpTransform, body : Body, ase : AnchorStartEnd, tapered : Bool=false) 
     {
-        super();
+        super(trans);
         this.body = body;
         this.startEnd = ase;
         this.tapered = tapered;
@@ -91,8 +92,45 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     }
     
     function get_x() : Float { return body.position.x-width*0.5; }
-    function get_y() : Float { return body.position.y-height*0.5; }
-    function set_x(x) : Float { body.position.x = x;  return x; }
-    function set_y(y) : Float { body.position.y = y;  return y; }
+    function get_y() : Float { return body.position.y - height * 0.5; }
+    function set_body(b) : Body
+    {
+        this.body = b;
+        if (b != null) {
+            transform.bbox = this.body.bounds;
+        }
+        return b;
+    }
+    
+    function set_x(x) : Float 
+    { 
+        var space = body.space; 
+        body.space = null; 
+        body.position.x = x; 
+        body.space = space; 
+        transform.x = body.position.x - width * 0.5;
+        sendMsg(Msgs.ANCHORMOVE, this, null);
+        return x; 
+    }
+    function set_y(y) : Float 
+    { 
+        var space = body.space; 
+        body.space = null; 
+        body.position.y = y; 
+        body.space = space; 
+        transform.y = body.position.y - height * 0.5;
+        sendMsg(Msgs.ANCHORMOVE, this, null);
+        return y; 
+    }
+    function set_width(w) : Float
+    {
+        this.width = w;
+        return w;
+    }
+    function set_height(h) : Float
+    {
+        this.height = h;
+        return h;
+    }
     
 }

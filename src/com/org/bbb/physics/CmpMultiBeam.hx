@@ -36,7 +36,7 @@ class CmpMultiBeam extends CmpBeamBase
 {
     public var compound : Compound;
     
-    public static function createFromBeam(cmpBeam : CmpBeam, splitType : SplitType, brokenCons : PivotJoint) : CmpMultiBeam
+    public static function createFromBeam(trans : CmpTransform, cmpBeam : CmpBeam, splitType : SplitType, brokenCons : PivotJoint) : CmpMultiBeam
     {
         var beamBody = cmpBeam.body;
         if (beamBody.shapes.length > 1) {
@@ -239,16 +239,16 @@ class CmpMultiBeam extends CmpBeamBase
                 }
                 
                 c.space = null;
-                return new CmpMultiBeam(cmpBeam.p1, cmpBeam.p2, c);
+                return new CmpMultiBeam(trans, cmpBeam.p1, cmpBeam.p2, c);
             }
         }
         return null;
 
     }
     
-    public function new(p1 : Vec2, p2 : Vec2, compound : Compound, material : BuildMat=null) 
+    public function new(trans : CmpTransform, p1 : Vec2, p2 : Vec2, compound : Compound, material : BuildMat=null) 
     {
-        super(p1, p2);
+        super(trans, p1, p2);
         this.compound = compound;
         this.material = material;
         this.constraints = new List();

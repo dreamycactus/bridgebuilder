@@ -11,9 +11,9 @@ class CmpMover extends CmpPhys
 {
     public var body : Body;
     
-    public function new(body : Body) 
+    public function new(trans : CmpTransform, body : Body) 
     {
-        super();
+        super(trans);
         this.body = body;
     }
     

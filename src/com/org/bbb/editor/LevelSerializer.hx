@@ -6,6 +6,7 @@ import com.org.bbb.physics.CmpAnchor.AnchorStartEnd;
 import com.org.bbb.level.CmpSpawn.SpawnType;
 import com.org.bbb.physics.CmpEnd;
 import com.org.bbb.physics.CmpTerrain;
+import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.CmpRenderBg;
 import com.org.mes.MESState;
 import haxe.xml.Fast;
@@ -168,10 +169,11 @@ class LevelSerializer
     {
         var pos = level.worldCoords(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y), {w : 200, h : 100});
         var end = state.createEnt();
+        var trans = new CmpTransform();
         if (offset == null) {
             offset = Vec2.weak();
         }
-        end.attachCmp(new CmpEnd(pos.add(offset)));
+        end.attachCmp(new CmpEnd(trans, pos.add(offset)));
         level.ents.push(end);
     }
     //todo replace with layer and static sprite

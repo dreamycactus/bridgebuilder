@@ -35,9 +35,9 @@ class CmpCable extends CmpBeamBase
     var prevLen : Float = Math.POSITIVE_INFINITY;
     var lastTension : Float =-1;
     
-    public function new(pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
+    public function new(trans : CmpTransform, pos1 : Vec2, pos2 : Vec2, cableMat : BuildMat) 
     {
-        super(pos1, pos2);
+        super(trans, pos1, pos2);
         this.material = cableMat;
         tightness = 1.0;
         

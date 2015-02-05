@@ -1,5 +1,6 @@
 package com.org.bbb.render ;
 import com.org.bbb.physics.CmpAnchor;
+import com.org.mes.Cmp;
 import openfl.filters.BitmapFilter;
 import openfl.filters.GlowFilter;
 import openfl.geom.Rectangle;
@@ -15,11 +16,27 @@ class CmpRenderAnchor extends CmpRender
     public function new(cmpAnchor : CmpAnchor) 
     {
         super(true);
+        subscriptions = [Msgs.ANCHORMOVE];
         this.cmpAnchor = cmpAnchor;
         this.displayLayer = GameConfig.zAnchor;
         if (cmpAnchor.fluid) {
             color = 0x91c2c1;
         }
+        refresh();
+        //sprite.cacheAsBitmap = true;
+        
+    }
+    
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
+    {
+        switch (msgType) {
+        case Msgs.ANCHORMOVE:
+            refresh();
+        }
+    }
+
+    function refresh()
+    {
         var g = sprite.graphics;
         //sprite.filters = [];
         //sprite.cacheAsBitmap = false;
@@ -27,13 +44,8 @@ class CmpRenderAnchor extends CmpRender
         g.beginFill(color);
         g.drawRect(cmpAnchor.x, cmpAnchor.y, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
-        
-        //sprite.cacheAsBitmap = true;
-        
     }
     
-    override public function render(dt : Float) : Void
-    {
-    }
+    
     
 }

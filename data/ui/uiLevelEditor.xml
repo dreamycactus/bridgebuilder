@@ -1,69 +1,9 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
-<Widget id="'rootWidget'" widthPt="100" h="600">
-    <meta:inject code="var controlBuild : CmpControlBuild = cast(@controlBuild, CmpControlBuild);"/>
-    <!-- Buttons -->
-    <!--<VBox autoHeight="true" childPadding="10" padding="10" left="150">
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Toggle Edit'" autoHeight="true" 
-                     on-click="@controlBuild.set_editMode(!@controlBuild.editMode);"/>
-        <Text id="'console'" skin:Paint-color="0xFFFFFF" w="200" h="100" format-size="14" text="''"/>
-    </VBox>-->
-    <HBox id="'topbar'" right="0" align="'right,top'" padding="0">
-    <WControlBar id="'controlbar'" control="@controlBuild">
-    </WControlBar>
-    <!--<Button id="'buttab2'" w="100" h="100" skin:Paint-border="0" skin:Paint-alpha="0.3" skin:Paint-color="0xb58900" on-click="@controlBuild.wcb.show();">
-        <Bmp src="'img/tri.png'" w="20" h="100" stretch="true" keepAspect="true"/>
-    </Button>-->
-    <Button id="'buttab'" w="100" h="100" skin:Paint-color="0xd33682" skin:Paint-border="1" skin:Paint-borderColor="0x6c71c4" text="'DODO'" 
-         on-click="@controlBuild.wcb.show();"/>
-    </HBox>
-
-    <WSideBar id="'sidebar'" w="100" right="0" top="150" >
-        <VBox id="'menu'">
-        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x9149f2" text="'Back'"
-             on-click="@controlBuild.levelSelect();" />
+<Widget id="'rootWidget'" widthPt="100" h="1200">
+    <Scroll w="200" right="0" top="0" defaults="'EditorCmpPanel'">
+        <VBox id="'cmpedit'">
+            
         </VBox>
-        <VBox id="'control'">
-        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x9149f2" text="'Delete Mode'"
-             on-click="@controlBuild.set_beamDeleteMode(true);" />
-        <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x9149f2" text="'Undo'"
-                 on-click="@controlBuild.undo();" />
-         <Button w="100" h="50" skin:Paint-border="1" skin:Paint-color="0x9149f2" text="'Start/Stop'"
-                 on-click="@controlBuild.togglePause();" />
-        </VBox>
-    </WSideBar>
-    
-
-    <WBottomBar id="'bottombar'" left="0" bottom="0" widthPt="100" heightPt="5" skin:Paint-color="0xFFFFF0" skin:Paint-alpha="0.9">
-        <Text id="'budget'" defaults="'budgetD'" text="'100/1000'" />
-    </WBottomBar>
-     
-    <Floating id="'levelEdit'" w="200" right ="3" top="0" autoHeight="true" childPadding="10" padding="10" renderTo="'rootWidget'" >
-    <HBox top="0">
-    <VBox w="200" left="3" top="40" autoHeight="true" childPadding="10" padding="10">
-        <HBox w="400" autoHeight="true" childPadding="10" padding="10">
-        <InputText id="'levelWidth'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
-        <InputText id="'levelHeight'" skin:Paint-color="0xFFFFFF" w="50" h ="20" /> 
-        <!--<Text id="'mem'" skin:Paint-color="0xFFFFFF" w="300" h="100" format-size="14" text="''"/>
-        --></HBox>
-        
-        <InputText id="'inX'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'x'"/> 
-        <InputText id="'inY'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'y'"/> 
-        <InputText id="'inWidth'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'width'" /> 
-        <InputText id="'inHeight'" skin:Paint-color="0xFFFFFF" w="50" h ="20" text="'height'"/>
-        <InputText id="'load'" skin:Paint-color="0xFFFFFF" w="150" h ="100" text="'Load level in'"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Generate XML'" autoHeight="true" 
-                 on-click="@controlBuild.generateLevelXML();"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Load XML'" autoHeight="true" 
-                 on-click="@controlBuild.loadLevelFromXml(null);"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Create box'" autoHeight="true" 
-                 on-click="@controlBuild.createBox();"/>
-        <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Create Spawn'" autoHeight="true" 
-                 on-click="@controlBuild.createSpawn();"/>
-         <Button  w="100" skin:Paint-border="1" skin:Paint-color="0x00FF00" text="'Delete'" autoHeight="true" 
-                 on-click="@controlBuild.deleteLastSelected();"/>
-    </VBox>
-     
-    </HBox>
-   </Floating>
+    </Scroll>
 </Widget>

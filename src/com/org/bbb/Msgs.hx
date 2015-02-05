@@ -6,6 +6,7 @@ package com.org.bbb;
  */
 class Msgs
 {
+    public static var ANCHORMOVE = "anchormove";
     public static var BEAMDOWN = "beamdown";
     public static var BEAMDELETE = "beamdelete";
     public static var BEAMRECALC = "beamrecalc";
@@ -16,5 +17,7 @@ class Msgs
     public static var CABLECREATE = "cablecreate";
     
     public static var NEWPLAYER = "newplayer";
+    public static var XTRANSCHANGE = "xtranschange";
+    public static var YTRANSCHANGE = "ytranschange";
     
 }

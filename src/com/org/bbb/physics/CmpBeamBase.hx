@@ -26,9 +26,9 @@ class CmpBeamBase extends CmpPhys implements BridgeNode
     @:isVar public var sj1 (default, set_sj1): CmpSharedJoint;
     @:isVar public var sj2 (default, set_sj2): CmpSharedJoint;
     
-    public function new(p1 : Vec2, p2 : Vec2) 
+    public function new(trans : CmpTransform, p1 : Vec2, p2 : Vec2) 
     {
-        super();
+        super(trans);
         this.p1 = p1;
         this.p2 = p2;
     }

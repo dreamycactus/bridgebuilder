@@ -95,6 +95,12 @@ class MESState
         return e;
     }
     
+    public function registerType(et : EntityType) : Void
+    {
+        entityTypeManager.registerType(et);
+    }
+    
+    
     public function getEntitiesOfType(name : String) : Array <Entity>
     {
         return entityTypeManager.getEntitiesOfType(name);

@@ -38,6 +38,7 @@
     <haxeflag name="--no-opt " if="flash" />
     <haxeflag name="-D fdb " if="flash debug"/>
     <haxeflag name="--no-traces " unless="debug" />
+    <haxeflag name="--macro" value="allowPackage('flash')" />
 
     <haxedef name="HXCPP_DEBUGGER" if="debug" />
     <haxedef name="HXCPP_STACK_TRACE" if="cpp" />

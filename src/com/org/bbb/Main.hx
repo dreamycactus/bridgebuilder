@@ -120,7 +120,7 @@ class Main extends Sprite
 #if cpp
 
 #if (HXCPP_DEBUGGER && debug)
-        new debugger.Local(true);
+        //new debugger.Local(true);
 #end
 #if HXCPP_STACK_TRACE
         //cpp.vm.Profiler.start("log.txt");
@@ -133,7 +133,7 @@ class Main extends Sprite
         
         UIBuilder.regSkins('data/ui/skins.xml');
         //EditorEntityCreator.test('CmpAnchor');
-        EditorClassImporter.createClassEditorInstance('CmpAnchor');
+        //EditorClassImporter.createClassEditorInstance('CmpAnchor');
         Lib.current.addChild(new Main());
         
     }

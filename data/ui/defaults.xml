@@ -3,7 +3,6 @@
 <Defaults>
     <Text>
         <Default
-            label-filters    = "[new openfl.filters.GlowFilter(0x333333, 1, 2, 2)]"
             format-font      = "$Assets.getFont('fonts/LibreBaskerville-Regular.ttf').fontName"
             format-size      = "8"
             label-embedFonts = "true"
@@ -14,6 +13,13 @@
             format-size      = "12"
             label-embedFonts = "true"
             label-selectable = "false"
+        />
+        <EditorCmpLabel
+            format-font      = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            format-size      = "12"
+            label-embedFonts = "true"
+            label-selectable = "false"
+            skinName         = "'EditorRow'"
         />
     </Text>
     <InputText>
@@ -30,6 +36,17 @@
             skin:Paint-color       = "0xFFFFFF"
         />
     </InputText>
+    <MyInputText>
+        <EditorCmpField
+            format-font      = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            format-size      = "12"
+            label-embedFonts = "true"
+            label-selectable = "true"
+            skinName         = "'EditorRow'"
+            w                = "120"
+            autoHeight       = "true"
+        />
+    </MyInputText>
 
     <Button>
         <Default
@@ -46,5 +63,17 @@
             skin:Tile-corners  = "[10]"
         />
     </Button>
+    
+    <Scroll>
+        <EditorCmpPanel
+            w           = "200"
+            h           = "600"
+            skinName    = "'EditorPanel'"
+            vBar-slider-skin:Paint-color="0x002200"
+            hBar-visible = "false"
+        />
+            
+        
+    </Scroll>
 
 </Defaults>

@@ -16,6 +16,7 @@ import com.org.bbb.physics.CmpMoverTruckTrailer;
 import com.org.bbb.physics.CmpMultiBeam;
 import com.org.bbb.physics.CmpMultiBeam.SplitType;
 import com.org.bbb.physics.CmpSharedJoint;
+import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.CmpRenderAnchor;
 import com.org.bbb.render.CmpRenderCable;
 import com.org.bbb.render.CmpRenderCar;
@@ -86,7 +87,9 @@ class EntFactory
     public function createBeamEnt(p1 : Vec2, p2 : Vec2, pos : Vec2, body : Body, width : Float, material : BuildMat, name : String = "") : Entity
     {
         var e = state.createEnt("be");
-        var cmpbeam = new CmpBeam(p1, p2, body, width, material);
+        var trans = new CmpTransform();
+        e.attachCmp(trans);
+        var cmpbeam = new CmpBeam(trans, p1, p2, body, width, material);
         
         //var length = body.shapes.at(0).bounds.width;
         var assetPath : String = "";
@@ -131,9 +134,11 @@ class EntFactory
     public function createCable(p1 : Vec2, p2 : Vec2, material : BuildMat) : Entity
     {
         var cab = state.createEnt("cc");
-        var cmp = new CmpCable(p1, p2, material);
+        var trans = new CmpTransform();
+        var cmp = new CmpCable(trans, p1, p2, material);
         var bitmap = new Bitmap(Assets.getBitmapData('img/cable.png'));
         var rcmp = new CmpRenderCable(cmp, bitmap);
+        cab.attachCmp(trans);
         cab.attachCmp(cmp);
         cab.attachCmp(rcmp);
         return cab;
@@ -143,7 +148,7 @@ class EntFactory
     {
         var e = state.createEnt(name);
         var oldCmpBeam = entity.getCmp(CmpBeam);
-        var cmpbeam = CmpMultiBeam.createFromBeam(oldCmpBeam, splitType, null);
+        var cmpbeam = CmpMultiBeam.createFromBeam(oldCmpBeam.transform, oldCmpBeam, splitType, null);
         if (cmpbeam == null) return null;
         var pairs : Array<BodyBitmap> = new Array();
         
@@ -161,7 +166,9 @@ class EntFactory
     public function createSharedJoint(pos : Vec2, bodies : Array<Body>=null, name : String = "") : Entity
     {
         var e = state.createEnt("sj");
-        var sj = new CmpSharedJoint(pos, bodies);
+        var trans = new CmpTransform();
+        e.attachCmp(trans);
+        var sj = new CmpSharedJoint(trans, pos, bodies);
         var rsj = new CmpRenderSharedJoint(sj);
         rsj.tintColour(84, 84, 115, 255);
         
@@ -189,7 +196,10 @@ class EntFactory
         joint2.anchor2 = body2.worldPointToLocal(pos2);
         joint2.compound = compound;
         
-        var cmpbeam = new CmpMultiBeam(pos1, pos2, compound);
+        var trans = new CmpTransform();
+        e.attachCmp(trans);
+        
+        var cmpbeam = new CmpMultiBeam(trans, pos1, pos2, compound);
         
         e.attachCmp(cmpbeam);
         
@@ -211,8 +221,9 @@ class EntFactory
     public function createCar(pos :Vec2, dir : Int, playerControlled : Bool = false) : Entity
     {
         var e = state.createEnt();
-        
-        var cm = new CmpMoverCar(pos);
+        var trans = new CmpTransform();
+        e.attachCmp(trans);
+        var cm = new CmpMoverCar(trans, pos);
         cm.set_entity(e);
         if (!playerControlled) {
             var cc = new CmpControlCar(cm);
@@ -237,29 +248,37 @@ class EntFactory
         switch(type) {
             case TRACTOR_ONLY:
                 var e = state.createEnt();
-                var tractor = new CmpMoverTruckTractor(pos);
+                var trans = new CmpTransform();
+                var tractor = new CmpMoverTruckTractor(trans, pos);
                 var render = new CmpRenderTruckTractor(tractor);
+                e.attachCmp(trans);
                 e.attachCmp(tractor);
                 e.attachCmp(render);
                 truck.push(e);
             case HEAVY_COMBINATION:
                 var e1 = state.createEnt();
-                var tractor = new CmpMoverTruckTractor(pos);
+                var trans1 = new CmpTransform();
+                var tractor = new CmpMoverTruckTractor(trans1, pos);
                 var render = new CmpRenderTruckTractor(tractor);
+                e1.attachCmp(trans1);
                 e1.attachCmp(tractor);
                 e1.attachCmp(render);
                 var e2 = state.createEnt();
-                var trailer = new CmpMoverTruckTrailer(pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-10, 0 )));
+                var trans2 = new CmpTransform();
+                var trailer = new CmpMoverTruckTrailer(trans2, pos.add(Vec2.weak(-GameConfig.truckTractorCabDim.w*0.5-10, 0 )));
                 var renderTrailer = new CmpRenderTruckTrailer(trailer);
+                e2.attachCmp(trans2);
                 e2.attachCmp(trailer);
-                e1.attachCmp(renderTrailer);
+                e2.attachCmp(renderTrailer);
                 tractor.addTrailer(trailer);
                 truck.push(e1);
                 truck.push(e2);
             case RIGID:
                 var e = state.createEnt();
-                var mover = new CmpMoverTruckRigid(pos);
+                var trans = new CmpTransform();
+                var mover = new CmpMoverTruckRigid(trans, pos);
                 var render = new CmpRenderTruckRigid(mover);
+                e.attachCmp(trans);
                 e.attachCmp(mover);
                 e.attachCmp(render);
                 truck.push(e);
@@ -267,36 +286,36 @@ class EntFactory
         return truck;
     }
     
-    public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>
-    {
-        var ents = new Array<Entity>();
-        var e = state.createEnt();
-        var cm = new CmpMoverTrainEngine(pos);
-        var ren = new CmpRenderTrainLocomotive(cm);
-        var cm2 = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2), 0)));
-        var ren2 = new CmpRenderTrainCar(cm2); // WEIRD
-        cm.addCar(cm2);
-        ents.push(e);
-        
-        var prev : CmpMoverTrainCar = cm2;
-        for (i in 0...count) {
-            var cmt = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2 )* i, 0)));
-            var rtc = new CmpRenderTrainCar(cmt);
-            var ee = state.createEnt();
-            ee.attachCmp(cmt);
-            ee.attachCmp(rtc);
-            prev.addCar(cmt);
-            prev = cmt;
-            ents.push(ee);
-        }
-
-        e.attachCmp(cm);
-        e.attachCmp(cm2);
-        e.attachCmp(ren);
-        e.attachCmp(ren2);
-        
-        return ents;
-    }
+    //public function createTrain(pos :Vec2, dir : Int, count : Int) : Array<Entity>
+    //{
+        //var ents = new Array<Entity>();
+        //var e = state.createEnt();
+        //var cm = new CmpMoverTrainEngine(pos);
+        //var ren = new CmpRenderTrainLocomotive(cm);
+        //var cm2 = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2), 0)));
+        //var ren2 = new CmpRenderTrainCar(cm2); // WEIRD
+        //cm.addCar(cm2);
+        //ents.push(e);
+        //
+        //var prev : CmpMoverTrainCar = cm2;
+        //for (i in 0...count) {
+            //var cmt = new CmpMoverTrainCar(pos.add(Vec2.weak(-(GameConfig.trainCarDim.w+GameConfig.trainMargin*2 )* i, 0)));
+            //var rtc = new CmpRenderTrainCar(cmt);
+            //var ee = state.createEnt();
+            //ee.attachCmp(cmt);
+            //ee.attachCmp(rtc);
+            //prev.addCar(cmt);
+            //prev = cmt;
+            //ents.push(ee);
+        //}
+//
+        //e.attachCmp(cm);
+        //e.attachCmp(cm2);
+        //e.attachCmp(ren);
+        //e.attachCmp(ren2);
+        //
+        //return ents;
+    //}
     
     public function createSpawn(spawnType : SpawnType, pos : Vec2, dir : Int, period : Float, count : Int) : Entity
     {
@@ -306,7 +325,10 @@ class EntFactory
             spawnIcon.rotation = Math.PI;
         }
         var spawn = state.createEnt();
-        var cmpSpawn = new CmpSpawn(spawnType, pos, dir, spawnIcon, count, period);
+        var trans = new CmpTransform();
+        spawn.attachCmp(trans);
+        var cmpSpawn = new CmpSpawn(trans, spawnType, pos, dir, spawnIcon, count, period);
+
         spawn.attachCmp(cmpSpawn);
         spawnIcon.userData.entity = spawn;
         
@@ -346,11 +368,13 @@ class EntFactory
         
         anc.position = pos;
         var ent = state.createEnt();
-        var cmpanc = new CmpAnchor(anc, ase);
+        var trans = new CmpTransform();
+        var cmpanc = new CmpAnchor(trans, anc, ase);
         cmpanc.fluid = fluid;
         var cmprender = new CmpRenderAnchor(cmpanc);
         cmprender.tintColour(212, 23, 80, 255);
         
+        ent.attachCmp(trans);
         ent.attachCmp(cmpanc);
         ent.attachCmp(cmprender);
         

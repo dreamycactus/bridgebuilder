@@ -18,9 +18,9 @@ class CmpJoint extends CmpPhys
     public var weldJoint(get_weldJoint, null) : WeldJoint;
     public var jointType(default, set_jointType) : JointType;
     
-    public function new(joint : Constraint, jointType : JointType) 
+    public function new(trans : CmpTransform, joint : Constraint, jointType : JointType) 
     {
-        super();
+        super(trans);
         this.joint = joint;
         this.jointType = jointType;
     }

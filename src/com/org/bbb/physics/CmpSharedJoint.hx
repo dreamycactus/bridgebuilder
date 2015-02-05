@@ -26,9 +26,9 @@ class CmpSharedJoint extends CmpPhys
     
     var joints : Array<Constraint>;
     
-    public function new(pos : Vec2, startingBodies : Array<Body> = null) 
+    public function new(trans : CmpTransform, pos : Vec2, startingBodies : Array<Body> = null) 
     {
-        super();
+        super(trans);
         body = new Body();
         body.shapes.add(GameConfig.sharedJointShape());
         body.position = pos;

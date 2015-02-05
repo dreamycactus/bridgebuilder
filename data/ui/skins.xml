@@ -7,4 +7,14 @@
         borderColor = "0x5e62a9"
         border      = "1"
     />
+    <EditorRow:Paint
+        color       = "0x558888"
+        borderColor = "0x000000"
+        border      = "1"
+    />
+    <EditorPanel:Paint
+        color       = "0x888888"
+        borderColor = "0x222222"
+        border      = "2"
+    />
 </Skins>

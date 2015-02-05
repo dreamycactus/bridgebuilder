@@ -30,9 +30,9 @@ class CmpBeam extends CmpBeamBase
     public var stressTHp : Float = GameConfig.beamStressHp;
     public var stressSHp : Float = GameConfig.beamStressHp;
     
-    public function new(p1 : Vec2, p2 : Vec2, body : Body, width : Float, material : BuildMat) 
+    public function new(trans : CmpTransform, p1 : Vec2, p2 : Vec2, body : Body, width : Float, material : BuildMat) 
     {
-        super(p1, p2);
+        super(trans, p1, p2);
         this.body = body;
         this.width = width;
         this.jointOffsets = new Array();

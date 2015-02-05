@@ -33,9 +33,9 @@ class CmpMoverCar extends CmpMover
     public var fw : Body;
     public var bw : Body;
     
-    public function new(pos : Vec2)
+    public function new(trans : CmpTransform, pos : Vec2)
     {
-        super(null);
+        super(trans, null);
         this.compound = new Compound();
         
         body = new Body(); // Chassis

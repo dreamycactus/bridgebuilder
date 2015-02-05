@@ -3,7 +3,7 @@ package com.org.mes;
 /**
  * @author 
  */
-
+@:autoBuild(com.org.bbb.editor.EditorClassImporter.build())
 class Cmp implements Subscriber
 {
     public static var cmpManager : CmpManager;

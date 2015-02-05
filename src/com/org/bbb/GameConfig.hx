@@ -4,6 +4,7 @@ import com.org.bbb.control.CmpControl;
 import com.org.bbb.control.CmpControlBuild;
 import com.org.bbb.control.CmpControlCar;
 import com.org.bbb.control.CmpControlCarPlayer;
+import com.org.bbb.editor.CmpControlEditor;
 import com.org.bbb.physics.CmpEnd;
 import com.org.bbb.level.CmpObjective;
 import com.org.bbb.level.CmpObjectiveAllPass;
@@ -36,6 +37,7 @@ import com.org.bbb.render.CmpRenderCable;
 import com.org.bbb.render.CmpRenderCar;
 import com.org.bbb.render.CmpRenderControlBuild;
 import com.org.bbb.render.CmpRenderControlUI;
+import com.org.bbb.render.CmpRenderEditorUI;
 import com.org.bbb.render.CmpRenderGrid;
 import com.org.bbb.render.CmpRenderMultiBeam;
 import com.org.bbb.render.CmpRenderPony;
@@ -181,6 +183,7 @@ class GameConfig
     
     public static var tCar = "car";
     public static var tBeam = "beam";
+    public static var tTransform= "beam";
     
     public static var tcable = "Cable";
     public static var tsupercable = "Supercable";
@@ -211,11 +214,11 @@ class GameConfig
                                       , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBg, CmpRenderBgStarfield, CmpRenderBgCityfield
                                       , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable
                                       , CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderTrainLocomotive, CmpRenderTrainCar
-                                      , CmpRenderRain, CmpRenderPony]);
+                                      , CmpRenderRain, CmpRenderPony, CmpRenderEditorUI]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);
-        Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlCar, CmpControlCarPlayer]);
+        Cmp.cmpManager.adopt(CmpControl, [CmpControlBuild, CmpControlEditor, CmpControlCar, CmpControlCarPlayer]);
         Cmp.cmpManager.adopt(CmpObjective, [CmpObjectiveEndBridgeIntact, CmpObjectiveAllPass, CmpObjectiveTimerUp, CmpObjectiveBudget]);
         Cmp.cmpManager.adopt(CmpSpawn, []);
         
