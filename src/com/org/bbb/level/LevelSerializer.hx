@@ -1,4 +1,4 @@
-package com.org.bbb.editor ;
+package com.org.bbb.level ;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.level.CmpObjectiveBudget;
 import com.org.bbb.level.CmpSpawn;
@@ -224,13 +224,8 @@ class LevelSerializer
     
     function parseTerrain(level : CmpLevel, fast : Fast, offset:Vec2 = null) : Void
     {
-        var terrain = state.createEnt("terrain");
-        var bd = Assets.getBitmapData('img/${fast.att.src}');
-        var ct = new CmpTerrain(bd, 100, 40);
         var offset = new Vec2(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y));
-        ct.invalidate(new AABB(0, 0, bd.width, bd.height), level.space, offset);
-        offset.dispose();
-        terrain.attachCmp(ct);
+        var terrain = EntFactory.inst.createTerrain('img/${fast.att.src}', level.space, offset);
         level.ents.push(terrain);
     }
     

@@ -20,14 +20,20 @@ enum SpawnType
  * ...
  * @author 
  */
-class CmpSpawn extends CmpPhys
+@editor
+ class CmpSpawn extends CmpPhys
 {
+    @editor
     public var pos : Vec2;
+    @editor
     public var dir : Int;
+    @editor
     public var spawnType : SpawnType;
     public var body : Body;
+    @editor
     public var totalCount : Int;
     public var curCount : Int = 0;
+    @editor
     public var period : Float;
     public var spawnCD : Float;
     public var active(default, set_active) : Bool = false;

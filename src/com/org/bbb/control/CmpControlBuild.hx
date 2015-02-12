@@ -1,5 +1,5 @@
 package com.org.bbb.control ;
-import com.org.bbb.editor.LevelSerializer;
+import com.org.bbb.level.LevelSerializer;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.physics.BuildMat;
@@ -36,7 +36,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.system.System;
 import openfl.utils.Object;
-import ru.stablex.ui.widgets.Floating;
 import ru.stablex.ui.widgets.Radio;
 import com.org.mes.Cmp;
 import com.org.mes.Entity;
@@ -253,8 +252,6 @@ class CmpControlBuild extends CmpControl
     public function loadLevelFromXml(state : StateBridgeLevel)
     {
         var loadText = cast(UIBuilder.get('load'), InputText).text;
-        cast(UIBuilder.get('levelEdit'), Floating).hide();
-        cast(UIBuilder.get('build'), Floating).hide();
         UIBuilder.get('rootWidget').free(true);
         UIBuilder.get('build').free(true);
         UIBuilder.get('levelEdit').free(true);
@@ -415,7 +412,6 @@ class CmpControlBuild extends CmpControl
     
     public function levelSelect()
     {
-        cast(UIBuilder.get('levelEdit'), Floating).show();
         if (top != null && !top.transitioning) {
             top.changeState(new StateTransPan(top, cast(top.state), new StateLevelSelect(top)), true);
         }

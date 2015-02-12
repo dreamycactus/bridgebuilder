@@ -16,6 +16,7 @@ import nape.geom.Vec2;
 import openfl.display.Stage;
 import openfl.events.MouseEvent;
 import ru.stablex.ui.UIBuilder;
+import ru.stablex.ui.widgets.Text;
 import ru.stablex.ui.widgets.Widget;
 
 /**
@@ -38,10 +39,12 @@ class CmpControlEditor extends CmpControl
     //var material(get, set) : BuildMat;
     var prevMouse : Vec2;
     var editPanel : Widget;
+    var editPanelTitle : Text;
     
     // Edit State
     var selectedEntity : Entity = null;
     var activeInstances : Array<EditorCmpInstance> = new Array();
+    var isDrag : Bool = false;
     
     public function new(bridgebuilder : CmpBridgeBuild)
     {
@@ -63,6 +66,8 @@ class CmpControlEditor extends CmpControl
     {
         regEvents();
         editPanel = UIBuilder.get('cmpedit');
+        editPanelTitle = cast(UIBuilder.get('cmpeditTitle'), Text);
+        camera.isUnlocked = true;
         
         //material = level.materialsAllowed.length > 0 ?
             //GameConfig.nameToMat(level.materialsAllowed[0]) :
@@ -73,10 +78,19 @@ class CmpControlEditor extends CmpControl
     {
         //unregEvents();
     }
-    
+    override public function update()
+    {
+        if (isDrag) {
+            dragCamera();
+        } 
+        prevMouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
+    }
     function regEvents() : Void
     {
         stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+        stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+        stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, rmouseDown);
+        stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, rmouseUp);
     }
     
     function mouseDown(_) : Void
@@ -84,6 +98,12 @@ class CmpControlEditor extends CmpControl
         var mouse = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
         var ents = state.getEntitiesOfType(GameConfig.tTransform); // Get entities having CmpTransform
         var res : Array<{area : Float, entity :Entity}> = new Array();
+        var bodies = level.space.bodiesUnderPoint(mouse);
+        for (b in bodies) {
+            if (b.userData.entity != null) {
+                res.push( { area : 1e5, entity : b.userData.entity } );
+            }
+        }
         for (e in ents) {
             var ct = e.getCmp(CmpTransform);
             if (ct.bbox != null && Util.pointInRect(mouse, ct.bbox)) {
@@ -92,7 +112,29 @@ class CmpControlEditor extends CmpControl
         }
         if (res.length != 0) {
             selectEntity(res[0].entity);
+        } else {
+            
         }
+    }
+    function mouseUp(_) : Void
+    {
+    }
+    
+    function rmouseDown(_) : Void
+    {
+        isDrag = true;
+    }
+    
+    function rmouseUp(_) : Void
+    {
+        isDrag = false;
+    }
+    
+    function dragCamera()
+    {
+        camera.dragCamera(camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY)).sub(
+                            prevMouse).mul(
+                                GameConfig.camDragCoeff) );
     }
     
     function ascendingArea(a : { area : Float, entity :Entity }, b : { area : Float, entity :Entity }) : Bool
@@ -105,8 +147,29 @@ class CmpControlEditor extends CmpControl
         if (e == selectedEntity) {
             return;
         }
-        var ca = e.getCmp(CmpAnchor);
-        ca.createEditorWidget();
-        editPanel.addChild(e.getCmp(CmpAnchor).widget);
+        if (selectedEntity != null) {
+            for (c in selectedEntity.cmps) {
+                if (c.hasEditorInstance) {
+                    c.deleteWidget();
+                }
+            }
+        }
+        selectedEntity = e;
+        if (e != null) {
+            editPanelTitle.text = 'Entity: ${e.id}';
+        } else {
+            editPanelTitle.text = 'Entity:';
+        }
+        for (c in e.cmps) {
+            if (c.hasEditorInstance) {
+                c.createEditorWidget();
+                editPanel.addChild(c.widget);
+            }
+        }
+        //var ca = e.getCmp(CmpAnchor);
+        //ca.createEditorWidget();
+        //editPanel.addChild(e.getCmp(CmpAnchor).widget);
     }   
+    
+    //public function createEntity(EntityType
 }

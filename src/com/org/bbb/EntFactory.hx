@@ -16,6 +16,7 @@ import com.org.bbb.physics.CmpMoverTruckTrailer;
 import com.org.bbb.physics.CmpMultiBeam;
 import com.org.bbb.physics.CmpMultiBeam.SplitType;
 import com.org.bbb.physics.CmpSharedJoint;
+import com.org.bbb.physics.CmpTerrain;
 import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.CmpRenderAnchor;
 import com.org.bbb.render.CmpRenderCable;
@@ -26,6 +27,8 @@ import com.org.bbb.render.CmpRenderMultiBeam.BodyBitmap;
 import com.org.bbb.level.CmpSpawn.SpawnType;
 import com.org.bbb.GameConfig.JointType;
 import com.org.bbb.render.CmpRenderSharedJoint;
+import com.org.bbb.render.CmpRenderSprite;
+import com.org.bbb.render.CmpRenderTerrain;
 import com.org.bbb.render.CmpRenderTrainCar;
 import com.org.bbb.render.CmpRenderTrainLocomotive;
 import com.org.bbb.render.CmpRenderTruckRigid;
@@ -37,12 +40,14 @@ import com.org.mes.Top;
 import nape.constraint.Constraint;
 import nape.constraint.PivotJoint;
 import nape.dynamics.InteractionFilter;
+import nape.geom.AABB;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.BodyType;
 import nape.phys.Compound;
 import nape.phys.Material;
 import nape.shape.Polygon;
+import nape.space.Space;
 import openfl.Assets;
 import openfl.display.Bitmap;
 import openfl.Lib;
@@ -130,6 +135,18 @@ class EntFactory
         
         return e;
     }    
+    
+    public function createTerrain(terrainsrc : String, space : Space, offset : Vec2)
+    {
+        var terrain = state.createEnt("terrain");
+        var bd = Assets.getBitmapData(terrainsrc);
+        var ct = new CmpTerrain(terrainsrc, space, offset);
+        
+        terrain.attachCmp(ct);
+        terrain.attachCmp(new CmpRenderTerrain(ct));
+        
+        return terrain;
+    }
     
     public function createCable(p1 : Vec2, p2 : Vec2, material : BuildMat) : Entity
     {
@@ -374,9 +391,12 @@ class EntFactory
         var cmprender = new CmpRenderAnchor(cmpanc);
         cmprender.tintColour(212, 23, 80, 255);
         
+        var temp = new CmpRenderSprite();
+        
         ent.attachCmp(trans);
         ent.attachCmp(cmpanc);
         ent.attachCmp(cmprender);
+        ent.attachCmp(temp);
         
         anc.userData.entity = ent;
         return ent;

@@ -4,7 +4,7 @@ import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.control.CmpControlBuild;
 import com.org.bbb.editor.CmpAnchorInstance;
 import com.org.bbb.editor.CmpControlEditor;
-import com.org.bbb.editor.LevelSerializer;
+import com.org.bbb.level.LevelSerializer;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.level.CmpObjectiveAllPass;

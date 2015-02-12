@@ -45,6 +45,10 @@ class CmpAnchor extends CmpPhys implements BridgeNode
         var bounds = body.bounds;
         this.width = bounds.width;
         this.height = bounds.height;
+        if (body != null) {
+            x = body.position.x;
+            y = body.position.y;
+        }
     }
     
     public function findAdjacentBodies() : Array<Body>
@@ -109,7 +113,7 @@ class CmpAnchor extends CmpPhys implements BridgeNode
         body.position.x = x; 
         body.space = space; 
         transform.x = body.position.x - width * 0.5;
-        sendMsg(Msgs.ANCHORMOVE, this, null);
+        sendMsg(Msgs.ENTMOVE, this, null);
         return x; 
     }
     function set_y(y) : Float 
@@ -119,7 +123,7 @@ class CmpAnchor extends CmpPhys implements BridgeNode
         body.position.y = y; 
         body.space = space; 
         transform.y = body.position.y - height * 0.5;
-        sendMsg(Msgs.ANCHORMOVE, this, null);
+        sendMsg(Msgs.ENTMOVE, this, null);
         return y; 
     }
     function set_width(w) : Float

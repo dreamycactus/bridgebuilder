@@ -15,6 +15,7 @@ class CmpRender extends Cmp
     public var sprite : Sprite;
     public var inCamera : Bool;
     public var displayLayer : Int;
+
     
     public function new(inCamera : Bool=true)
     {

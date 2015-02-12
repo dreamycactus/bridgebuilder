@@ -44,6 +44,8 @@ import com.org.bbb.render.CmpRenderPony;
 import com.org.bbb.render.CmpRenderRain;
 import com.org.bbb.render.CmpRenderSharedJoint;
 import com.org.bbb.render.CmpRenderSlide;
+import com.org.bbb.render.CmpRenderSprite;
+import com.org.bbb.render.CmpRenderTerrain;
 import com.org.bbb.render.CmpRenderTrainCar;
 import com.org.bbb.render.CmpRenderTrainLocomotive;
 import com.org.bbb.render.CmpRenderTruckRigid;
@@ -212,7 +214,7 @@ class GameConfig
         Cmp.cmpManager = new CmpManager();
         Cmp.cmpManager.adopt(CmpRender, [CmpRenderGrid, CmpRenderControlBuild, CmpRenderControlUI
                                       , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBg, CmpRenderBgStarfield, CmpRenderBgCityfield
-                                      , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable
+                                      , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderSprite, CmpRenderTerrain
                                       , CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderTrainLocomotive, CmpRenderTrainCar
                                       , CmpRenderRain, CmpRenderPony, CmpRenderEditorUI]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,

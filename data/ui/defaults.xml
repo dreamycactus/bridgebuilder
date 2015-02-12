@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Defaults>
+    <VBox>
+        <EditorMenu
+            skinName="'EditorPanel'"
+            paddingBottom = "10"
+        />
+        <EditorWidgetProperties
+            align           = "'top,left'"
+            paddingBottom      = "20"
+            childPadding    = "0"
+            autoSize        = "true"
+            skinName        = "'matBut'"
+        />
+    </VBox>
     <Text>
         <Default
             format-font      = "$Assets.getFont('fonts/LibreBaskerville-Regular.ttf').fontName"
@@ -20,6 +33,13 @@
             label-embedFonts = "true"
             label-selectable = "false"
             skinName         = "'EditorRow'"
+        />
+        <EditorHeading
+            format-font      = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            format-size      = "18"
+            label-embedFonts = "true"
+            label-selectable = "false"
+            skinName         = "'EditorHeadingSkin'"
         />
     </Text>
     <InputText>
@@ -60,7 +80,26 @@
             format-size        = "14"
             format-color       = "0xcdc4d9  "
             format-align       = "openfl.text.TextFormatAlign.CENTER"
-            skin:Tile-corners  = "[10]"
+        />
+        <EditorButton
+            label-selectable   = "false"
+            label-mouseEnabled = "false"
+            label-embedFonts   = "true"
+            label-autoSize     = "openfl.text.TextFieldAutoSize.LEFT"
+            format-font        = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            format-size        = "14"
+            format-color       = "0xcdc4d9  "
+            format-align       = "openfl.text.TextFormatAlign.LEFT"
+        />
+        <EditorMenu
+            label-selectable   = "false"
+            label-mouseEnabled = "false"
+            label-embedFonts   = "true"
+            label-autoSize     = "openfl.text.TextFieldAutoSize.LEFT"
+            format-font        = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            format-size        = "14"
+            format-color       = "0xcdc4d9"
+            format-align       = "openfl.text.TextFormatAlign.LEFT"
         />
     </Button>
     
@@ -72,8 +111,20 @@
             vBar-slider-skin:Paint-color="0x002200"
             hBar-visible = "false"
         />
-            
-        
     </Scroll>
-
+    <TabPage>
+        <EditorMenu
+            title-skinName    = "'EditorMenuTab'"
+            title-w           = "100"
+            title-h           = "50"
+            title-label-selectable   = "false"
+            title-label-mouseEnabled = "false"
+            title-label-embedFonts   = "true"
+            title-label-autoSize     = "openfl.text.TextFieldAutoSize.LEFT"
+            title-format-font        = "$Assets.getFont('fonts/CONSOLA.TTF').fontName"
+            title-format-size        = "14"
+            title-format-color       = "0xcdc4d9  "
+            title-format-align       = "openfl.text.TextFormatAlign.LEFT"
+        />
+    </TabPage>
 </Defaults>

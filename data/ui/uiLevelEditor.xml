@@ -1,9 +1,44 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
 <Widget id="'rootWidget'" widthPt="100" h="1200">
-    <Scroll w="200" right="0" top="0" defaults="'EditorCmpPanel'">
-        <VBox id="'cmpedit'">
-            
-        </VBox>
-    </Scroll>
+    <HBox w="1024" h="576" align="'top, left'">
+        <TabStack left="100" name="'editorMenu'">
+            <TabPage title-text="'File'" defaults="'EditorMenu'">
+                <VBox defaults="'EditorMenu'">
+                    <Button text="'New Level'" defaults="'EditorMenu'"/>
+                    <Button text="'Load'" defaults="'EditorMenu'"/>
+                    <Button text="'Save'" defaults="'EditorMenu'"/>
+                </VBox>
+            </TabPage>
+            <TabPage title-text="'Mode'" defaults="'EditorMenu'">
+                <VBox left="100" defaults="'EditorMenu'">
+                    <Button text="'Editor'" defaults="'EditorMenu'"/>
+                    <Button text="'Bridge Build'" defaults="'EditorMenu'"/>
+                    <Button text="'Game Preview'" defaults="'EditorMenu'"/>
+                </VBox>
+            </TabPage>
+            <TabPage title-text="'Options'" defaults="'EditorMenu'">
+                <VBox left="200" defaults="'EditorMenu'"> 
+                    <Button text="'Draw Nape Debug'" defaults="'EditorMenu'"/>
+                    <Button text="'Draw BBox'" defaults="'EditorMenu'"/>
+                </VBox>
+            </TabPage>
+            <TabPage title-text="'Create'" defaults="'EditorMenu'">
+                <VBox left="300" defaults="'EditorMenu'">
+                    <Button text="'Anchor'" defaults="'EditorMenu'"/>
+                    <Button text="'Terrain'" defaults="'EditorMenu'"/>
+                    <Button text="'Static Sprite'" defaults="'EditorMenu'"/>
+                    <Button text="'Spawn'" defaults="'EditorMenu'"/>
+                    <Button text="'End'" defaults="'EditorMenu'"/>
+                </VBox>                
+            </TabPage>
+            <TabPage title-text="'Meh'" defaults="'EditorMenu'">
+            </TabPage>
+        </TabStack>
+        <Scroll w="300" right="0" top="0" defaults="'EditorCmpPanel'">
+            <VBox id="'cmpedit'" align="'top, left'">
+                <Text id="'cmpeditTitle'" text="'Entity:'" defaults="'EditorHeading'" />
+            </VBox>
+        </Scroll>
+    </HBox>
 </Widget>

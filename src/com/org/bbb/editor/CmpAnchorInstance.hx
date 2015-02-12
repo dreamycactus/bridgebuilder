@@ -21,7 +21,6 @@ import ru.stablex.ui.widgets.Widget;
 class CmpAnchorInstance extends CmpControl implements EditorCmpInstance
 {
     var cmpAnchor(default, set): CmpAnchor;
-    public var widget : Widget;
     public var fields : Widget;
     var col1: Widget;
     var col2: Widget;

@@ -9,14 +9,16 @@ import openfl.geom.Rectangle;
  * ...
  * @author ...
  */
+@editor
 class CmpRenderAnchor extends CmpRender
 {
     var cmpAnchor : CmpAnchor;
-    var color = 0xFFFFFF;
+    @editor
+    public var color(default, default) = 0xFFFFFF;
     public function new(cmpAnchor : CmpAnchor) 
     {
         super(true);
-        subscriptions = [Msgs.ANCHORMOVE];
+        subscriptions = [Msgs.ENTMOVE];
         this.cmpAnchor = cmpAnchor;
         this.displayLayer = GameConfig.zAnchor;
         if (cmpAnchor.fluid) {
@@ -30,7 +32,7 @@ class CmpRenderAnchor extends CmpRender
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
     {
         switch (msgType) {
-        case Msgs.ANCHORMOVE:
+        case Msgs.ENTMOVE:
             refresh();
         }
     }

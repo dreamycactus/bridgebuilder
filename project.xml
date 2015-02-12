@@ -23,6 +23,7 @@
 	<haxelib name="nape" />
 	<haxelib name="spritesheet" />
     <haxelib name="hxcpp-debugger" />
+    <haxelib name="systools" />
 
 	<!-- assets -->
 	<assets path="assets/img" rename="img" exclude="icon.svg" />

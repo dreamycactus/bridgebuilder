@@ -7,12 +7,27 @@
         borderColor = "0x5e62a9"
         border      = "1"
     />
+    <matBut2:Paint
+        color       = "0x363636"
+        borderColor = "0xf1b266"
+        border      = "1"
+    />
     <EditorRow:Paint
         color       = "0x558888"
         borderColor = "0x000000"
         border      = "1"
     />
     <EditorPanel:Paint
+        color       = "0x888888"
+        borderColor = "0x222222"
+        border      = "2"
+    />
+    <EditorHeadingSkin:Paint
+        color       = "0x888888"
+        borderColor = "0x222222"
+        border      = "2"
+    />
+    <EditorMenuTab:Paint
         color       = "0x888888"
         borderColor = "0x222222"
         border      = "2"

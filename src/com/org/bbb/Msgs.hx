@@ -6,7 +6,7 @@ package com.org.bbb;
  */
 class Msgs
 {
-    public static var ANCHORMOVE = "anchormove";
+    public static var ENTMOVE = "entmove";
     public static var BEAMDOWN = "beamdown";
     public static var BEAMDELETE = "beamdelete";
     public static var BEAMRECALC = "beamrecalc";
