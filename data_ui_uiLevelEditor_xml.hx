@@ -285,6 +285,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
      }
 }
 __ui__widget6.text = 'Anchor';
+__ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.createDefaultEntity('anchor');});
 __ui__widget6.defaults = 'EditorMenu';
 __ui__widget6._onInitialize();
 __ui__widget6._onCreate();
@@ -300,6 +301,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
      }
 }
 __ui__widget6.text = 'Terrain';
+__ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.createDefaultEntity('terrain');});
 __ui__widget6.defaults = 'EditorMenu';
 __ui__widget6._onInitialize();
 __ui__widget6._onCreate();
@@ -315,6 +317,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
      }
 }
 __ui__widget6.text = 'Static Sprite';
+__ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.createDefaultEntity('sprite');});
 __ui__widget6.defaults = 'EditorMenu';
 __ui__widget6._onInitialize();
 __ui__widget6._onCreate();

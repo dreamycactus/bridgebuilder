@@ -187,7 +187,7 @@ class EditorClassImporter
                         return s;
                     }
                 case 'Bool':
-                    func = macro inline function(s : String) : Bool {
+                    func = macro inline function(s : String) : Null<Bool> {
                         var ss = s.toLowerCase();
                         if (ss == 'true') {
                             return true;

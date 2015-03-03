@@ -23,6 +23,12 @@ class CmpRenderSprite extends CmpRender
     @editor 
     public var scale(default, set) : Float = 1.0;
     
+    @editor
+    public var width(default, default) : Float = 50;
+    
+    @editor
+    public var height(default, default) : Float = 50;
+    
     public var bitmap : Bitmap;
     
     public function new() 
@@ -42,6 +48,7 @@ class CmpRenderSprite extends CmpRender
     {
         if (Assets.exists(path, AssetType.IMAGE)) {
             bitmap.bitmapData = Assets.getBitmapData(path);
+            sendMsg(Msgs.DIMCHANGE, this, { w : width, h : height } );
         }
         this.src = path;
         return path;

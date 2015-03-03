@@ -7,6 +7,7 @@ import nape.shape.Polygon;
  * ...
  * @author ...
  */
+@editor
 class CmpRenderTerrain extends CmpRender
 {
     var terrain : CmpTerrain;
@@ -19,9 +20,9 @@ class CmpRenderTerrain extends CmpRender
         
     }
     
-    function refresh() : Void
+    function refreshterrain() : Void
     {
-        if (terrain == null) return;
+        if (terrain == null || terrain.cells == null) return;
         var g = sprite.graphics;
         g.clear();
         for (c in terrain.cells) {
@@ -44,7 +45,7 @@ class CmpRenderTerrain extends CmpRender
     {
         switch(msgType) {
         case Msgs.ENTMOVE:
-            refresh();
+            refreshterrain();
         }
     }
     

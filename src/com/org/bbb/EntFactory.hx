@@ -1,6 +1,7 @@
 package com.org.bbb;
 import com.org.bbb.control.CmpControlCar;
 import com.org.bbb.control.CmpControlCarPlayer;
+import com.org.bbb.editor.CmpEditorBox;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpSpawn;
 import com.org.bbb.physics.BuildMat;
@@ -140,8 +141,14 @@ class EntFactory
     {
         var terrain = state.createEnt("terrain");
         var bd = Assets.getBitmapData(terrainsrc);
+        var trans = new CmpTransform(offset.x, offset.y, 0);
         var ct = new CmpTerrain(terrainsrc, space, offset);
+
         
+        terrain.attachCmp(trans);
+        if (bd == null) {
+            terrain.attachCmp(new CmpEditorBox(100, 100));
+        }
         terrain.attachCmp(ct);
         terrain.attachCmp(new CmpRenderTerrain(ct));
         
@@ -232,6 +239,19 @@ class EntFactory
         e.attachCmp(cmpGrid);
         e.attachCmp(cmpRenderGrid);
         
+        return e;
+    }
+    
+    public function createStaticSprite(src : String, x : Float, y : Float, layer : Int) : Entity
+    {
+        var e = state.createEnt();
+        var trans = new CmpTransform(x, y);
+        var s = new CmpRenderSprite();
+        s.src = src;
+        var box = new CmpEditorBox(s.width, s.height);
+        e.attachCmp(trans);
+        e.attachCmp(s);
+        e.attachCmp(box);
         return e;
     }
     

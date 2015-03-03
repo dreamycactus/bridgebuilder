@@ -33,11 +33,11 @@ class CmpRenderAnchor extends CmpRender
     {
         switch (msgType) {
         case Msgs.ENTMOVE:
-            refresh();
+            refreshanchor();
         }
     }
 
-    function refresh()
+    function refreshanchor()
     {
         var g = sprite.graphics;
         //sprite.filters = [];

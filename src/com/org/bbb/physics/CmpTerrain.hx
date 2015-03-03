@@ -112,16 +112,21 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
             b.setShapeFilters(new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor));
             b.cbTypes.add(GameConfig.cbGround);
             b.position = offset;
+            if (entity != null) {
+                b.userData.entity = entity;
+            }
         }}
     }
     override function set_entity(e : Entity) : Entity
     {
-        for (c in cells) {
-            if (c != null) {
-                c.userData.entity = e;
+        if (cells != null) {
+            for (c in cells) {
+                if (c != null) {
+                    c.userData.entity = e;
+                }
             }
         }
-        return e;
+        return super.set_entity(e);
     }
     
     public function iso(x:Float, y:Float):Float 
@@ -144,7 +149,7 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
     
     function set_src(value:String):String 
     {
-        if (Assets.exists(value, AssetType.IMAGE)) {
+        if (value != "" && Assets.exists(value, AssetType.IMAGE)) {
             bitmapData = Assets.getBitmapData(value);
             aabb.x = 0;
             aabb.y = 0;
@@ -153,6 +158,7 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
             if (space != null) {
                 invalidate(aabb, space);
             }
+            sendMsg(Msgs.ENTMOVE, this, null);
         }
         return src = value;
     }

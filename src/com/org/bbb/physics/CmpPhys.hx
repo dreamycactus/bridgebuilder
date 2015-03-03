@@ -19,6 +19,13 @@ class CmpPhys extends Cmp
         this.transform = transform;
     }
     
+    
+    override function set_entity(e:Entity):Entity 
+    {
+        var trans = e.getCmp(CmpTransform);
+        this.transform = trans;
+        return super.set_entity(e);
+    }
     function get_space() : Space { return null;  }
     function set_space(space : Space) : Space { this.space = space;  return null;  }
 }

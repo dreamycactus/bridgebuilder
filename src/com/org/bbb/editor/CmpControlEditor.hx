@@ -105,8 +105,8 @@ class CmpControlEditor extends CmpControl
             }
         }
         for (e in ents) {
-            var ct = e.getCmp(CmpTransform);
-            if (ct.bbox != null && Util.pointInRect(mouse, ct.bbox)) {
+            var ct = e.getCmp(CmpEditorBox);
+            if (ct != null && ct.bbox != null && Util.pointInRect(mouse, ct.bbox)) {
                 ArrayHelper.insertInPlace(res, { area : ct.bbox.width * ct.bbox.height, entity : e }, ascendingArea); 
             }
         }
@@ -171,5 +171,18 @@ class CmpControlEditor extends CmpControl
         //editPanel.addChild(e.getCmp(CmpAnchor).widget);
     }   
     
-    //public function createEntity(EntityType
+    public function createDefaultEntity(type : String) : Void
+    {
+        var e : Entity = null;
+        var offset = Vec2.get(200, 200);
+        switch (type) {
+        case "anchor":
+            e = EntFactory.inst.createAnchor(offset, { w : 100, h : 100 }, false, AnchorStartEnd.NONE, false);
+        case "terrain":
+            e = EntFactory.inst.createTerrain("", level.space, offset);
+        case "sprite":
+            e = EntFactory.inst.createStaticSprite('img/editorsprite.png', 200, 200, 5);
+        }
+        state.insertEnt(e);
+    }
 }

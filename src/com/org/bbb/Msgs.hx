@@ -19,5 +19,6 @@ class Msgs
     public static var NEWPLAYER = "newplayer";
     public static var XTRANSCHANGE = "xtranschange";
     public static var YTRANSCHANGE = "ytranschange";
+    public static var DIMCHANGE = "dimchange";
     
 }

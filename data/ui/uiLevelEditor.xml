@@ -25,9 +25,9 @@
             </TabPage>
             <TabPage title-text="'Create'" defaults="'EditorMenu'">
                 <VBox left="300" defaults="'EditorMenu'">
-                    <Button text="'Anchor'" defaults="'EditorMenu'"/>
-                    <Button text="'Terrain'" defaults="'EditorMenu'"/>
-                    <Button text="'Static Sprite'" defaults="'EditorMenu'"/>
+                    <Button text="'Anchor'" defaults="'EditorMenu'" on-click="editor.createDefaultEntity('anchor');" />
+                    <Button text="'Terrain'" defaults="'EditorMenu'" on-click="editor.createDefaultEntity('terrain');" />
+                    <Button text="'Static Sprite'" defaults="'EditorMenu'" on-click="editor.createDefaultEntity('sprite');"/>
                     <Button text="'Spawn'" defaults="'EditorMenu'"/>
                     <Button text="'End'" defaults="'EditorMenu'"/>
                 </VBox>                

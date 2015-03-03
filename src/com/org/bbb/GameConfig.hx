@@ -5,6 +5,7 @@ import com.org.bbb.control.CmpControlBuild;
 import com.org.bbb.control.CmpControlCar;
 import com.org.bbb.control.CmpControlCarPlayer;
 import com.org.bbb.editor.CmpControlEditor;
+import com.org.bbb.editor.CmpEditorBox;
 import com.org.bbb.physics.CmpEnd;
 import com.org.bbb.level.CmpObjective;
 import com.org.bbb.level.CmpObjectiveAllPass;
@@ -216,7 +217,7 @@ class GameConfig
                                       , CmpRenderMultiBeam, CmpRenderSlide, CmpRenderBg, CmpRenderBgStarfield, CmpRenderBgCityfield
                                       , CmpRenderAnchor, CmpRenderSharedJoint, CmpRenderCable, CmpRenderSprite, CmpRenderTerrain
                                       , CmpRenderCar, CmpRenderTruckRigid, CmpRenderTruckTractor, CmpRenderTruckTrailer, CmpRenderTrainLocomotive, CmpRenderTrainCar
-                                      , CmpRenderRain, CmpRenderPony, CmpRenderEditorUI]);
+                                      , CmpRenderRain, CmpRenderPony, CmpRenderEditorUI, CmpEditorBox]);
         Cmp.cmpManager.adopt(CmpPhys, [CmpBeamBase, CmpJoint, CmpAnchor,
                                        CmpSharedJoint, CmpMover, CmpMoverCar, CmpMoverTrainEngine, CmpMoverTrainCar, CmpMoverTruckTractor, CmpMoverTruckTrailer, CmpMoverTruckRigid, CmpSpawn, CmpEnd]);
         Cmp.cmpManager.adopt(CmpBeamBase, [CmpBeam, CmpCable, CmpMultiBeam]);

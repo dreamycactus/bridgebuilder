@@ -4,29 +4,31 @@ package com.org.bbb.render ;
  * ...
  * @author 
  */
+import com.org.bbb.systems.SysRender;
 import com.org.mes.Cmp;
 import flash.display.Stage;
+import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.geom.ColorTransform;
 
+@editor
 class CmpRender extends Cmp
 {
     public var sprite : Sprite;
-    public var inCamera : Bool;
-    public var displayLayer : Int;
-
+    @editor
+    public var inCamera(default, set) : Bool;
+    @editor
+    public var displayLayer(default, set) : Int;
     
     public function new(inCamera : Bool=true)
     {
         super();
-        this.inCamera = inCamera;
         sprite = new Sprite();
+
+        this.inCamera = inCamera;
     }
-    public function render(dt : Float) : Void
-    {
-        
-    }
+    public function render(dt : Float) : Void {}
     
     public function addToScene(scene : DisplayObjectContainer, index : Int) : Void 
     {
@@ -46,4 +48,29 @@ class CmpRender extends Cmp
             sprite.transform.colorTransform = col;
         }
     }
+    
+    function refresh() 
+    {
+        if (entity != null) {
+            var sys = entity.state.getSystem(SysRender);
+            sys.removed(entity);
+            sys.inserted(entity);
+        }
+    }
+    
+    function set_displayLayer(value:Int):Int 
+    {
+        displayLayer = value;
+        //refresh();
+        return value;
+    }
+    
+    function set_inCamera(value:Bool):Bool 
+    {
+        if (value != inCamera) {
+            //refresh();
+        }
+        return inCamera = value;
+    }
+
 }
