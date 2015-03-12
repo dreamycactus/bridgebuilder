@@ -3,12 +3,14 @@ import com.org.bbb.level.CmpLevel;
 import com.org.bbb.render.Camera;
 import com.org.bbb.render.CmpRender;
 import com.org.bbb.render.CmpRenderGrid;
+import com.org.mes.Cmp;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import com.org.mes.System;
 import com.org.mes.Top;
 import flash.display.Stage;
 import flash.Lib;
+import nape.geom.Mat23;
 import nape.space.Space;
 import nape.util.Debug;
 import nape.util.ShapeDebug;
@@ -41,6 +43,7 @@ class SysRender extends System
     public function new(state : MESState, level : CmpLevel, stage : Stage)
     {
         super(state);
+        subscriptions = [Msgs.SPRITECHANGE];
         this.level = level;
         this.cmpsToRender = new Array();
         this.stage = stage;
@@ -64,15 +67,15 @@ class SysRender extends System
         stage.addChild(this.mainSprite);
 
         this.camera = new Camera(this);
-        this.camera.sprite.addChild(debug.display);
         this.mainSprite.addChild(this.camera.sprite);
         this.mainSprite.addChild(new FPS());
         this.mainSprite.addChild(someStats);
+        this.mainSprite.addChild(debug.display);
+
     }
     
     override public function deinit()
     {
-        camera.sprite.removeChild(debug.display);
         stage.removeChild(mainSprite);
     }
     
@@ -81,6 +84,8 @@ class SysRender extends System
         camera.update();
         debug.cullingEnabled = true;
 
+        var mat = camera.sprite.transform.matrix;
+        debug.transform = Mat23.fromMatrix(mat);
         debug.clear();
         if (drawDebug) {
             debug.draw(level.space);
@@ -109,7 +114,7 @@ class SysRender extends System
         for (c in res) {
             var index = cmpsToRender.insertInPlace(c, higherDisplayLayer);
             if (c.inCamera) {
-                c.addToScene(camera.sprite, index);
+                c.addToScene(camera.sprite, Std.int(Math.min(index, camera.sprite.numChildren)));
             } else {
                 c.addToScene(mainSprite, index);
             }
@@ -143,5 +148,24 @@ class SysRender extends System
         //this.camera.sprite.height = h;
     }
     
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    {
+        switch(msgType) {
+        case Msgs.SPRITECHANGE:
+            var render = cast(sender, CmpRender);
+            if (render.inCamera) {
+                camera.sprite.removeChild(render.sprite);
+            } else {
+                mainSprite.removeChild(render.sprite);
+            }
+            if (options.inCamera) {
+                var index = cmpsToRender.insertInPlace(render, higherDisplayLayer);
+                camera.sprite.addChildAt(render.sprite, Std.int(Math.min(index, camera.sprite.numChildren)));
+            } else {
+                mainSprite.addChild(render.sprite);
+            }
+        }
+    }
+
 
 }

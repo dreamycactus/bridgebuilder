@@ -24,7 +24,7 @@ class CmpRenderAnchor extends CmpRender
         if (cmpAnchor.fluid) {
             color = 0x91c2c1;
         }
-        refresh();
+        refreshanchor();
         //sprite.cacheAsBitmap = true;
         
     }
@@ -33,6 +33,9 @@ class CmpRenderAnchor extends CmpRender
     {
         switch (msgType) {
         case Msgs.ENTMOVE:
+            sprite.x = options.x;
+            sprite.y = options.y;
+        case Msgs.REFRESH:
             refreshanchor();
         }
     }
@@ -44,8 +47,10 @@ class CmpRenderAnchor extends CmpRender
         //sprite.cacheAsBitmap = false;
         g.clear();
         g.beginFill(color);
-        g.drawRect(cmpAnchor.x, cmpAnchor.y, cmpAnchor.width, cmpAnchor.height);
+        g.drawRect(0, 0, cmpAnchor.width, cmpAnchor.height);
         g.endFill();
+        sprite.x = cmpAnchor.x;
+        sprite.y = cmpAnchor.y;
     }
     
     

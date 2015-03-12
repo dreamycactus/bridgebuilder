@@ -9,6 +9,7 @@ import nape.geom.AABB;
  * ...
  * @author ...
  */
+@editor
 class CmpEditorBox extends CmpRender
 {
     public var w(default, set) : Float;
@@ -19,10 +20,14 @@ class CmpEditorBox extends CmpRender
 
     public var trans : CmpTransform;
     
+    @editor
+    public var visible(default, set) : Bool = true;
+    
+    
     public function new(w : Float, h : Float) 
     {
         super(true);
-        subscriptions = [Msgs.XTRANSCHANGE, Msgs.YTRANSCHANGE, Msgs.DIMCHANGE];
+        subscriptions = [Msgs.TRANSCHANGE, Msgs.DIMCHANGE];
         this.w = w;
         this.h = h;
     }
@@ -69,14 +74,23 @@ class CmpEditorBox extends CmpRender
         return trans == null ? null : new AABB(x, y, w, h);
     }
     
+    function set_visible(v) 
+    {
+        if (!v) {
+            sprite.graphics.clear();
+        } else {
+            refreshbox();
+        }
+        return visible = v;
+    }
+    
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         switch(msgType)
         {
-        case Msgs.XTRANSCHANGE:
-            refresh();
-        case Msgs.YTRANSCHANGE:
-            refresh();
+        case Msgs.TRANSCHANGE:
+            sprite.x = trans.x;
+            sprite.y = trans.y;
         case Msgs.DIMCHANGE:
             h = options.h;
             w = options.w;

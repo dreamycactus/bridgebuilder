@@ -1,0 +1,70 @@
+{
+ "h": 480,
+ "objects": [
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.physics.CmpAnchor",
+     "width": 100,
+     "x": 97.5,
+     "height": 200,
+     "y": 85
+    },
+    {
+     "vec_offsetX": 0,
+     "width": 50,
+     "vec_offsetY": 0,
+     "height": 50,
+     "src": null,
+     "offsetRot": 0,
+     "cmp": "com.org.bbb.render.CmpRenderSprite",
+     "scale": 1
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 97.5,
+     "y": 85,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.render.CmpRenderAnchor",
+     "color": 16777215
+    }
+   ],
+   "type": "anchor"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.physics.CmpAnchor",
+     "width": 400,
+     "x": 632.6666666666667,
+     "height": 280,
+     "y": 68.33333333333333
+    },
+    {
+     "vec_offsetX": -1000,
+     "width": 50,
+     "vec_offsetY": 0,
+     "height": 50,
+     "src": null,
+     "offsetRot": 0,
+     "cmp": "com.org.bbb.render.CmpRenderSprite",
+     "scale": 1
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 632.6666666666667,
+     "y": 68.33333333333333,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.render.CmpRenderAnchor",
+     "color": 16777215
+    }
+   ],
+   "type": "anchor"
+  }
+ ],
+ "w": 920
+}

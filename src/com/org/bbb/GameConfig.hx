@@ -116,14 +116,14 @@ class GameConfig
     public static var panRate = 10;
     public static var cameraElasticEdge = 0.1;
     
-    public static var cgBeam        = 1;
+    public static var cgBeam        = 1<<11;
     public static var cgDeck        = 2;
     public static var cgBeamSplit   = 4;
     public static var cgSharedJoint = 8;
     public static var cgAnchor      = 16;
     public static var cgLoad        = 32;
     public static var cgCable       = 64;
-    public static var cgSensor      = (1<<11);
+    public static var cgSensor      = 1;
     public static var cgEnd         = 256;
     public static var cgSpawn       = 512;
     public static var cgNull        = 1024;
@@ -186,7 +186,8 @@ class GameConfig
     
     public static var tCar = "car";
     public static var tBeam = "beam";
-    public static var tTransform= "beam";
+    public static var tTransform = "transform";
+    public static var tAnchor = "anchor";
     
     public static var tcable = "Cable";
     public static var tsupercable = "Supercable";

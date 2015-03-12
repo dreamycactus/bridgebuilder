@@ -4,6 +4,7 @@ import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.control.CmpControlBuild;
 import com.org.bbb.editor.CmpAnchorInstance;
 import com.org.bbb.editor.CmpControlEditor;
+import com.org.bbb.level.LevelParser;
 import com.org.bbb.level.LevelSerializer;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpLevel;
@@ -67,7 +68,6 @@ class StateBridgeLevel extends BBBState
     var entfactory : EntFactory;
     var grid : Entity;
     public var cmpGrid : CmpGrid;
-    public var cmpControl : CmpControlBuild;
     public var controllerEnt : Entity;
     var uiSprite : Sprite;
     var textField : TextField;
@@ -84,7 +84,7 @@ class StateBridgeLevel extends BBBState
     {
         var state = new StateBridgeLevel(top);
         EntFactory.inst.state = state;
-        var levelserializer = new LevelSerializer(state);
+        var levelserializer = new LevelParser(state);
         var cl = levelserializer.loadLevelXml(levelPath);
         return createFromLevel(state, top, cl);
     }
@@ -123,10 +123,9 @@ class StateBridgeLevel extends BBBState
         var cmpBuilder = new CmpBridgeBuild(top, s1, cl, s1.camera, cmpGrid);
         //var cmpControl = new CmpControlBuild(cmpBuilder);
         var cmpControl = new CmpControlEditor(cmpBuilder);
-        //s1.cmpControl = cmpControl;
         controllerEnt.attachCmp(cmpControl);
-        //controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpControl) );
-        controllerEnt.attachCmp(new CmpRenderEditorUI(cl, cmpControl, 1024, 576) );
+        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpBuilder) );
+        controllerEnt.attachCmp(new CmpRenderEditorUI(cmpControl, cl, 1024, 576) );
         //controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
         s1.controllerEnt = controllerEnt;
         s1.insertEnt(controllerEnt);
@@ -135,15 +134,13 @@ class StateBridgeLevel extends BBBState
             s1.insertEnt(e);
         }
         
+        s1.level = cl;
+
 
         //var cob = s1.createEnt();
         //var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
         //cob.attachCmp(cmpCob);
         //s1.insertEnt(cob);
-        
-        var eobj = s1.createEnt();
-        eobj.attachCmp(new CmpObjectiveAllPass(cl));
-        s1.insertEnt(eobj);
         
         
         //var starbg = s1.createEnt();
@@ -214,7 +211,6 @@ class StateBridgeLevel extends BBBState
         level = cl;
         getSystem(SysPhysics).level = cl;
         getSystem(SysRender).level = cl;
-        cmpControl.level = cl;
         return cl;
     }
     

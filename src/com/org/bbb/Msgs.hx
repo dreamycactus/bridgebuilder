@@ -7,6 +7,7 @@ package com.org.bbb;
 class Msgs
 {
     public static var ENTMOVE = "entmove";
+    public static var REFRESH = "refresh";
     public static var BEAMDOWN = "beamdown";
     public static var BEAMDELETE = "beamdelete";
     public static var BEAMRECALC = "beamrecalc";
@@ -17,8 +18,8 @@ class Msgs
     public static var CABLECREATE = "cablecreate";
     
     public static var NEWPLAYER = "newplayer";
-    public static var XTRANSCHANGE = "xtranschange";
-    public static var YTRANSCHANGE = "ytranschange";
+    public static var SPRITECHANGE = "spritechange";
+    public static var TRANSCHANGE = "transchange";
     public static var DIMCHANGE = "dimchange";
     
 }

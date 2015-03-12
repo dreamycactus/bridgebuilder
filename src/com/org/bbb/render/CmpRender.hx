@@ -20,7 +20,7 @@ class CmpRender extends Cmp
     public var inCamera(default, set) : Bool;
     @editor
     public var displayLayer(default, set) : Int;
-    
+
     public function new(inCamera : Bool=true)
     {
         super();
@@ -61,16 +61,34 @@ class CmpRender extends Cmp
     function set_displayLayer(value:Int):Int 
     {
         displayLayer = value;
-        //refresh();
+        refresh();
         return value;
     }
     
     function set_inCamera(value:Bool):Bool 
     {
         if (value != inCamera) {
-            //refresh();
+            inCamera = value;
+            refresh();
+            return value;
         }
         return inCamera = value;
     }
 
+    //function set_inCamera(value : Bool) : Bool
+    //{
+        //if (value != inCamera) {
+            //sendMsg(Msgs.SPRITECHANGE, this, { inCamera : value, displayLayer : this.displayLayer} );
+        //}
+//
+        //return inCamera = value;
+    //}
+    //function set_displayLayer(value : Int) : Int
+    //{
+        //if (value != displayLayer) {
+            //sendMsg(Msgs.SPRITECHANGE, this, { inCamera : this.inCamera, displayLayer : value} );
+        //}
+//
+        //return displayLayer = value;
+    //}
 }

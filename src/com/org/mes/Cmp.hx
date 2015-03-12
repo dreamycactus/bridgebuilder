@@ -45,7 +45,16 @@ class Cmp implements Subscriber
     public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void {}
     //function broadcastMessage(name : String, sender : Cmp, options : Dynamic);
     
-    public function sendMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    public function internalSendMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
+    {
+        if (entity != null) {
+            for (c in entity.cmps) {
+                c.recieveMsg(msgType, sender, options);
+            }
+        }
+    }
+    
+    public inline function sendMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         if (entity != null && entity.state != null) {
             entity.state.distributeMsg(msgType, sender, options);

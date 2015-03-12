@@ -89,7 +89,7 @@ class CmpBridgeBuild extends Cmp
         saveState();
     }
     
-    public function beamDown() 
+    public function beamDown() : Void
     {
         var mousePos = Vec2.get(stage.mouseX, stage.mouseY);
         var mp = camera.screenToWorld(mousePos);
@@ -130,12 +130,12 @@ class CmpBridgeBuild extends Cmp
         }
     }
     
-    public function beamUp()
+    public function beamUp() : Entity
     {
         isDrawing = false;
         
         if (spawn1 == null) {
-            return;
+            return null;
         }
         
         var cp1 = cmpGrid.getClosestCell(spawn1);
@@ -145,7 +145,7 @@ class CmpBridgeBuild extends Cmp
         var validLine = lineChecker.isValidLine(spawn1, spawn2);
 
         if ( (!beamDeleteMode && !deckSelectMode) && ((cp1.x == cp2.x && cp1.y == cp2.y) || startBody == null || !validLine) ) {
-            return;
+            return null;
         }
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
         if (beamDeleteMode || deckSelectMode) {
@@ -169,12 +169,12 @@ class CmpBridgeBuild extends Cmp
                 state.deleteEnt(startBody.userData.entity);
                 startBody = null;
             }
-            return;
+            return null;
         }
         if (deckSelectMode && startBody != null) {
             var ent : Entity = startBody.userData.entity;
             toggleBeamRoad(ent);
-            return;
+            return null;
         }
         
         for (b in bb) {
@@ -185,7 +185,7 @@ class CmpBridgeBuild extends Cmp
             }
         }
         if (startBody == otherBody) {
-            return;
+            return null;
         }
         var genBody : { body : Body, ent : Entity } = null;
         var beamStartBody : Body = null;
@@ -318,6 +318,7 @@ class CmpBridgeBuild extends Cmp
         spawn1 = null;
         spawn2 = null;
         startBody = null;
+        return beamEnt;
     }
     
     public function toggleBeamRoad(e : Entity) : Entity

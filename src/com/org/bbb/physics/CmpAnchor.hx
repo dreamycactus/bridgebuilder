@@ -1,8 +1,13 @@
 package com.org.bbb.physics ;
 import com.org.bbb.control.BridgeNode;
+import com.org.mes.Cmp;
 import com.org.mes.Entity;
+import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 import nape.phys.Body;
+import nape.phys.BodyType;
+import nape.phys.Material;
+import nape.shape.Polygon;
 import nape.space.Space;
 
 /**
@@ -16,39 +21,39 @@ enum AnchorStartEnd
     NONE;
 }
 
-@author("Harry")
 @editor
+@:access(com.org.bbb.physics.CmpTransform)
 class CmpAnchor extends CmpPhys implements BridgeNode
 {
     public var body(default, set) : Body;
+    @editor
+    public var data : Dynamic;
     public var startEnd : AnchorStartEnd;
+    //@editor
     public var tapered : Bool;
+    //@editor
     public var fluid : Bool;
     
     @editor
-    public var width(default, set) : Float;
+    public var width(default, set) : Float = 0;
     @editor
-    public var height(default, set) : Float;
+    public var height(default, set) : Float = 0;
     
     @editor
-    public var x(get, set) : Float;
+    @:isVar public var x(get, set) : Float;
     @editor
-    public var y(get, set) : Float;
+    @:isVar public var y(get, set) : Float;
     
     @:isVar public var sharedJoints(default, default) : Array<CmpSharedJoint> = new Array();
     public function new(trans : CmpTransform, body : Body, ase : AnchorStartEnd, tapered : Bool=false) 
     {
         super(trans);
-        this.body = body;
+        subscriptions = [Msgs.TRANSCHANGE];
         this.startEnd = ase;
         this.tapered = tapered;
+        this.body = body;
         var bounds = body.bounds;
-        this.width = bounds.width;
-        this.height = bounds.height;
-        if (body != null) {
-            x = body.position.x;
-            y = body.position.y;
-        }
+        rebuild();
     }
     
     public function findAdjacentBodies() : Array<Body>
@@ -90,13 +95,23 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     override function get_space() : Space { return body.space;  }
     override function set_space(space : Space) : Space { body.space = space; return space;  }
     
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
+    {
+        switch(msgType) {
+        case Msgs.TRANSCHANGE:
+            body.position.x = transform.x + width * 0.5;
+            body.position.y = transform.y + height * 0.5;
+            internalSendMsg(Msgs.ENTMOVE, this, { x : transform.x, y : transform.y } );
+        }
+    }
+
     function get_sharedJoints() : Array<CmpSharedJoint>
     {
         return sharedJoints;
     }
     
-    function get_x() : Float { return body.position.x-width*0.5; }
-    function get_y() : Float { return body.position.y - height * 0.5; }
+    function get_x() : Float { return transform.x; }
+    function get_y() : Float { return transform.y; }
     function set_body(b) : Body
     {
         this.body = b;
@@ -108,33 +123,48 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     
     function set_x(x) : Float 
     { 
-        var space = body.space; 
-        body.space = null; 
-        body.position.x = x; 
-        body.space = space; 
-        transform.x = body.position.x - width * 0.5;
-        sendMsg(Msgs.ENTMOVE, this, null);
-        return x; 
+        body.position.x = x + width * 0.5; 
+        transform._x = body.position.x - width * 0.5;
+        internalSendMsg(Msgs.ENTMOVE, this, {x:x, y:y});
+        return this.x=x; 
     }
     function set_y(y) : Float 
     { 
-        var space = body.space; 
-        body.space = null; 
         body.position.y = y; 
-        body.space = space; 
-        transform.y = body.position.y - height * 0.5;
-        sendMsg(Msgs.ENTMOVE, this, null);
-        return y; 
+        transform._y = body.position.y - height * 0.5;
+        internalSendMsg(Msgs.ENTMOVE, this, {x:x, y:y});
+        return this.y=y; 
     }
     function set_width(w) : Float
     {
         this.width = w;
+        rebuild();
+        internalSendMsg(Msgs.ENTMOVE, this, null);
+        
         return w;
     }
     function set_height(h) : Float
     {
         this.height = h;
+        rebuild();
         return h;
     }
-    
+    function rebuild() : Void
+    {
+        body.shapes.clear();
+        x = transform.x;
+        y = transform.y;
+
+        if (width != 0 && height != 0) {
+            var filter = null;
+            if (fluid) {
+                filter = new InteractionFilter(GameConfig.cgNull, 0, GameConfig.cgNull, 0, GameConfig.cgAnchor, -1);
+            } else {
+                filter = new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor);
+            }
+            body.shapes.push(new Polygon(Polygon.box(width, height), GameConfig.matSteel.material, filter));
+            internalSendMsg(Msgs.REFRESH, this, null);
+        }
+
+    }
 }

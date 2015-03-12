@@ -6,10 +6,17 @@ import nape.geom.AABB;
  * ...
  * @author ...
  */
+@editor
+@:access(com.org.mes.Cmp)
 class CmpTransform extends Cmp
 {
-    public var x(default, set) : Float;
-    public var y(default, set) : Float;
+    @editor
+    public var x(get, set) : Float;
+    var _x : Float;
+    @editor
+    public var y(get, set) : Float;
+    var _y : Float;
+    @editor
     public var rotation(default, set) : Float;
     public var bbox : AABB;
     
@@ -20,17 +27,18 @@ class CmpTransform extends Cmp
         this.y = y;
         this.rotation = rotation;
     }
-    
+    function get_x() { return _x; }
+    function get_y() { return _y; }
     function set_x(x) : Float
     {
-        sendMsg(Msgs.XTRANSCHANGE, this, { prevX : this.x } );
-        this.x = x;
+        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
+        this._x = x;
         return x;
     }
     function set_y(y) : Float
     {
-        sendMsg(Msgs.YTRANSCHANGE, this, { prevY : this.y } );
-        this.y = y;
+        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
+        this._y = y;
         return y;
     }
     function set_rotation(r) : Float

@@ -7,6 +7,7 @@ import com.org.bbb.systems.SysRender;
 import com.org.mes.Entity;
 import com.org.mes.EntityType;
 import com.org.mes.Top;
+import haxe.rtti.Meta;
 import openfl.display.OpenGLView;
 import openfl.display.Sprite;
 import openfl.display.StageDisplayState;

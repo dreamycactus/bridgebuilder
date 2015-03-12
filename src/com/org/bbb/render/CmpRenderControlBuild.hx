@@ -1,4 +1,5 @@
 package com.org.bbb.render ;
+import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.control.CmpControlBuild;
 import com.org.mes.Cmp;
 import flash.display.Stage;
@@ -16,15 +17,15 @@ import ru.stablex.ui.widgets.Widget;
  */
 class CmpRenderControlBuild extends CmpRender
 {
-    var buildControl : CmpControlBuild;
+    var bridgebuild : CmpBridgeBuild;
     var scene:DisplayObjectContainer;
     
     var stage : Stage;
     
-    public function new(stage : Stage, buildControl : CmpControlBuild) 
+    public function new(stage : Stage, bridgebuild : CmpBridgeBuild) 
     {
         super();
-        this.buildControl = buildControl;
+        this.bridgebuild = bridgebuild;
         this.displayLayer = GameConfig.zControlUI;
         this.stage = stage;
     }
@@ -35,15 +36,14 @@ class CmpRenderControlBuild extends CmpRender
         var g = sprite.graphics;
             
         g.clear();
-        //if (buildControl.isDrawing && !buildControl.editMode) {
-//
-            //g.lineStyle(1, 0xFF0088, 0.6);
-            //g.beginFill(0xFFFFFF, 1.0);
-            //
-            //g.moveTo(buildControl.spawn1.x, buildControl.spawn1.y);
-            //var spawn2 = buildControl.calculateBeamEnd();
-            //g.lineTo(spawn2.x, spawn2.y);    
-            //g.endFill();
-        //}
+        if (bridgebuild.isDrawing) {
+            g.lineStyle(1, 0xFF0088, 0.6);
+            g.beginFill(0xFFFFFF, 1.0);
+            
+            g.moveTo(bridgebuild.spawn1.x, bridgebuild.spawn1.y);
+            var spawn2 = bridgebuild.calculateBeamEnd();
+            g.lineTo(spawn2.x, spawn2.y);    
+            g.endFill();
+        }
     }
 }

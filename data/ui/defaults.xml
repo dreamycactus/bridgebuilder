@@ -9,8 +9,6 @@
         <EditorWidgetProperties
             align           = "'top,left'"
             paddingBottom      = "20"
-            childPadding    = "0"
-            autoSize        = "true"
             skinName        = "'matBut'"
         />
     </VBox>
@@ -92,6 +90,7 @@
             format-align       = "openfl.text.TextFormatAlign.LEFT"
         />
         <EditorMenu
+            align              = "'top,left'"
             label-selectable   = "false"
             label-mouseEnabled = "false"
             label-embedFonts   = "true"

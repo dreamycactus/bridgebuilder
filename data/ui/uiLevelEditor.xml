@@ -1,25 +1,35 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
 <Widget id="'rootWidget'" widthPt="100" h="1200">
+    <meta:inject code="var editor : CmpControlEditor = cast(@editor, CmpControlEditor);"/>
+    <Floating w="1024" h="576" id="'saveFloating'" visible="false" skin:Paint-color="0x999999">
+        <InputText top="250" left="512" id="'saveText'" w="500" h="200" />
+        <Button text="'Close'" on-click="#saveFloating.visible = false;" />
+    </Floating>
+    <Floating w="1024" h="576" id="'loadFloating'" visible="false" skin:Paint-color="0x999999">
+        <InputText top="250" left="512" id="'loadText'" w="500" h="200" />
+        <Button text="'Close'" on-click="#loadFloating.visible = false;" />
+        <Button text="'Load'" on-click="editor.loadLevel(cast(#loadText,ru.stablex.ui.widgets.Text).text); #loadFloating.visible = false;" />
+    </Floating>
     <HBox w="1024" h="576" align="'top, left'">
         <TabStack left="100" name="'editorMenu'">
             <TabPage title-text="'File'" defaults="'EditorMenu'">
                 <VBox defaults="'EditorMenu'">
                     <Button text="'New Level'" defaults="'EditorMenu'"/>
-                    <Button text="'Load'" defaults="'EditorMenu'"/>
-                    <Button text="'Save'" defaults="'EditorMenu'"/>
+                    <Button text="'Load'" defaults="'EditorMenu'" on-click="#loadFloating.visible = true;" />
+                    <Button text="'Save'" defaults="'EditorMenu'" on-click="editor.saveLevel();" />
                 </VBox>
             </TabPage>
             <TabPage title-text="'Mode'" defaults="'EditorMenu'">
                 <VBox left="100" defaults="'EditorMenu'">
-                    <Button text="'Editor'" defaults="'EditorMenu'"/>
-                    <Button text="'Bridge Build'" defaults="'EditorMenu'"/>
-                    <Button text="'Game Preview'" defaults="'EditorMenu'"/>
+                    <Button text="'Editor'" defaults="'EditorMenu'" on-click="editor.set_mode(EditMode.EDIT);" />
+                    <Button text="'Bridge Build'" defaults="'EditorMenu'" on-click="editor.set_mode(EditMode.BUILD);"/>
+                    <Button text="'Game Preview'" defaults="'EditorMenu'" on-click="editor.set_mode(EditMode.PLAY);"/>
                 </VBox>
             </TabPage>
             <TabPage title-text="'Options'" defaults="'EditorMenu'">
                 <VBox left="200" defaults="'EditorMenu'"> 
-                    <Button text="'Draw Nape Debug'" defaults="'EditorMenu'"/>
+                    <Button text="'Draw Nape Debug'" defaults="'EditorMenu'" on-click="editor.toggleDrawDebug();" />
                     <Button text="'Draw BBox'" defaults="'EditorMenu'"/>
                 </VBox>
             </TabPage>
@@ -32,6 +42,11 @@
                     <Button text="'End'" defaults="'EditorMenu'"/>
                 </VBox>                
             </TabPage>
+            <TabPage title-text="'Material'" defaults="'EditorMenu'">
+                <VBox left="400" defaults="'EditorMenu'">    
+                    <Button text="'Steel'" defaults="'EditorMenu'" on-click="editor.builder.set_material($GameConfig.matSteel);" />
+                </VBox>
+                </TabPage>
             <TabPage title-text="'Meh'" defaults="'EditorMenu'">
             </TabPage>
         </TabStack>

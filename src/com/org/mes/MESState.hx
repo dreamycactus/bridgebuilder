@@ -2,6 +2,7 @@ package com.org.mes;
 import com.org.bbb.EntFactory;
 import haxe.ds.StringMap;
 @:access(com.org.mes.Entity)
+@:access(com.org.mes.System)
 class MESState
 {
     public var entityTypeManager : EntityTypeManager = new EntityTypeManager();
@@ -22,6 +23,7 @@ class MESState
     
     public function init()
     {
+        
     }
     
     public function deinit()
@@ -128,7 +130,10 @@ class MESState
         if (sys != null) {
             sys.push(s);
             s.init();
-            s.active = true;
+            s.active = true; //TODO remove- don't assume system active status
+            for (sub in s.subscriptions) {
+                registerSubscriber(sub, s);
+            }
         } else {
             throw "System is " + s + "... cannot add to top";
         }
@@ -137,6 +142,11 @@ class MESState
     public function removeSystem(s : System)
     {
         sys.remove(s);
+        for (system in sys) {
+            for (sub in system.subscriptions) {
+                unregisterSubscriber(sub, system);
+            }
+        }
     }
     
     public function getSystem<T>(t:Class<T>) : T

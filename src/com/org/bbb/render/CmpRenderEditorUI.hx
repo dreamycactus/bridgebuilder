@@ -22,7 +22,7 @@ class CmpRenderEditorUI extends CmpRender
     var height : Float;
     var level : CmpLevel;
     
-    public function new(level : CmpLevel, editor : CmpControlEditor, width : Float, height : Float ) 
+    public function new(editor : CmpControlEditor, level : CmpLevel, width : Float, height : Float ) 
     {
         super(false);
         this.displayLayer = GameConfig.zRenderControlUI;
@@ -30,6 +30,7 @@ class CmpRenderEditorUI extends CmpRender
         this.editor = editor;
         this.width = width;
         this.height = height;
+        this.editor = editor;
 
     }
     

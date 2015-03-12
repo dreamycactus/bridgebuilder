@@ -1,5 +1,5 @@
 package com.org.bbb.control ;
-import com.org.bbb.level.LevelSerializer;
+import com.org.bbb.level.LevelParser;
 import com.org.bbb.level.CmpGrid;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.physics.BuildMat;
@@ -257,7 +257,7 @@ class CmpControlBuild extends CmpControl
         UIBuilder.get('levelEdit').free(true);
 
         if (state == null) { state = new StateBridgeLevel(top); }
-        var levelserializer = new LevelSerializer(state);
+        var levelserializer = new LevelParser(state);
         var l = levelserializer.loadLevelXml(loadText);
         
         top.changeState(new StateTransPan(top, cast(top.state), StateBridgeLevel.createFromLevel(state, top, l)));

@@ -8,6 +8,7 @@ import nape.geom.MarchingSquares;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.BodyType;
+import nape.phys.Compound;
 import nape.shape.Polygon;
 import nape.space.Space;
 import openfl.Assets;
@@ -21,6 +22,7 @@ import openfl.display.BitmapData;
 class CmpTerrain extends Cmp #if flash implements IsoFunction #end
 {
     public var bitmapData : BitmapData;
+    public var compound : Compound;
     var aabb : AABB;
     public var space : Space;
     public var cellSize : Float = 40;
@@ -28,6 +30,8 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
     
     @editor
     public var offset(default, set) : Vec2 = Vec2.get();
+    
+    var lastOffset : Vec2 = Vec2.get();
     
     public var cells : Array<Body>;
     public var isoBounds : AABB;
@@ -40,14 +44,15 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
     public function new(src : String, space : Space, offset : Vec2) 
     {
         super();
+        this.compound = new Compound();
         this.space = space;
+        this.compound.space = space;
         this.aabb = new AABB();
         this.isoBounds = new AABB();
         this.isoGranularity = Vec2.get(subSize, subSize);
         this.offset = offset;
 
         this.src = src;
-        
     }
     
     public function invalidate(region:AABB, space:Space) 
@@ -69,7 +74,7 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
             var b = cells[y*width + x];
             if (b != null) {
                 // If body exists, we'll simply re-use it.
-                b.space = null;
+                b.compound = null;
                 b.shapes.clear();
             }
  
@@ -112,9 +117,11 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
             b.setShapeFilters(new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor));
             b.cbTypes.add(GameConfig.cbGround);
             b.position = offset;
+            b.compound = compound;
             if (entity != null) {
                 b.userData.entity = entity;
             }
+            trace(cells.length);
         }}
     }
     override function set_entity(e : Entity) : Entity
@@ -147,6 +154,22 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
         return 0x80-ret;
     }
     
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
+    {
+        switch(msgType) {
+        case Msgs.TRANSCHANGE:
+            if (cells != null) {
+                for (c in cells) {
+                    if (c != null) {
+                        c.position.x = options.x;
+                        c.position.y = options.y;
+                    }
+                }
+                internalSendMsg(Msgs.ENTMOVE, this, options);
+            }
+        }
+    }
+    
     function set_src(value:String):String 
     {
         if (value != "" && Assets.exists(value, AssetType.IMAGE)) {
@@ -158,7 +181,7 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
             if (space != null) {
                 invalidate(aabb, space);
             }
-            sendMsg(Msgs.ENTMOVE, this, null);
+            internalSendMsg(Msgs.REFRESH, this, null);
         }
         return src = value;
     }
@@ -168,14 +191,9 @@ class CmpTerrain extends Cmp #if flash implements IsoFunction #end
         if (value == null) {
             throw "Terrain cannot have null offset";
         }
-        if (cells != null) {
-            for (c in cells) {
-                if (c != null) {
-                    c.position = value;
-                }
-            }
-        }
-        sendMsg(Msgs.ENTMOVE, this, null);
+        compound.translate(lastOffset.add(value));
+        internalSendMsg(Msgs.ENTMOVE, this, null);
+        lastOffset = value.mul( -1);
         return offset = value;
     }
    

@@ -52,4 +52,9 @@ class EntityTypeManager
             }
         }
     }
+    
+    public function getEntityType(name : String) : EntityType
+    {
+        return nameToEntityType.get(name);
+    }
 }

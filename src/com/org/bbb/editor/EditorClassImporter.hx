@@ -32,6 +32,13 @@ class EditorClassImporter
             })
         });
         fields.push( {
+            name : 'jsondata',
+            access : [APublic],
+            pos : Context.currentPos(),
+            kind : FVar(TPath({pack:[], name : 'Dynamic'}))
+        });
+
+        fields.push( {
             name : 'widget',
             access : [APublic],
             pos : Context.currentPos(),
@@ -95,6 +102,17 @@ class EditorClassImporter
                 ret : null
             })
         });
+        fields.push({
+            name : 'genJson',
+            access : [APublic],
+            pos : Context.currentPos(),
+            kind : FFun( {
+                args : [],
+                expr : macro $b {[macro $p{['this', 'jsondata']} = null, macro return null]},
+                params : [],
+                ret : TPath( {pack  :[], name : 'String'} )
+            })
+        });
         return fields;
     }
     
@@ -129,8 +147,11 @@ class EditorClassImporter
         var refreshStates = [];
         refreshStates.push(macro var i = 0);
         
+        var genStates = [];
+        genStates.push(macro $p{['this', 'jsondata']} = {cmp : Type.getClassName(Type.getClass(this))});
+
         for (w in widgetFields) {
-            //Sys.println('wid : $w');
+            Sys.println('wid : $w');
             switch(w.kind) {
             case FProp(g, s, t, e):
                 var fieldInput : String = '${w.name}Field';
@@ -191,8 +212,10 @@ class EditorClassImporter
                         var ss = s.toLowerCase();
                         if (ss == 'true') {
                             return true;
+                        } else if (ss == 'false') {
+                            return false;
                         }
-                        return false;
+                        return null;
                     }
                 case 'Int':
                     func = macro inline function(f : String) : Null<Int> {
@@ -217,6 +240,12 @@ class EditorClassImporter
                     
                 default:
                 }
+                if (typeName == 'Vec2') {
+                    genStates.push(macro $p { ['this', 'jsondata', 'vec_${w.name}X'] } = $p { ['this', w.name, 'x'] });
+                    genStates.push(macro $p { ['this', 'jsondata', 'vec_${w.name}Y'] } = $p { ['this', w.name, 'y'] });
+                } else {
+                    genStates.push(macro $p { ['this', 'jsondata', w.name] } = $p { ['this', w.name] } );
+                }
                 
                 // Create input textfield and change event
                 states.push(macro $p{['this', '$fieldInput']} = ru.stablex.ui.UIBuilder.create(com.org.bbb.widgets.MyInputText, {
@@ -237,13 +266,23 @@ class EditorClassImporter
                 states.push(macro inputRows.push($p { ['this', '$fieldInput'] } ));
                 refreshStates.push(macro var t = cast($p { ['this', 'col2Widget'] } .getChildAt(i), ru.stablex.ui.widgets.Text));
                 refreshStates.push(macro t.text = $ { parseFunc } ($p { ['this', w.name] } ));
+                refreshStates.push(macro i++);
                 case _:
             }
-            refreshStates.push(macro i++);
         }
         // Setup columns and main widget
+         states.push(macro if (superFieldWidget != null && superFieldWidget.numChildren > 1) {
+            var c0 = cast(superFieldWidget.getChildAt(0), ru.stablex.ui.widgets.Widget);
+            var c1 = cast(superFieldWidget.getChildAt(1), ru.stablex.ui.widgets.Widget);
+            var numChildren = c0.numChildren;
+            while (c0.numChildren != 0) {
+                labelRows.push(cast(c0.removeChildAt(0)));
+                inputRows.push(cast(c1.removeChildAt(0)));
+            }
+        });
         states.push(macro $p{['this', 'col1Widget']} = ru.stablex.ui.UIBuilder.create(ru.stablex.ui.widgets.VBox, {
             align : 'top, left',
+            autoSize : true,
             children : $i { 'labelRows' },
             skinName : 'matBut2'
         }));
@@ -252,6 +291,7 @@ class EditorClassImporter
             children : $i { 'inputRows' },
             skinName : 'matBut2'
         }));
+       
         states.push(macro var col = new ru.stablex.ui.layouts.Column());
         states.push(macro col.cols = [150, 150]);
         states.push(macro $p{['this', 'fieldsWidget']} = ru.stablex.ui.UIBuilder.create(ru.stablex.ui.widgets.HBox, {
@@ -260,6 +300,7 @@ class EditorClassImporter
             defaults : 'EditorWidgetProperties',
             children : [ $p{['this','col1Widget']}, $p{['this','col2Widget']}]
         }));
+
         
         // Create widget
         var fclassname : String = Context.getLocalClass().toString();
@@ -268,19 +309,16 @@ class EditorClassImporter
             text : '$classname',
             defaults : 'EditorCmpLabel'
         }));
+
+        states.push(macro if ($p { ['this', 'widget'] } != null) {
+            $p { ['this', 'widget'] } .free();
+        });
         states.push(macro $p{['this', 'widget']} = ru.stablex.ui.UIBuilder.create(ru.stablex.ui.widgets.VBox, {
             w : 200,
             defaults : 'EditorWidgetProperties',
             children : [$p{['this', 'title']}, $p{['this', 'fieldsWidget']}]
         }));
-        states.push(macro if (superFieldWidget != null && superFieldWidget.numChildren > 1) {
-            var c0 = cast(superFieldWidget.getChildAt(0), ru.stablex.ui.widgets.Widget);
-            var c1 = cast(superFieldWidget.getChildAt(1), ru.stablex.ui.widgets.Widget);
-            for (c in 0...c0.numChildren) {
-                $p { ['this', 'col1Widget'] }.addChild(c0.getChildAt(c));
-                $p { ['this', 'col2Widget'] }.addChild(c1.getChildAt(c));
-            }
-        });
+        
         fields.push( {
             name : 'get_hasEditorInstance',
             access : [APrivate, AOverride],
@@ -327,6 +365,19 @@ class EditorClassImporter
                 ret : null
             })
         });
+        genStates.push(macro return haxe.Json.stringify($p{['this', 'jsondata']}));
+        fields.push({
+            name : 'genJson',
+            access : [APublic, AOverride],
+            pos : Context.currentPos(),
+            kind : FFun( {
+                args : [],
+                expr : macro $b { genStates },
+                params : [],
+                ret : TPath( {pack  :[], name : 'String'} )
+            })
+        });
+        
         return fields;
     }
     

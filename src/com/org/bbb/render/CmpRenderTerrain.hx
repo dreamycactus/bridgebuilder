@@ -1,6 +1,8 @@
 package com.org.bbb.render;
 import com.org.bbb.physics.CmpTerrain;
+import com.org.bbb.physics.CmpTransform;
 import com.org.mes.Cmp;
+import com.org.mes.Entity;
 import nape.shape.Polygon;
 
 /**
@@ -16,7 +18,7 @@ class CmpRenderTerrain extends CmpRender
         super(true);
         subscriptions = [Msgs.ENTMOVE];
         this.terrain = terrain;
-        refresh();
+        refreshterrain();
         
     }
     
@@ -33,18 +35,32 @@ class CmpRenderTerrain extends CmpRender
                 var v1 = edges.at(0).worldVertex1;
                 g.beginFill(0x454545);
                 g.moveTo(v1.x, v1.y);
-                for (i in 0...edges.length) {
-                    var v2 = edges.at(i).worldVertex2;
+                for (e in edges) {
+                    var v2 = e.worldVertex2;
                     g.lineTo(v2.x, v2.y);
                 }
                 g.endFill();
             }
         }
+        var trans = entity.getCmp(CmpTransform);
+        if (trans != null) {
+            sprite.x = trans.x;
+            sprite.y = trans.y;
+        }
+    }
+    
+    override function set_entity(e : Entity) : Entity
+    {
+        refreshterrain();
+        return super.set_entity(e);
     }
     override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void
     {
         switch(msgType) {
         case Msgs.ENTMOVE:
+            sprite.x = options.x;
+            sprite.y = options.y;
+        case Msgs.REFRESH:
             refreshterrain();
         }
     }

@@ -11,9 +11,7 @@ ru.stablex.ui.UIBuilder.defaults.get("VBox").set("EditorWidgetProperties", funct
 var __ui__widget1 : ru.stablex.ui.widgets.VBox = cast(__ui__widget0, ru.stablex.ui.widgets.VBox);
 __ui__widget1.paddingBottom = 20;
 __ui__widget1.skinName = 'matBut';
-__ui__widget1.childPadding = 0;
 __ui__widget1.align = 'top,left';
-__ui__widget1.autoSize = true;
 });
 if( !ru.stablex.ui.UIBuilder.defaults.exists("Text") ) ru.stablex.ui.UIBuilder.defaults.set("Text", new Map());
 ru.stablex.ui.UIBuilder.defaults.get("Text").set("Default", function(__ui__widget0:ru.stablex.ui.widgets.Widget) : Void {
@@ -112,6 +110,7 @@ __ui__widget1.format.font = ru.stablex.Assets.getFont('fonts/CONSOLA.TTF').fontN
 __ui__widget1.format.size = 14;
 __ui__widget1.label.autoSize = openfl.text.TextFieldAutoSize.LEFT;
 __ui__widget1.label.embedFonts = true;
+__ui__widget1.align = 'top,left';
 __ui__widget1.format.align = openfl.text.TextFormatAlign.LEFT;
 __ui__widget1.label.mouseEnabled = false;
 __ui__widget1.label.selectable = false;

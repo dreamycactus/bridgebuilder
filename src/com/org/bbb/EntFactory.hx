@@ -143,7 +143,6 @@ class EntFactory
         var bd = Assets.getBitmapData(terrainsrc);
         var trans = new CmpTransform(offset.x, offset.y, 0);
         var ct = new CmpTerrain(terrainsrc, space, offset);
-
         
         terrain.attachCmp(trans);
         if (bd == null) {
@@ -379,7 +378,7 @@ class EntFactory
         pos.y = gridMultiple + tdim.h * 0.5 +(GameConfig.gridCellWidth - GameConfig.matSteel.height) * 0.5;
         //pos.addeq(Vec2.get(0, -(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5));
 
-        var anc = new Body(BodyType.STATIC);
+        var anc = new Body(BodyType.KINEMATIC);
         var filter = null;
         if (fluid) {
             filter = new InteractionFilter(GameConfig.cgNull, 0, GameConfig.cgNull, 0, GameConfig.cgAnchor, -1);
@@ -407,6 +406,8 @@ class EntFactory
         var ent = state.createEnt();
         var trans = new CmpTransform();
         var cmpanc = new CmpAnchor(trans, anc, ase);
+        cmpanc.width = tdim.w;
+        cmpanc.height = tdim.h;
         cmpanc.fluid = fluid;
         var cmprender = new CmpRenderAnchor(cmpanc);
         cmprender.tintColour(212, 23, 80, 255);
