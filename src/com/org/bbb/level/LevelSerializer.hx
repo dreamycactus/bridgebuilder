@@ -1,5 +1,7 @@
 package com.org.bbb.level;
 import com.org.bbb.physics.CmpAnchor;
+import com.org.bbb.physics.CmpBeam;
+import com.org.bbb.physics.CmpCable;
 import com.org.bbb.physics.CmpTerrain;
 import com.org.bbb.render.CmpRenderSprite;
 import com.org.bbb.states.StateBridgeLevel;
@@ -37,6 +39,10 @@ class LevelSerializer
                 entdata.type = 'terrain';
             } else if (e.hasCmp(CmpRenderSprite)) {
                 entdata.type = 'staticsprite';
+            } else if (e.hasCmp(CmpBeam)) {
+                entdata.type = 'beam';
+            } else if (e.hasCmp(CmpCable)) {
+                entdata.type = 'cable';
             }
             for (c in e.cmps) {
                 c.genJson();

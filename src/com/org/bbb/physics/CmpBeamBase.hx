@@ -11,14 +11,18 @@ import nape.phys.Body;
  */
 
 using Lambda;
+@editor
 class CmpBeamBase extends CmpPhys implements BridgeNode
 {
     public var sharedJoints : Array<CmpSharedJoint> = new Array();
     public var material : BuildMat;
     public var broken : Bool = false;
-    public var p1 : Vec2;
-    public var p2 : Vec2;
+    @editor
+    public var p1(default, set) : Vec2;
+    @editor
+    public var p2(default, set) : Vec2;
     public var slope(get_slope, null) : Float;
+    @editor
     public var isRoad(get_isRoad, null) : Bool;
     public var length(get_length, null) : Float;
     public var unitLength(get_unitLength, null) : Int;
@@ -117,6 +121,47 @@ class CmpBeamBase extends CmpPhys implements BridgeNode
     function get_unitLength() : Int
     {
         return Std.int(length / GameConfig.gridCellWidth);
+    }
+    
+    function boltBeam(anchorWorldPos : Vec2, sharedJointIndex : Int) 
+    {
+        if (space != null) {
+            var bb  = space.bodiesUnderPoint(anchorWorldPos, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor | GameConfig.cgSharedJoint | GameConfig.cgBeam));
+            var sharedJoint : Body = null;
+            var anchor : Body = null;
+            var thisbody : Body = null;
+            for (b in bb) {
+                if (b.shapes.at(0).filter.collisionGroup & GameConfig.cgSharedJoint != 0) {
+                    sharedJoint = b;
+                    break;
+                } else if (b.shapes.at(0).filter.collisionGroup & GameConfig.cgAnchor != 0) {
+                    anchor = b;
+                } else if (b.shapes.at(0).filter.collisionGroup & (GameConfig.cgBeam|GameConfig.cgCable) != 0) {
+                    thisbody = b;
+                }
+            }
+            if (sharedJoint == null) {
+                var sj = EntFactory.inst.createSharedJoint(anchorWorldPos, [thisbody, anchor]);
+                if (sharedJointIndex == 1) {
+                    sj1 = sj.getCmp(CmpSharedJoint);
+                } else if (sharedJointIndex ==2) {
+                    sj2 = sj.getCmp(CmpSharedJoint);
+                }
+            }
+            
+        }
+    }
+    
+    function set_p1(v : Vec2) : Vec2
+    {
+        boltBeam(v, 1);
+        return p1 = v;
+    }
+    
+    function set_p2(v : Vec2) : Vec2
+    {
+        boltBeam(v, 2);
+        return p2 = v;
     }
 
 }

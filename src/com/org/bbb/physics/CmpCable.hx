@@ -212,7 +212,7 @@ class CmpCable extends CmpBeamBase
             sj1 = sj;
             rebuild();
         }
-        return sj;
+        return super.sj1 = sj;
     }
     
     override function set_sj2(sj : CmpSharedJoint) : CmpSharedJoint
@@ -221,7 +221,7 @@ class CmpCable extends CmpBeamBase
             sj2 = sj;
             rebuild();
         }
-        return sj;
+        return super.sj2 = sj;
     }
     override function get_isRoad() : Bool
     {

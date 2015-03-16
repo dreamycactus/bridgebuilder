@@ -1,4 +1,5 @@
 package com.org.bbb.level ;
+import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.level.CmpLevel;
 import com.org.bbb.level.CmpObjectiveBudget;
 import com.org.bbb.level.CmpSpawn;
@@ -27,9 +28,11 @@ import openfl.display.BitmapData;
 class LevelParser
 {
     public var state : MESState;
-    public function new(state : MESState) 
+    var builder : CmpBridgeBuild;
+    public function new(state : MESState, builder : CmpBridgeBuild) 
     {
         this.state = state;
+        this.builder = builder;
     }
     
     public function loadLevelXml(xmlAssetPath : String) : CmpLevel
@@ -68,8 +71,14 @@ class LevelParser
                 //parseSublevel(level, fast);
             case "terrain":
                 e = EntFactory.inst.createTerrain("", level.space, Vec2.get());
+            case "beam":
+                var cmps : Array<Dynamic> = o.cmps;
+                for (c in cmps) {
+                    
+                }
+            case "cable":
             default:
-            }
+            
             var cmps : Array<Dynamic> = o.cmps;
             for (c in cmps) {
                 var cmptype = Type.resolveClass(c.cmp);
@@ -128,8 +137,8 @@ class LevelParser
     
     function parseAnchor(level : CmpLevel, fast : Fast, offset:Vec2=null) : Void
     {
-        var tdim = level.worldDim(Std.parseFloat(fast.att.w),  Std.parseFloat(fast.att.h));
-        var pos = level.worldCoords(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y), tdim);
+        var tdim = Vec2.get( Std.parseFloat(fast.att.w),  Std.parseFloat(fast.att.h));
+        var pos = Vec2.get(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y)).addeq(tdim.x*0.5, tdim.y*0.5);
         var startend = fast.att.type;
         var ase = AnchorStartEnd.NONE;
         if (startend != null) {

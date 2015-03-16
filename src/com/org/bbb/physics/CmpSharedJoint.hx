@@ -17,12 +17,14 @@ using Lambda;
  * ...
  * @author 
  */
+@editor
 class CmpSharedJoint extends CmpPhys
 {   
     public var body : Body;
     @:isVar public var bodies(default, default) : Array<Body>;
     public var isAnchored = false;
-    @:isVar public var isRolling(default, set_isRolling) : Bool = false;
+    @editor
+    @:isVar public var isRolling(default, set) : Bool = false;
     
     var joints : Array<Constraint>;
     

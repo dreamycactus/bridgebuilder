@@ -89,13 +89,14 @@ class CmpBridgeBuild extends Cmp
         saveState();
     }
     
-    public function beamDown() : Void
+    public function beamDown(mousePos : Vec2=null) : Void
     {
-        var mousePos = Vec2.get(stage.mouseX, stage.mouseY);
+        if (mousePos == null) {
+            mousePos = Vec2.get(stage.mouseX, stage.mouseY);
+        }
         var mp = camera.screenToWorld(mousePos);
         var cp = cmpGrid.getClosestCell(mp);
         var cFilter = GameConfig.cgAnchor | GameConfig.cgSharedJoint;
-        var bb : BodyList = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck) ) ;
 
         spawn1 = cmpGrid.getCellPos(cp.x, cp.y);
 
@@ -103,7 +104,7 @@ class CmpBridgeBuild extends Cmp
             spawn1 = mp;
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
         } 
-        bb  = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
+        var bb  = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
         var otherBody : Body = null;
         startBody = null;
         isDrawing = true;
@@ -121,7 +122,7 @@ class CmpBridgeBuild extends Cmp
             }
         }
         
-        if (startBody == null && otherBody != null) {
+        if (startBody == null) {
             startBody = otherBody;
         }
         
@@ -130,7 +131,7 @@ class CmpBridgeBuild extends Cmp
         }
     }
     
-    public function beamUp() : Entity
+    public function beamUp(mousePos : Vec2=null) : Entity
     {
         isDrawing = false;
         
@@ -139,7 +140,11 @@ class CmpBridgeBuild extends Cmp
         }
         
         var cp1 = cmpGrid.getClosestCell(spawn1);
-        spawn2 = calculateBeamEnd();
+        if (mousePos == null) {
+            mousePos = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
+        }
+
+        spawn2 = calculateBeamEnd(mousePos);
         var cp2 = cmpGrid.getClosestCell(spawn2);
         
         var validLine = lineChecker.isValidLine(spawn1, spawn2);
@@ -321,6 +326,26 @@ class CmpBridgeBuild extends Cmp
         return beamEnt;
     }
     
+    public function getBodyUnderPoint(p : Vec2, filter : Int) : Body
+    {
+        bodies = level.space.bodiesUnderPoint(p, new InteractionFilter(GameConfig.cgSensor, filter));
+        var shared : Body = null;
+        for (b in bodies) {
+            if (b.shapes.at(0).filter.collisionGroup & (GameConfig.cgBeam | GameConfig.cgCable) != 0) {
+                return b;
+            } else if (b.shapes.at(0).filter.collisionGroup & GameConfig.cgSharedJoint != 0) {
+                shared = b;
+            }
+        }
+        if (shared != null) {
+            return shared;
+        }
+        if (bodies.length != 0) {
+            return bodies.at(0);
+        }
+        return null;
+    }
+    
     public function toggleBeamRoad(e : Entity) : Entity
     {
         if (e == null) { return e; }
@@ -353,7 +378,7 @@ class CmpBridgeBuild extends Cmp
         return e;
     }
     
-    function genBeam(endBody : Body, otherBody : Body, iFilter : InteractionFilter) : { body : Body, ent : Entity }
+    public function genBeam(endBody : Body, otherBody : Body, iFilter : InteractionFilter) : { body : Body, ent : Entity }
     {
         var body : Body = new Body();
         var center = spawn1.add(spawn2).mul(0.5);
@@ -369,15 +394,13 @@ class CmpBridgeBuild extends Cmp
         body.userData.entity = ent;
         if (startBody.userData.sharedJoint != null) {
             startBody.userData.sharedJoint.addBody(body);
-        } else {
         }
         return { body : body, ent : ent };
     }
     
-    public function calculateBeamEnd() : Vec2
+    public function calculateBeamEnd(mousePos : Vec2) : Vec2
     {
-        var mouseWorldPos = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
-        var delta = mouseWorldPos.sub(spawn1);
+        var delta = mousePos.sub(spawn1);
         var maxlen = cmpGrid.lengthOfCells(material.maxLength-1);
         var cp : Vec2 = null;
         while(true) {

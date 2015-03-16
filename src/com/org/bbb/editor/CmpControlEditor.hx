@@ -70,6 +70,7 @@ class CmpControlEditor extends CmpControl
         super();
         
         this.builder = bridgebuilder;
+        this.builder.material = GameConfig.matSteel;
         
         this.stage = builder.stage;
         this.top = builder.top;
