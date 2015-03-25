@@ -31,14 +31,14 @@ class CmpTransform extends Cmp
     function get_y() { return _y; }
     function set_x(x) : Float
     {
-        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
         this._x = x;
+        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
         return x;
     }
     function set_y(y) : Float
     {
-        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
         this._y = y;
+        internalSendMsg(Msgs.TRANSCHANGE, this, { x : _x, y : _y } );
         return y;
     }
     function set_rotation(r) : Float

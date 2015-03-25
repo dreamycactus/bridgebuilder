@@ -26,6 +26,7 @@ class CmpPhys extends Cmp
         this.transform = trans;
         return super.set_entity(e);
     }
+    public function onInserted() : Void {}
     function get_space() : Space { return null;  }
     function set_space(space : Space) : Space { this.space = space;  return null;  }
 }

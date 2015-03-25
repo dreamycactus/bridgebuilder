@@ -52,6 +52,9 @@ class CmpAnchor extends CmpPhys implements BridgeNode
         this.startEnd = ase;
         this.tapered = tapered;
         this.body = body;
+        this.body.position.x = trans.x;
+        this.body.position.y = trans.y;
+
         var bounds = body.bounds;
         rebuild();
     }
@@ -152,8 +155,6 @@ class CmpAnchor extends CmpPhys implements BridgeNode
     function rebuild() : Void
     {
         body.shapes.clear();
-        x = transform.x;
-        y = transform.y;
 
         if (width != 0 && height != 0) {
             var filter = null;
@@ -165,6 +166,7 @@ class CmpAnchor extends CmpPhys implements BridgeNode
             body.shapes.push(new Polygon(Polygon.box(width, height), GameConfig.matSteel.material, filter));
             internalSendMsg(Msgs.REFRESH, this, null);
         }
-
+        body.position.x = transform.x + width * 0.5;
+        body.position.y = transform.y + height * 0.5;
     }
 }

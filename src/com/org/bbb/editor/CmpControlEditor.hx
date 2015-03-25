@@ -11,6 +11,7 @@ import com.org.bbb.physics.CmpAnchor;
 import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.Camera;
 import com.org.bbb.states.StateBridgeLevel;
+import com.org.bbb.systems.SysPhysics;
 import com.org.bbb.systems.SysRender;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
@@ -26,6 +27,8 @@ import openfl.net.SharedObject;
 import openfl.ui.Keyboard;
 import ru.stablex.ui.UIBuilder;
 import ru.stablex.ui.widgets.Floating;
+import ru.stablex.ui.widgets.TabPage;
+import ru.stablex.ui.widgets.TabStack;
 import ru.stablex.ui.widgets.Text;
 import ru.stablex.ui.widgets.Widget;
 
@@ -57,6 +60,10 @@ class CmpControlEditor extends CmpControl
     var prevMouse : Vec2;
     var editPanel : Widget;
     var editPanelTitle : Text;
+    var tabstack : TabStack;
+    var matTab : TabPage;
+    var playTab : TabPage;
+    
     
     // Edit State
     var selectedEntity : Entity = null;
@@ -75,7 +82,6 @@ class CmpControlEditor extends CmpControl
         this.stage = builder.stage;
         this.top = builder.top;
         this.state = builder.state;
-        this.level = builder.level;
         this.camera = builder.camera;
         this.cmpGrid = builder.cmpGrid;
         
@@ -84,10 +90,15 @@ class CmpControlEditor extends CmpControl
     
     override public function init()
     {
-        regEvents();
         editPanel = UIBuilder.get('cmpedit');
         editPanelTitle = cast(UIBuilder.get('cmpeditTitle'), Text);
         camera.isUnlocked = true;
+        
+        tabstack = cast(UIBuilder.get('tabStack'));
+        matTab = cast(UIBuilder.get('tabMat'));
+        playTab = cast(UIBuilder.get('tabPlay'));
+        regEvents();
+
         
         //material = level.materialsAllowed.length > 0 ?
             //GameConfig.nameToMat(level.materialsAllowed[0]) :
@@ -116,9 +127,20 @@ class CmpControlEditor extends CmpControl
         }
         prevMouse = mp;
     }
+    function removeExtraTabs() : Void
+    {
+        if (matTab.wparent == tabstack) {
+            tabstack.removeChild(matTab);
+        }
+        if (playTab.wparent == tabstack) {
+            tabstack.removeChild(playTab);
+        }
+    }
     function set_mode(m) 
     {
         if (m == mode) return m;
+        removeExtraTabs();
+
         if (mode != null) {
             switch(this.mode) {
             case EDIT:
@@ -139,9 +161,12 @@ class CmpControlEditor extends CmpControl
         case BUILD:
             stage.addEventListener(MouseEvent.MOUSE_DOWN, buildMouseDown);
             stage.addEventListener(MouseEvent.MOUSE_UP, buildMouseUp);
+            tabstack.addChild(matTab);
         case PLAY:
             stage.addEventListener(MouseEvent.MOUSE_DOWN, playMouseDown);
             stage.addEventListener(MouseEvent.MOUSE_UP, playMouseUp);
+            tabstack.addChild(playTab);
+
         }
         return mode = m;
     }
@@ -220,6 +245,18 @@ class CmpControlEditor extends CmpControl
         builder.beamUp();
     }
     
+    public function togglePause() : Void
+    {
+        var sys = state.getSystem(SysPhysics);
+        if (!sys.paused) {
+            builder.restore();
+        } else {
+            builder.saveState();
+        }
+        sys.paused = !sys.paused;
+        
+    }
+    
     // Other handlers
     function keydown(e:KeyboardEvent) : Void
     {
@@ -227,7 +264,10 @@ class CmpControlEditor extends CmpControl
             camera.zoom += 0.2;
         } else if (e.keyCode == Keyboard.PAGE_DOWN) {
             camera.zoom -= 0.2;
+        } else if (e.keyCode == Keyboard.SPACE) {
+            togglePause();
         }
+        
     }
     
     function toggleDrawDebug() : Void
@@ -283,7 +323,7 @@ class CmpControlEditor extends CmpControl
         var offset = Vec2.get(200, 200);
         switch (type) {
         case "anchor":
-            e = EntFactory.inst.createAnchor(offset, { w : 100, h : 100 }, false, AnchorStartEnd.NONE, false);
+            e = EntFactory.inst.createAnchor(offset, Vec2.get(100, 100), false, AnchorStartEnd.NONE, false);
         case "terrain":
             e = EntFactory.inst.createTerrain("", level.space, offset);
         case "sprite":
@@ -295,10 +335,10 @@ class CmpControlEditor extends CmpControl
     
     public function loadLevel(json : String)
     {
-        var par = new LevelParser(state);
+        var par = new LevelParser(cast(state));
         var l = par.parseLevelFromString(json);
         state.deinit();
-        top.changeState(StateBridgeLevel.createFromLevel(cast(state), top, l));
+        //top.changeState(StateBridgeLevel.createFromLevel(cast(state), top, l));
     }
     
     function saveLevel() : Void

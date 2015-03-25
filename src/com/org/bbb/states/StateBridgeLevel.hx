@@ -4,6 +4,7 @@ import com.org.bbb.control.CmpBridgeBuild;
 import com.org.bbb.control.CmpControlBuild;
 import com.org.bbb.editor.CmpAnchorInstance;
 import com.org.bbb.editor.CmpControlEditor;
+import com.org.bbb.level.CmpSpawn.SpawnType;
 import com.org.bbb.level.LevelParser;
 import com.org.bbb.level.LevelSerializer;
 import com.org.bbb.level.CmpGrid;
@@ -34,6 +35,7 @@ import haxe.macro.Context;
 import haxe.Resource;
 import nape.dynamics.InteractionFilter;
 import nape.geom.AABB;
+import nape.space.Space;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -69,11 +71,14 @@ class StateBridgeLevel extends BBBState
     var grid : Entity;
     public var cmpGrid : CmpGrid;
     public var controllerEnt : Entity;
+    public var editor : CmpControlEditor;
+    
     var uiSprite : Sprite;
     var textField : TextField;
     var inited = false;
     @:isVar public var level(default, set_level) : CmpLevel;
     
+    public var builder : CmpBridgeBuild;
     var camera : Camera;
     var playerCar : CmpMoverCar;
     
@@ -84,79 +89,15 @@ class StateBridgeLevel extends BBBState
     {
         var state = new StateBridgeLevel(top);
         EntFactory.inst.state = state;
+        state.init();
+        var space = new Space();
         var levelserializer = new LevelParser(state);
         var cl = levelserializer.loadLevelXml(levelPath);
-        return createFromLevel(state, top, cl);
+        state.level = cl;
+
+        return state;
     }
     
-    public static function createFromLevel(s1 : StateBridgeLevel, top : Top, cl : CmpLevel) : BBBState
-    {
-        if (s1 == null) { s1 = new StateBridgeLevel(top); }
-        var allsys = [new SysPhysics(s1, null), new SysRender(s1, null, Lib.current.stage)
-                    , new SysControl(s1, Lib.current.stage), new SysRuntimeOverlord(s1), new SysObjective(s1)
-                    , new SysLevelDirector(s1, null)];
-        for (s in allsys) {
-            s1.insertSystem(s);
-        }
-        EntFactory.inst.state = s1;
-        
-        var level = s1.createEnt();
-        level.attachCmp(cl);
-        s1.getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
-        s1.getSystem(SysRender).camera.zoom = -1;
-        s1.insertEnt(level);
-        
-        var grid = EntFactory.inst.createGridEnt(cl.width, cl.height, GameConfig.gridCellWidth, [7]);
-        var cmpGrid = grid.getCmp(CmpGrid);
-        s1.insertEnt(grid);
-        s1.cmpGrid = cmpGrid;
-       
-        s1.renderSys = s1.getSystem(SysRender);
-        s1.getSystem(SysPhysics).level = cl;
-        s1.getSystem(SysRender).level = cl;
-        s1.getSystem(SysLevelDirector).level = cl;
-        s1.getSystem(SysRuntimeOverlord).level = cl;
-        
-        s1.camera = s1.getSystem(SysRender).camera;
-        
-        var controllerEnt = s1.createEnt();
-        var cmpBuilder = new CmpBridgeBuild(top, s1, cl, s1.camera, cmpGrid);
-        //var cmpControl = new CmpControlBuild(cmpBuilder);
-        var cmpControl = new CmpControlEditor(cmpBuilder);
-        controllerEnt.attachCmp(cmpControl);
-        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, cmpBuilder) );
-        controllerEnt.attachCmp(new CmpRenderEditorUI(cmpControl, cl, 1024, 576) );
-        //controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
-        s1.controllerEnt = controllerEnt;
-        s1.insertEnt(controllerEnt);
-        
-        for (e in cl.ents) {
-            s1.insertEnt(e);
-        }
-        
-        s1.level = cl;
-
-
-        //var cob = s1.createEnt();
-        //var cmpCob = new CmpObjectiveBudget(cl, 0, 0, 0);
-        //cob.attachCmp(cmpCob);
-        //s1.insertEnt(cob);
-        
-        
-        //var starbg = s1.createEnt();
-        //starbg.attachCmp(new CmpRenderBgStarfield(400, cl.width, cl.height/2));
-        //s1.insertEnt(starbg);
-        //
-        //var rainbg = s1.createEnt();
-        //rainbg.attachCmp(new CmpRenderRain(Std.int(cl.width), Std.int(cl.height), false));
-        //s1.insertEnt(rainbg);
-        
-        //var tt = s1.createEnt();
-        //tt.attachCmp(new CmpRenderPony());
-        //s1.insertEnt(tt);
-        
-        return s1;
-    }
     
     public function new(top : Top) 
     {
@@ -173,6 +114,34 @@ class StateBridgeLevel extends BBBState
         entityTypeManager.registerType(etCar);
         entityTypeManager.registerType(new EntityType(GameConfig.tTransform, [CmpTransform], [], []));
         //this.stage.addChild(textField);
+        
+                var allsys = [new SysPhysics(this, null), new SysRender(this, null, Lib.current.stage)
+                    , new SysControl(this, Lib.current.stage), new SysRuntimeOverlord(this), new SysObjective(this)
+                    , new SysLevelDirector(this, null)];
+        for (s in allsys) {
+            insertSystem(s);
+        }
+        EntFactory.inst.state = this;
+        
+        getSystem(SysRender).camera.zoom = -1;
+        var grid = EntFactory.inst.createGridEnt(920, 480, GameConfig.gridCellWidth, [7]);
+        var cmpGrid = grid.getCmp(CmpGrid);
+        insertEnt(grid);
+       
+        renderSys = getSystem(SysRender);
+        camera = getSystem(SysRender).camera;
+        
+        controllerEnt = createEnt();
+        builder = new CmpBridgeBuild(top, this, getSystem(SysPhysics).space, camera, cmpGrid);
+        //var cmpControl = new CmpControlBuild(cmpBuilder);
+        builder.cmpGrid = cmpGrid;
+
+        editor = new CmpControlEditor(builder);
+        controllerEnt.attachCmp(editor);
+        controllerEnt.attachCmp(new CmpRenderControlBuild(Lib.current.stage, builder) );
+        controllerEnt.attachCmp(new CmpRenderEditorUI(editor, 1024, 576) );
+        //controllerEnt.attachCmp(new CmpRenderControlUI(cmpControl, cl, GameConfig.stageWidth, GameConfig.stageHeight) );
+        insertEnt(controllerEnt);
         
     }
         
@@ -208,10 +177,20 @@ class StateBridgeLevel extends BBBState
     
     function set_level(cl : CmpLevel) : CmpLevel
     {
-        level = cl;
         getSystem(SysPhysics).level = cl;
         getSystem(SysRender).level = cl;
-        return cl;
+        getSystem(SysRender).camera.dragBounds = { x : 0, y : 0, width : cl.width, height : cl.height };
+        getSystem(SysLevelDirector).level = cl;
+        getSystem(SysRuntimeOverlord).level = cl;
+        editor.level = cl;
+        
+        builder.space = cl.space;
+        //builder.cmpGrid = cmpGrid;
+
+        for (e in cl.ents) {
+            insertEnt(e);
+        }
+        return level = cl;
     }
     
     override public function distributeMsg(msgType : String, sender : Cmp, options : Dynamic) : Void

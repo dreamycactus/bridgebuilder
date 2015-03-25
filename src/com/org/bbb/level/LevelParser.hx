@@ -9,12 +9,16 @@ import com.org.bbb.physics.CmpEnd;
 import com.org.bbb.physics.CmpTerrain;
 import com.org.bbb.physics.CmpTransform;
 import com.org.bbb.render.CmpRenderBg;
+import com.org.bbb.states.StateBridgeLevel;
 import com.org.mes.Entity;
 import com.org.mes.MESState;
 import haxe.Json;
 import haxe.xml.Fast;
+import nape.dynamics.InteractionFilter;
 import nape.geom.AABB;
 import nape.geom.Vec2;
+import nape.phys.Body;
+import nape.shape.Polygon;
 import nape.space.Broadphase;
 import nape.space.Space;
 import openfl.Assets;
@@ -29,10 +33,10 @@ class LevelParser
 {
     public var state : MESState;
     var builder : CmpBridgeBuild;
-    public function new(state : MESState, builder : CmpBridgeBuild) 
+    public function new(state : StateBridgeLevel) 
     {
         this.state = state;
-        this.builder = builder;
+        this.builder = state.builder;
     }
     
     public function loadLevelXml(xmlAssetPath : String) : CmpLevel
@@ -52,17 +56,23 @@ class LevelParser
     {
         var level = new CmpLevel();
         level.space = new Space(Vec2.weak(0, 600),Broadphase.DYNAMIC_AABB_TREE);
-        
+        builder.space = level.space;
         var json = Json.parse(jsonData);
-            level.width = Std.parseFloat(json.w);
+        level.width = Std.parseFloat(json.w);
         level.height = Std.parseFloat(json.h);
         var gridOffset = Vec2.get(0, -(GameConfig.gridCellWidth-GameConfig.matSteel.height)*0.5);
         var objects : Array<Dynamic> = json.objects;
+        var beamlikes : Array<Dynamic> = new Array(); // Don't spawn beams until the end
+        var anchors : Array<Entity> = [];
+        var sjs : Array<Entity> = [];
+        var others : Array<Entity> = [];
         for (o in objects) {
             var e : Entity = null;
             switch(o.type) {
             case "anchor":
-                e = EntFactory.inst.createAnchor(Vec2.get(100, 100), { w : 100, h : 100 }, false, AnchorStartEnd.START, false);
+                e = EntFactory.inst.createAnchor(Vec2.get(100, 100), Vec2.get(100, 100), false, AnchorStartEnd.START, false);
+                //builder.forceInsertEntity(e);
+                anchors.push(e);
             //case "spawn":
                 //parseSpawn(level, fast);
             //case "bg":
@@ -71,14 +81,26 @@ class LevelParser
                 //parseSublevel(level, fast);
             case "terrain":
                 e = EntFactory.inst.createTerrain("", level.space, Vec2.get());
+                others.push(e);
             case "beam":
-                var cmps : Array<Dynamic> = o.cmps;
-                for (c in cmps) {
-                    
-                }
+                //e = EntFactory.inst.createBeamEnt(Vec2.get(), Vec2.get(), GameConfig.matSteel);
+                beamlikes.push(o);
+                others.push(e);
+                continue;
             case "cable":
+                beamlikes.push(o);
+                others.push(e);
+                continue;
+            case "sharedjoint":
+                e = EntFactory.inst.createSharedJoint(Vec2.get(), null, null);
+                builder.forceInsertEntity(e);
+                sjs.push(e);
+            case "staticsprite":
+                e = EntFactory.inst.createStaticSprite("img/pony.png", 100, 100, 5);
+                others.push(e);
             default:
-            
+                continue;
+            }
             var cmps : Array<Dynamic> = o.cmps;
             for (c in cmps) {
                 var cmptype = Type.resolveClass(c.cmp);
@@ -87,23 +109,49 @@ class LevelParser
                 for (f in Reflect.fields(c)) {
                     if (f != "cmp") {
                         if (StringTools.startsWith(f, 'vec_')) {
-                            if (StringTools.endsWith(f, 'X')) {
-                                var name = f.substr(4, f.length - 5);
-                                var vec = Vec2.get(cast(Reflect.getProperty(c, f)), cast(Reflect.getProperty(c, 'vec_${name}Y')));
-                                Reflect.setProperty(cmp, name, vec);
-                            }
+                            var name = f.substr(4, f.length - 5);
+                            var vec = getVec2(c, name);
+                            Reflect.setProperty(cmp, name, vec);
                         } else {
                             Reflect.setProperty(cmp, f, Reflect.getProperty(c, f));
                         }
                     }
                 }
             }
-            level.ents.push(e);
         }
-        
+        for (o in beamlikes) {
+            var e : Entity = null;
+            var cmps : Array<Dynamic> = o.cmps;
+            var cmpbeam : Dynamic = null;
+            for (c in cmps) {
+                for (f in Reflect.fields(c)) {
+                    if (f == "cmp" && Std.string(Reflect.getProperty(c, f)) ==  "com.org.bbb.physics.CmpBeam") {
+                        cmpbeam = c;
+                        break;
+                    }
+                }
+            }
+            if (cmpbeam != null) {
+                var p1 = getVec2(cmpbeam, "p1"); 
+                var p2 = getVec2(cmpbeam, "p2");
+                
+                e = EntFactory.inst.createBeamEnt(p1, p2, GameConfig.matSteel);
+                builder.forceInsertEntity(e);
+                others.push(e);
+            }
+   
+        }
+        builder.saveState();
+        level.ents = Lambda.list(anchors.concat(sjs.concat(others)));
         return level;
     }
     
+    function getVec2(struct : Dynamic, name : String) : Vec2
+    {
+        var vec = Vec2.get(cast(Reflect.getProperty(struct, 'vec_${name}X')), cast(Reflect.getProperty(struct, 'vec_${name}Y')));
+
+        return vec;
+    }
     
     function parseSublevel(level : CmpLevel, fast : Fast) : Void
     {
@@ -137,8 +185,8 @@ class LevelParser
     
     function parseAnchor(level : CmpLevel, fast : Fast, offset:Vec2=null) : Void
     {
-        var tdim = Vec2.get( Std.parseFloat(fast.att.w),  Std.parseFloat(fast.att.h));
-        var pos = Vec2.get(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y)).addeq(tdim.x*0.5, tdim.y*0.5);
+        var tdim = Vec2.get(Std.parseFloat(fast.att.w),  Std.parseFloat(fast.att.h));
+        var pos = Vec2.get(Std.parseFloat(fast.att.x), Std.parseFloat(fast.att.y)).addeq(Vec2.get(tdim.x*0.5, tdim.y*0.5));
         var startend = fast.att.type;
         var ase = AnchorStartEnd.NONE;
         if (startend != null) {

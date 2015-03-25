@@ -1,6 +1,6 @@
  <?xml version="1.0" encoding="UTF-8"?>
 
-<Widget id="'rootWidget'" widthPt="100" h="1200">
+<Widget id="'rootEdWidget'" widthPt="100" h="1200">
     <meta:inject code="var editor : CmpControlEditor = cast(@editor, CmpControlEditor);"/>
     <Floating w="1024" h="576" id="'saveFloating'" visible="false" skin:Paint-color="0x999999">
         <InputText top="250" left="512" id="'saveText'" w="500" h="200" />
@@ -12,7 +12,7 @@
         <Button text="'Load'" on-click="editor.loadLevel(cast(#loadText,ru.stablex.ui.widgets.Text).text); #loadFloating.visible = false;" />
     </Floating>
     <HBox w="1024" h="576" align="'top, left'">
-        <TabStack left="100" name="'editorMenu'">
+        <TabStack id="'tabStack'" left="100" name="'editorMenu'">
             <TabPage title-text="'File'" defaults="'EditorMenu'">
                 <VBox defaults="'EditorMenu'">
                     <Button text="'New Level'" defaults="'EditorMenu'"/>
@@ -42,9 +42,15 @@
                     <Button text="'End'" defaults="'EditorMenu'"/>
                 </VBox>                
             </TabPage>
-            <TabPage title-text="'Material'" defaults="'EditorMenu'">
+            <TabPage id="'tabMat'" title-text="'Material'" defaults="'EditorMenu'">
                 <VBox left="400" defaults="'EditorMenu'">    
                     <Button text="'Steel'" defaults="'EditorMenu'" on-click="editor.builder.set_material($GameConfig.matSteel);" />
+                    <Button text="'Delete'" defaults="'EditorMenu'" on-click="editor.builder.set_material(null);" />
+                </VBox>
+                </TabPage>
+            <TabPage id="'tabPlay'" title-text="'Play'" defaults="'EditorMenu'">
+                <VBox left="400" defaults="'EditorMenu'">    
+                    <Button text="'Start/Stop'" defaults="'EditorMenu'" on-click="editor.togglePause();" />
                 </VBox>
                 </TabPage>
             <TabPage title-text="'Meh'" defaults="'EditorMenu'">

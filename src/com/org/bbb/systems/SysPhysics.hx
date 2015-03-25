@@ -73,6 +73,7 @@ class SysPhysics extends System
         var res = e.getCmpsHavingAncestor(CmpPhys);
         for (c in res) {
             c.space = level.space;
+            c.onInserted();
         }
         var c = e.getCmp(CmpCable);
         if (c != null) {

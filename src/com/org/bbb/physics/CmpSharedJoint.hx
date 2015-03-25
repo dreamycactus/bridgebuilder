@@ -7,6 +7,7 @@ import nape.constraint.DistanceJoint;
 import nape.constraint.LineJoint;
 import nape.constraint.PivotJoint;
 import nape.constraint.WeldJoint;
+import nape.dynamics.InteractionFilter;
 import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.space.Space;
@@ -28,12 +29,13 @@ class CmpSharedJoint extends CmpPhys
     
     var joints : Array<Constraint>;
     
-    public function new(trans : CmpTransform, pos : Vec2, startingBodies : Array<Body> = null) 
+    public function new(trans : CmpTransform, startingBodies : Array<Body> = null) 
     {
         super(trans);
         body = new Body();
         body.shapes.add(GameConfig.sharedJointShape());
-        body.position = pos;
+        body.position.x = trans.x;
+        body.position.y = trans.y;
         body.userData.sharedJoint = this;
         this.bodies = new Array();
         this.joints = new Array();
@@ -105,7 +107,7 @@ class CmpSharedJoint extends CmpPhys
                 if (anc != null) {
                     anc.sharedJoints.push(this);
                 }
-                var cable = beamEnt.getCmp(CmpCable);
+                var cable = beamEnt.getCmpHavingAncestor(CmpBeamBase);
                 if (cable != null) {
                     if (cable.sj1 == null) {
                         cable.sj1 = this;
@@ -241,11 +243,33 @@ class CmpSharedJoint extends CmpPhys
         return b; 
     }
     
+    override public function onInserted() : Void
+    {
+        var bb = space.bodiesUnderPoint(Vec2.weak(transform.x, transform.y), new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
+        if (bb.length > 1) {
+            trace('potential ambiguous shared joint @ ${transform.x}, ${transform.y}');
+        }
+        if (bb.length == 0) {
+            trace('naked shared joint @ ${transform.x}, ${transform.y}');
+            return;
+        }
+        addBody(bb.at(0));
+    }
+    
     override function set_entity(e: Entity) : Entity
     {
         this.entity = e;
         body.userData.entity = e;
         return e;
+    }
+    override public function recieveMsg(msgType : String, sender : Cmp, options : Dynamic) : Void 
+    {
+        switch(msgType) {
+        case Msgs.TRANSCHANGE:
+            body.position.x = transform.x;
+            body.position.y = transform.y;
+            internalSendMsg(Msgs.ENTMOVE, this, { x : transform.x, y : transform.y } );
+        }
     }
     
 }

@@ -9,7 +9,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("Widget") ){
      }
 }
 __ui__widget1.h = 1200;
-__ui__widget1.id = 'rootWidget';
+__ui__widget1.id = 'rootEdWidget';
 __ui__widget1.widthPt = 100;
 __ui__widget1._onInitialize();
 var editor : CmpControlEditor = cast(__ui__arguments.editor, CmpControlEditor);
@@ -174,6 +174,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("TabStack") ){
 }
 __ui__widget3.left = 100;
 __ui__widget3.name = 'editorMenu';
+__ui__widget3.id = 'tabStack';
 __ui__widget3._onInitialize();
 
 var __ui__widget4 : ru.stablex.ui.widgets.TabPage = new ru.stablex.ui.widgets.TabPage();
@@ -508,6 +509,7 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("TabPage") ){
          if( defaultsFn != null ) defaultsFn(__ui__widget4);
      }
 }
+__ui__widget4.id = 'tabMat';
 __ui__widget4.defaults = 'EditorMenu';
 __ui__widget4.title.text = 'Material';
 __ui__widget4._onInitialize();
@@ -536,6 +538,69 @@ if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
 }
 __ui__widget6.text = 'Steel';
 __ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.builder.set_material(GameConfig.matSteel);});
+__ui__widget6.defaults = 'EditorMenu';
+__ui__widget6._onInitialize();
+__ui__widget6._onCreate();
+__ui__widget5.addChild(__ui__widget6);
+
+var __ui__widget6 : ru.stablex.ui.widgets.Button = new ru.stablex.ui.widgets.Button();
+if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
+     var defs = 'EditorMenu'.split(",");
+     var defFns = ru.stablex.ui.UIBuilder.defaults.get("Button");
+     for(i in 0...defs.length){
+         var defaultsFn : ru.stablex.ui.widgets.Widget->Void = defFns.get(defs[i]);
+         if( defaultsFn != null ) defaultsFn(__ui__widget6);
+     }
+}
+__ui__widget6.text = 'Delete';
+__ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.builder.set_material(null);});
+__ui__widget6.defaults = 'EditorMenu';
+__ui__widget6._onInitialize();
+__ui__widget6._onCreate();
+__ui__widget5.addChild(__ui__widget6);
+__ui__widget5._onCreate();
+__ui__widget4.addChild(__ui__widget5);
+__ui__widget4._onCreate();
+__ui__widget3.addChild(__ui__widget4);
+
+var __ui__widget4 : ru.stablex.ui.widgets.TabPage = new ru.stablex.ui.widgets.TabPage();
+if( ru.stablex.ui.UIBuilder.defaults.exists("TabPage") ){
+     var defs = 'EditorMenu'.split(",");
+     var defFns = ru.stablex.ui.UIBuilder.defaults.get("TabPage");
+     for(i in 0...defs.length){
+         var defaultsFn : ru.stablex.ui.widgets.Widget->Void = defFns.get(defs[i]);
+         if( defaultsFn != null ) defaultsFn(__ui__widget4);
+     }
+}
+__ui__widget4.id = 'tabPlay';
+__ui__widget4.defaults = 'EditorMenu';
+__ui__widget4.title.text = 'Play';
+__ui__widget4._onInitialize();
+
+var __ui__widget5 : ru.stablex.ui.widgets.VBox = new ru.stablex.ui.widgets.VBox();
+if( ru.stablex.ui.UIBuilder.defaults.exists("VBox") ){
+     var defs = 'EditorMenu'.split(",");
+     var defFns = ru.stablex.ui.UIBuilder.defaults.get("VBox");
+     for(i in 0...defs.length){
+         var defaultsFn : ru.stablex.ui.widgets.Widget->Void = defFns.get(defs[i]);
+         if( defaultsFn != null ) defaultsFn(__ui__widget5);
+     }
+}
+__ui__widget5.left = 400;
+__ui__widget5.defaults = 'EditorMenu';
+__ui__widget5._onInitialize();
+
+var __ui__widget6 : ru.stablex.ui.widgets.Button = new ru.stablex.ui.widgets.Button();
+if( ru.stablex.ui.UIBuilder.defaults.exists("Button") ){
+     var defs = 'EditorMenu'.split(",");
+     var defFns = ru.stablex.ui.UIBuilder.defaults.get("Button");
+     for(i in 0...defs.length){
+         var defaultsFn : ru.stablex.ui.widgets.Widget->Void = defFns.get(defs[i]);
+         if( defaultsFn != null ) defaultsFn(__ui__widget6);
+     }
+}
+__ui__widget6.text = 'Start/Stop';
+__ui__widget6.addEventListener(flash.events.MouseEvent.CLICK, function(event:flash.events.MouseEvent){editor.togglePause();});
 __ui__widget6.defaults = 'EditorMenu';
 __ui__widget6._onInitialize();
 __ui__widget6._onCreate();

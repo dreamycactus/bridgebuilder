@@ -36,7 +36,7 @@ class CmpRenderControlBuild extends CmpRender
         var g = sprite.graphics;
             
         g.clear();
-        if (bridgebuild.isDrawing) {
+        if (bridgebuild.isDrawing && !bridgebuild.beamDeleteMode) {
             g.lineStyle(1, 0xFF0088, 0.6);
             g.beginFill(0xFFFFFF, 1.0);
             

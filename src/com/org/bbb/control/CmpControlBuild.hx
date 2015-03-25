@@ -87,7 +87,6 @@ class CmpControlBuild extends CmpControl
         this.stage = builder.stage;
         this.top = builder.top;
         this.state = builder.state;
-        this.level = builder.level;
         this.camera = builder.camera;
         this.cmpGrid = builder.cmpGrid;
     }
@@ -260,7 +259,10 @@ class CmpControlBuild extends CmpControl
         var levelserializer = new LevelParser(state);
         var l = levelserializer.loadLevelXml(loadText);
         
-        top.changeState(new StateTransPan(top, cast(top.state), StateBridgeLevel.createFromLevel(state, top, l)));
+        var state = new StateBridgeLevel(top);
+        state.init();
+        state.level = l;
+        top.changeState(new StateTransPan(top, cast(top.state), state));
     }
     
     //public function generateLevelXML()
@@ -354,10 +356,10 @@ class CmpControlBuild extends CmpControl
         cb.toggleVisible();
         if (sys.paused) {
             builder.saveState();
-            var frb = findRoadBeams();
-            for (e in frb) {
-                toggleBeamRoad(e);
-            }
+            //var frb = findRoadBeams();
+            //for (e in frb) {
+                //toggleBeamRoad(e);
+            //}
             cmpGrid.entity.getCmp(CmpRenderGrid).visible = false;
         } else {
             builder.restore();
@@ -417,136 +419,136 @@ class CmpControlBuild extends CmpControl
         }
     }
     
-    function findRoadBeams() : Array<Entity>
-    {
-        var res = new Array<Entity>();
-        var space = level.space;
-        var startAnchor : Body = null;
-        var endAnchor : Body = null;
-        var funccy = function(b:Body) {
-            var e : Entity = b.userData.entity;
-            if (e != null) {
-                var cmpa = e.getCmp(CmpAnchor);
-                if (cmpa == null) {
-                    return false;
-                }
-                if (cmpa.startEnd == AnchorStartEnd.START) {
-                    startAnchor = b;
-                } else if (cmpa.startEnd == AnchorStartEnd.END) {
-                    endAnchor = b;
-                }
-            }
-            return true;
-        };
-        space.bodies.foreach(funccy);
-        //if (endAnchor == null || startAnchor == null) {
-            //space.compounds.foreach(function(c) {
-                //c.bodies.foreach(funccy);
-            //});
+    //function findRoadBeams() : Array<Entity>
+    //{
+        //var res = new Array<Entity>();
+        //var space = space;
+        //var startAnchor : Body = null;
+        //var endAnchor : Body = null;
+        //var funccy = function(b:Body) {
+            //var e : Entity = b.userData.entity;
+            //if (e != null) {
+                //var cmpa = e.getCmp(CmpAnchor);
+                //if (cmpa == null) {
+                    //return false;
+                //}
+                //if (cmpa.startEnd == AnchorStartEnd.START) {
+                    //startAnchor = b;
+                //} else if (cmpa.startEnd == AnchorStartEnd.END) {
+                    //endAnchor = b;
+                //}
+            //}
+            //return true;
+        //};
+        //space.bodies.foreach(funccy);
+        ////if (endAnchor == null || startAnchor == null) {
+            ////space.compounds.foreach(function(c) {
+                ////c.bodies.foreach(funccy);
+            ////});
+        ////}
+        //// Bridge does not connect start and end... don't guess
+        //if (endAnchor == null) {
+            //return res;
         //}
-        // Bridge does not connect start and end... don't guess
-        if (endAnchor == null) {
-            return res;
-        }
-        if (startAnchor != null) {
-            var a1 = startAnchor;
-            var a1e : Entity = a1.userData.entity;
-            var anchorBounds = a1e.getCmp(CmpAnchor).body.bounds;
-            var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
-            var bod : Body = a1;
-            var bodEnt : Entity = a1.userData.entity;
-            var parentList : IntMap<Entity> = new IntMap();
-            var markers : IntMap<Bool> = new IntMap();
-            var stack : GenericStack<Body> = new GenericStack<Body>();
-            stack.add(a1);
-            
-            while (!stack.isEmpty()) {
-                var bod = stack.pop();
-                var bodEnt : Entity = bod.userData.entity;
-                if (!markers.exists(bodEnt.id)) {
-                    markers.set(bodEnt.id, true);
-                    var ca = bodEnt.getCmp(CmpAnchor);
-                    if (bodEnt.id != a1.userData.entity.id && ca != null && ca.startEnd == AnchorStartEnd.END) {
-                        var array = new Array<Entity>();
-                        var ent = parentList.get(bodEnt.id);
-                        while (ent != null) {
-                            if (!ent.hasCmp(CmpAnchor)) {
-                                array.push(ent);
-                            }
-                            ent = parentList.get(ent.id);
-                        }
-                        return array;
-                    }
-                    var cmpCable = bodEnt.getCmp(CmpCable);
-                    if (cmpCable != null) {
-                        if (bod == cmpCable.first) {
-                            bod = cmpCable.last;
-                        } else {
-                            bod = cmpCable.first;
-                        }
-                    }
-                    var cb : Array<Body> = null; // connected bodies
-                    if (bodEnt.hasCmp(CmpAnchor)) {
-                        cb = bodEnt.getCmp(CmpAnchor).findAdjacentBodies();
-                    } else {
-                        cb = bodEnt.getCmpHavingAncestor(CmpBeamBase).findAdjacentBodies();
-                    }
-                    var sorter = bod == a1 ? firstNode.bind(a1e) : flattestSlope;
-                    cb = cb.filter(beamsOnly.bind(markers));
-                    cb.sort(sorter);
-                    for (i in 0...cb.length) {
-                        var b = cb[i];
-                        var e : Entity = b.userData.entity;
-                        stack.add(b);
-                        parentList.set(e.id, bodEnt);
-                    }
-                }
-            }
-        }
-        return new Array<Entity>();
-    }
-    
-    function firstNode(a1e:Entity, a:Body, b:Body) : Int
-    {
-        var anchorBounds = a1e.getCmp(CmpAnchor).body.bounds;
-        var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
-        var abounds = a.bounds;
-        var bbounds = b.bounds;
-        var aclose = Math.min(Math.abs(abounds.y - anchorTopRight.y), Math.abs(abounds.y + abounds.height - anchorTopRight.y));
-        var bclose = Math.min(Math.abs(bbounds.y - anchorTopRight.y), Math.abs(bbounds.y + bbounds.height - anchorTopRight.y));
-        if (aclose < bclose) {
-            return 1;
-        } else if (aclose == bclose){
-            return flattestSlope(a, b);
-        } else {
-            return -1;
-        }
-    }
-    
-    function flattestSlope(a:Body, b:Body) : Int
-    {
-        var e1 : Entity = a.userData.entity;
-        var e2 : Entity = b.userData.entity;
-        
-        if (e1.hasCmp(CmpAnchor)) {
-            return 1;
-        }
-        if (e2.hasCmp(CmpAnchor)) {
-            return -1;
-        }
-        
-        var b1 = e1.getCmpsHavingAncestor(CmpBeamBase)[0];
-        var b2 = e2.getCmpsHavingAncestor(CmpBeamBase)[0];
-        
-        var sl1 = Math.abs(b1.slope);
-        var sl2 = Math.abs(b2.slope);
-        if (sl1 > sl2) {
-            return -1;
-        } else {
-            return 1;
-        }
-        
-    }
+        //if (startAnchor != null) {
+            //var a1 = startAnchor;
+            //var a1e : Entity = a1.userData.entity;
+            //var anchorBounds = a1e.getCmp(CmpAnchor).body.bounds;
+            //var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
+            //var bod : Body = a1;
+            //var bodEnt : Entity = a1.userData.entity;
+            //var parentList : IntMap<Entity> = new IntMap();
+            //var markers : IntMap<Bool> = new IntMap();
+            //var stack : GenericStack<Body> = new GenericStack<Body>();
+            //stack.add(a1);
+            //
+            //while (!stack.isEmpty()) {
+                //var bod = stack.pop();
+                //var bodEnt : Entity = bod.userData.entity;
+                //if (!markers.exists(bodEnt.id)) {
+                    //markers.set(bodEnt.id, true);
+                    //var ca = bodEnt.getCmp(CmpAnchor);
+                    //if (bodEnt.id != a1.userData.entity.id && ca != null && ca.startEnd == AnchorStartEnd.END) {
+                        //var array = new Array<Entity>();
+                        //var ent = parentList.get(bodEnt.id);
+                        //while (ent != null) {
+                            //if (!ent.hasCmp(CmpAnchor)) {
+                                //array.push(ent);
+                            //}
+                            //ent = parentList.get(ent.id);
+                        //}
+                        //return array;
+                    //}
+                    //var cmpCable = bodEnt.getCmp(CmpCable);
+                    //if (cmpCable != null) {
+                        //if (bod == cmpCable.first) {
+                            //bod = cmpCable.last;
+                        //} else {
+                            //bod = cmpCable.first;
+                        //}
+                    //}
+                    //var cb : Array<Body> = null; // connected bodies
+                    //if (bodEnt.hasCmp(CmpAnchor)) {
+                        //cb = bodEnt.getCmp(CmpAnchor).findAdjacentBodies();
+                    //} else {
+                        //cb = bodEnt.getCmpHavingAncestor(CmpBeamBase).findAdjacentBodies();
+                    //}
+                    //var sorter = bod == a1 ? firstNode.bind(a1e) : flattestSlope;
+                    //cb = cb.filter(beamsOnly.bind(markers));
+                    //cb.sort(sorter);
+                    //for (i in 0...cb.length) {
+                        //var b = cb[i];
+                        //var e : Entity = b.userData.entity;
+                        //stack.add(b);
+                        //parentList.set(e.id, bodEnt);
+                    //}
+                //}
+            //}
+        //}
+        //return new Array<Entity>();
+    //}
+    //
+    //function firstNode(a1e:Entity, a:Body, b:Body) : Int
+    //{
+        //var anchorBounds = a1e.getCmp(CmpAnchor).body.bounds;
+        //var anchorTopRight = Vec2.get(anchorBounds.x + anchorBounds.width, anchorBounds.y);
+        //var abounds = a.bounds;
+        //var bbounds = b.bounds;
+        //var aclose = Math.min(Math.abs(abounds.y - anchorTopRight.y), Math.abs(abounds.y + abounds.height - anchorTopRight.y));
+        //var bclose = Math.min(Math.abs(bbounds.y - anchorTopRight.y), Math.abs(bbounds.y + bbounds.height - anchorTopRight.y));
+        //if (aclose < bclose) {
+            //return 1;
+        //} else if (aclose == bclose){
+            //return flattestSlope(a, b);
+        //} else {
+            //return -1;
+        //}
+    //}
+    //
+    //function flattestSlope(a:Body, b:Body) : Int
+    //{
+        //var e1 : Entity = a.userData.entity;
+        //var e2 : Entity = b.userData.entity;
+        //
+        //if (e1.hasCmp(CmpAnchor)) {
+            //return 1;
+        //}
+        //if (e2.hasCmp(CmpAnchor)) {
+            //return -1;
+        //}
+        //
+        //var b1 = e1.getCmpsHavingAncestor(CmpBeamBase)[0];
+        //var b2 = e2.getCmpsHavingAncestor(CmpBeamBase)[0];
+        //
+        //var sl1 = Math.abs(b1.slope);
+        //var sl2 = Math.abs(b2.slope);
+        //if (sl1 > sl2) {
+            //return -1;
+        //} else {
+            //return 1;
+        //}
+        //
+    //}
     
     function beamsOnly(markers : IntMap<Bool>, b : Body) : Bool
     {

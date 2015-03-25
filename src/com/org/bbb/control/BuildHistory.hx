@@ -7,6 +7,7 @@ import com.org.mes.Entity;
 import com.org.mes.MESState;
 import haxe.ds.GenericStack;
 import haxe.ds.ObjectMap;
+import nape.geom.Vec2;
 import nape.phys.Body;
 using Lambda;
 using com.org.bbb.Util;
@@ -46,7 +47,7 @@ class BuildHistory
             if (e.hasCmp(CmpBeam)) {
                 var cmpBeam = e.getCmp(CmpBeam);
                 var newBody = cmpBeam.body.copy();
-                newEnt = EntFactory.inst.createBeamEnt(cmpBeam.p1, cmpBeam.p2, cmpBeam.body.position, newBody, cmpBeam.width, cmpBeam.material);
+                newEnt = EntFactory.inst.createBeamEnt(cmpBeam.p1, cmpBeam.p2, cmpBeam.material);
                 newBody.userData.entity = newEnt;
             } else if (e.hasCmp(CmpCable)) {
                 var cmpCable = e.getCmp(CmpCable);
@@ -54,7 +55,7 @@ class BuildHistory
             } else if (e.hasCmp(CmpAnchor)) {
                 var cmpAnchor = e.getCmp(CmpAnchor);
                 var bounds = cmpAnchor.body.bounds;
-                newEnt = EntFactory.inst.createAnchor(cmpAnchor.body.position, {w : bounds.width, h : bounds.height}, cmpAnchor.fluid, cmpAnchor.startEnd, cmpAnchor.tapered);
+                newEnt = EntFactory.inst.createAnchor(cmpAnchor.body.position, Vec2.get(bounds.width, bounds.height), cmpAnchor.fluid, cmpAnchor.startEnd, cmpAnchor.tapered);
             }
             if (newEnt != null) {
                 oldToNew.set(e, newEnt);

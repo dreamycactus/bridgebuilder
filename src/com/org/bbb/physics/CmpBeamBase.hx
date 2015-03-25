@@ -15,6 +15,7 @@ using Lambda;
 class CmpBeamBase extends CmpPhys implements BridgeNode
 {
     public var sharedJoints : Array<CmpSharedJoint> = new Array();
+    @editor
     public var material : BuildMat;
     public var broken : Bool = false;
     @editor

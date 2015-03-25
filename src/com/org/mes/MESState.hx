@@ -72,8 +72,12 @@ class MESState
     
     public function insertEnt(e : Entity)
     {
+        if (e == null) {
+            trace('null entity cannot be inserted');
+            return;
+        }
         ents.push(e);
-        if (e.state != null && e.state != this) {
+        if (e.state != this) {
             trace('overwriting entity ${e.id} state ${e.state} with ${this}');
         }
         e.state = this;

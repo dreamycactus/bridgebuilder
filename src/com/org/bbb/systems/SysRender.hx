@@ -116,7 +116,7 @@ class SysRender extends System
             if (c.inCamera) {
                 c.addToScene(camera.sprite, Std.int(Math.min(index, camera.sprite.numChildren)));
             } else {
-                c.addToScene(mainSprite, index);
+                c.addToScene(mainSprite, 3);
             }
         }
     }

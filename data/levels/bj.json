@@ -4,31 +4,31 @@
   {
    "cmps": [
     {
-     "cmp": "com.org.bbb.physics.CmpAnchor",
-     "width": 100,
-     "x": 97.5,
-     "height": 200,
-     "y": 85
+     "color": 16777215,
+     "cmp": "com.org.bbb.render.CmpRenderAnchor"
     },
     {
-     "vec_offsetX": 0,
-     "width": 50,
-     "vec_offsetY": 0,
-     "height": 50,
-     "src": null,
-     "offsetRot": 0,
-     "cmp": "com.org.bbb.render.CmpRenderSprite",
-     "scale": 1
+     "cmp": "com.org.bbb.physics.CmpAnchor",
+     "width": 100,
+     "x": 117.5,
+     "height": 200,
+     "y": 79.16666666666671
     },
     {
      "cmp": "com.org.bbb.physics.CmpTransform",
-     "x": 97.5,
-     "y": 85,
+     "x": 117.5,
+     "y": 79.16666666666671,
      "rotation": null
     },
     {
-     "cmp": "com.org.bbb.render.CmpRenderAnchor",
-     "color": 16777215
+     "vec_offsetY": 0,
+     "width": 50,
+     "height": 50,
+     "src": null,
+     "cmp": "com.org.bbb.render.CmpRenderSprite",
+     "scale": 1,
+     "vec_offsetX": 0,
+     "offsetRot": 0
     }
    ],
    "type": "anchor"
@@ -36,34 +36,167 @@
   {
    "cmps": [
     {
-     "cmp": "com.org.bbb.physics.CmpAnchor",
-     "width": 400,
-     "x": 632.6666666666667,
-     "height": 280,
-     "y": 68.33333333333333
+     "color": 16777215,
+     "cmp": "com.org.bbb.render.CmpRenderAnchor"
     },
     {
-     "vec_offsetX": -1000,
-     "width": 50,
-     "vec_offsetY": 0,
-     "height": 50,
-     "src": null,
-     "offsetRot": 0,
-     "cmp": "com.org.bbb.render.CmpRenderSprite",
-     "scale": 1
+     "cmp": "com.org.bbb.physics.CmpAnchor",
+     "width": 400,
+     "x": 457.66666666666663,
+     "height": 280,
+     "y": 40.833333333333314
     },
     {
      "cmp": "com.org.bbb.physics.CmpTransform",
-     "x": 632.6666666666667,
-     "y": 68.33333333333333,
+     "x": 457.66666666666663,
+     "y": 40.833333333333314,
      "rotation": null
     },
     {
-     "cmp": "com.org.bbb.render.CmpRenderAnchor",
-     "color": 16777215
+     "vec_offsetY": 0,
+     "width": 50,
+     "height": 50,
+     "src": null,
+     "cmp": "com.org.bbb.render.CmpRenderSprite",
+     "scale": 1,
+     "vec_offsetX": -1000,
+     "offsetRot": 0
     }
    ],
    "type": "anchor"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.render.CmpRenderSharedJoint",
+     "inCamera": true,
+     "displayLayer": 4
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 180,
+     "y": 220,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpSharedJoint",
+     "isRolling": false
+    }
+   ],
+   "type": "sharedjoint"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.render.CmpRenderSharedJoint",
+     "inCamera": true,
+     "displayLayer": 4
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 380,
+     "y": 220,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpSharedJoint",
+     "isRolling": false
+    }
+   ],
+   "type": "sharedjoint"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.render.CmpRenderSharedJoint",
+     "inCamera": true,
+     "displayLayer": 4
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 500,
+     "y": 220,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpSharedJoint",
+     "isRolling": false
+    }
+   ],
+   "type": "sharedjoint"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.render.CmpRenderMultiBeam",
+     "inCamera": true,
+     "displayLayer": 5
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 0,
+     "y": 0,
+     "rotation": null
+    },
+    {
+     "vec_p1Y": 220,
+     "vec_p2X": 380,
+     "isRoad": false,
+     "vec_p2Y": 220,
+     "cmp": "com.org.bbb.physics.CmpBeam",
+     "vec_p1X": 180
+    }
+   ],
+   "type": "beam"
+  },
+  {
+   "cmps": [
+    {
+     "cmp": "com.org.bbb.render.CmpRenderMultiBeam",
+     "inCamera": true,
+     "displayLayer": 5
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 0,
+     "y": 0,
+     "rotation": null
+    },
+    {
+     "vec_p1Y": 220,
+     "vec_p2X": 500,
+     "isRoad": false,
+     "vec_p2Y": 220,
+     "cmp": "com.org.bbb.physics.CmpBeam",
+     "vec_p1X": 380
+    }
+   ],
+   "type": "beam"
+  },
+  {
+   "cmps": [
+    {
+     "vec_offsetY": 0,
+     "width": 50,
+     "height": 50,
+     "src": "img/editorsprite.png",
+     "cmp": "com.org.bbb.render.CmpRenderSprite",
+     "scale": 1,
+     "vec_offsetX": 0,
+     "offsetRot": 0
+    },
+    {
+     "cmp": "com.org.bbb.physics.CmpTransform",
+     "x": 190.83333333333334,
+     "y": 89.16666666666666,
+     "rotation": null
+    },
+    {
+     "cmp": "com.org.bbb.editor.CmpEditorBox",
+     "visible": false
+    }
+   ],
+   "type": "staticsprite"
   }
  ],
  "w": 920

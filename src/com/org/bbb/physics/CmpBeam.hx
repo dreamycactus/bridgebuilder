@@ -114,6 +114,26 @@ class CmpBeam extends CmpBeamBase
         }
     }
     
+    override public function onInserted() : Void
+    {
+        var bb1  = space.bodiesUnderPoint(p1, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgSharedJoint));
+        if (bb1.length == 0) {
+            trace('unattached beam @ $p1');
+        }
+        var bb2  = space.bodiesUnderPoint(p2, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgSharedJoint));
+        if (bb2.length == 0) {
+            trace('unattached beam @ $p2');
+        }
+        if (sj1 == null || sj2 == null) {
+            for (b in bb1) {
+                cast(b.userData.sharedJoint, CmpSharedJoint).addBody(body);
+            }
+            for (b in bb2) {
+                cast(b.userData.sharedJoint, CmpSharedJoint).addBody(body);
+            }
+        }
+    }
+    
     override public function changeFilter(f : InteractionFilter) : Void
     {
         body.setShapeFilters(f);

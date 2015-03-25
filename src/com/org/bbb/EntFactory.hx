@@ -90,11 +90,20 @@ class EntFactory
         return inst;
     }
     
-    public function createBeamEnt(p1 : Vec2, p2 : Vec2, pos : Vec2, body : Body, width : Float, material : BuildMat, name : String = "") : Entity
+    public function createBeamEnt(p1 : Vec2, p2 : Vec2, material : BuildMat, name : String = "") : Entity
     {
         var e = state.createEnt("be");
         var trans = new CmpTransform();
         e.attachCmp(trans);
+        var body : Body = new Body();
+        var pos = p1.add(p2).mul(0.5);
+        var delta = p1.sub(p2);
+        var material = GameConfig.matSteel;
+        var beamshape = new Polygon(Polygon.box(delta.length + 10, material.height), 
+                                    material.material, new InteractionFilter(GameConfig.cgBeam, GameConfig.cmBeam ));
+        body.shapes.add(beamshape);
+        body.rotation = delta.angle;
+        var width = delta.length;
         var cmpbeam = new CmpBeam(trans, p1, p2, body, width, material);
         
         //var length = body.shapes.at(0).bounds.width;
@@ -190,8 +199,10 @@ class EntFactory
     {
         var e = state.createEnt("sj");
         var trans = new CmpTransform();
+        trans.x = pos.x;
+        trans.y = pos.y;
         e.attachCmp(trans);
-        var sj = new CmpSharedJoint(trans, pos, bodies);
+        var sj = new CmpSharedJoint(trans, bodies);
         var rsj = new CmpRenderSharedJoint(sj);
         rsj.tintColour(84, 84, 115, 255);
         
@@ -371,11 +382,11 @@ class EntFactory
         return spawn;
     }
     
-    public function createAnchor(pos : Vec2, tdim : {w : Float, h : Float}, fluid : Bool, ase : AnchorStartEnd, taperEnd : Bool=false) : Entity
+    public function createAnchor(pos : Vec2, tdim : Vec2, fluid : Bool, ase : AnchorStartEnd, taperEnd : Bool=false) : Entity
     {
-        var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.h * 0.5), GameConfig.gridCellWidth);
+        var gridMultiple = Util.roundNearest(Std.int(pos.y - tdim.y * 0.5), GameConfig.gridCellWidth);
         
-        pos.y = gridMultiple + tdim.h * 0.5 +(GameConfig.gridCellWidth - GameConfig.matSteel.height) * 0.5;
+        pos.y = gridMultiple + tdim.y * 0.5 +(GameConfig.gridCellWidth - GameConfig.matSteel.height) * 0.5;
         //pos.addeq(Vec2.get(0, -(GameConfig.gridCellWidth - GameConfig.matDeck.height) * 0.5));
 
         var anc = new Body(BodyType.KINEMATIC);
@@ -385,7 +396,7 @@ class EntFactory
         } else {
             filter = new InteractionFilter(GameConfig.cgAnchor, GameConfig.cmAnchor);
         }
-        var box = new Polygon(Polygon.box(tdim.w, tdim.h), GameConfig.matSteel.material, filter);
+        var box = new Polygon(Polygon.box(tdim.x, tdim.y), GameConfig.matSteel.material, filter);
         if (fluid) {
             box.fluidEnabled = fluid;
             box.fluidProperties.viscosity = 7;
@@ -399,16 +410,18 @@ class EntFactory
             localVerts.at(0).x += 10;
             box.localVerts.unshift(tv);
         }
-
         anc.shapes.add(box);
         
-        anc.position = pos;
         var ent = state.createEnt();
         var trans = new CmpTransform();
+        trans.x = pos.x;
+        trans.y = pos.y;
+        
         var cmpanc = new CmpAnchor(trans, anc, ase);
-        cmpanc.width = tdim.w;
-        cmpanc.height = tdim.h;
+        cmpanc.width = tdim.x;
+        cmpanc.height = tdim.y;
         cmpanc.fluid = fluid;
+        
         var cmprender = new CmpRenderAnchor(cmpanc);
         cmprender.tintColour(212, 23, 80, 255);
         

@@ -2,6 +2,7 @@ package com.org.bbb.level;
 import com.org.bbb.physics.CmpAnchor;
 import com.org.bbb.physics.CmpBeam;
 import com.org.bbb.physics.CmpCable;
+import com.org.bbb.physics.CmpSharedJoint;
 import com.org.bbb.physics.CmpTerrain;
 import com.org.bbb.render.CmpRenderSprite;
 import com.org.bbb.states.StateBridgeLevel;
@@ -28,10 +29,10 @@ class LevelSerializer
         anchorType = state.entityTypeManager.getEntityType('anchor');
     }
     
-    public function generateJson(state : StateBridgeLevel) : String
+    public function generateJson(leveldata : StateBridgeLevel) : String
     {
         var leveldata : Dynamic = { w : state.level.width, h : state.level.height, objects : new Array<Dynamic>()}
-        for (e in state.level.ents) {
+        for (e in state.ents) {
             var entdata : Dynamic = { type : '', cmps : new Array<Dynamic>() };
             if (e.hasCmp(CmpAnchor)) {
                 entdata.type = 'anchor';
@@ -43,6 +44,10 @@ class LevelSerializer
                 entdata.type = 'beam';
             } else if (e.hasCmp(CmpCable)) {
                 entdata.type = 'cable';
+            } else if (e.hasCmp(CmpSharedJoint)) {
+                entdata.type = 'sharedjoint';
+            } else {
+                continue;
             }
             for (c in e.cmps) {
                 c.genJson();

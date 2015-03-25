@@ -21,6 +21,7 @@ import nape.geom.Vec2;
 import nape.phys.Body;
 import nape.phys.BodyList;
 import nape.shape.Polygon;
+import nape.space.Space;
 import openfl.display.Stage;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
@@ -42,7 +43,7 @@ class CmpBridgeBuild extends Cmp
     public var top : Top;
     public var state : MESState;
     
-    public var level : CmpLevel;
+    public var space : Space;
     public var camera : Camera;
     public var cmpGrid : CmpGrid;
 
@@ -64,7 +65,7 @@ class CmpBridgeBuild extends Cmp
     public var levelHeight : Float;
     var inited : Bool = false;
 
-    public function new(top : Top, state : MESState, level : CmpLevel, camera : Camera, cmpGrid : CmpGrid) 
+    public function new(top : Top, state : MESState, space : Space, camera : Camera, cmpGrid : CmpGrid) 
     {
         super();
         this.top = top;
@@ -72,7 +73,7 @@ class CmpBridgeBuild extends Cmp
         this.state = state;
         this.camera = camera;
         this.cmpGrid = cmpGrid;
-        this.level = level;
+        this.space = space;
         
         init();
     }
@@ -82,10 +83,10 @@ class CmpBridgeBuild extends Cmp
         buildHistory = new BuildHistory(state);
         saveState();
         
-        // TODO remove anchor from history
-        var anchors : List<Body>= level.space.bodies.ffilter(function(b) { return b.userData.entity != null && !b.userData.entity.hasCmp(CmpSpawn); } );
-        anchors.foreach(function(b) { builtBeams.push(b.userData.entity);} );
-        
+        if (space != null) {
+            var anchors : List<Body>= space.bodies.ffilter(function(b) { return b.userData.entity != null && !b.userData.entity.hasCmp(CmpSpawn); } );
+            anchors.foreach(function(b) { builtBeams.push(b.userData.entity);} );
+        }
         saveState();
     }
     
@@ -104,7 +105,7 @@ class CmpBridgeBuild extends Cmp
             spawn1 = mp;
             cFilter = GameConfig.cgBeam | GameConfig.cgCable | GameConfig.cgDeck;
         } 
-        var bb  = level.space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
+        var bb  = space.bodiesUnderPoint(mp, new InteractionFilter(GameConfig.cgSensor, cFilter) ) ;
         var otherBody : Body = null;
         startBody = null;
         isDrawing = true;
@@ -144,7 +145,7 @@ class CmpBridgeBuild extends Cmp
             mousePos = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         }
 
-        spawn2 = calculateBeamEnd(mousePos);
+        spawn2 = calculateBeamEnd(spawn2);
         var cp2 = cmpGrid.getClosestCell(spawn2);
         
         var validLine = lineChecker.isValidLine(spawn1, spawn2);
@@ -158,7 +159,7 @@ class CmpBridgeBuild extends Cmp
             spawn2 = camera.screenToWorld(Vec2.weak(stage.mouseX, stage.mouseY));
         }
         
-        var bb : BodyList = level.space.bodiesUnderPoint(spawn2, new InteractionFilter(GameConfig.cgSensor, cFilter, 1, 0, 1, 0) );
+        var bb : BodyList = space.bodiesUnderPoint(spawn2, new InteractionFilter(GameConfig.cgSensor, cFilter, 1, 0, 1, 0) );
         var endBody : Body = null;
         var otherBody : Body = null;
         
@@ -295,14 +296,14 @@ class CmpBridgeBuild extends Cmp
                     var t = boundValues[resIndex];
                     var p1 = Vec2.get(pl.a * t + pl.b, pl.c * t + pl.d);
                     var pfinal = cmpGrid.getClosestCellPos(p1);
-                    var findAnchor = level.space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
+                    var findAnchor = space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
                     var i = 0;
                     var makeFoundation = true;
                     while (!findAnchor.has(anchor)) {
                         t -= 0.14;
                         p1 = Vec2.get(pl.a * t + pl.b, pl.c * t + pl.d);
                         pfinal = cmpGrid.getClosestCellPos(p1);
-                        findAnchor = level.space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
+                        findAnchor = space.bodiesUnderPoint(pfinal, new InteractionFilter(GameConfig.cgSensor, GameConfig.cgAnchor));
                         if (i++ > 1) {
                             makeFoundation = false;
                             break;
@@ -326,9 +327,14 @@ class CmpBridgeBuild extends Cmp
         return beamEnt;
     }
     
+    public function forceInsertEntity(e : Entity) : Void
+    {
+        builtBeams.push(e);
+    }
+    
     public function getBodyUnderPoint(p : Vec2, filter : Int) : Body
     {
-        bodies = level.space.bodiesUnderPoint(p, new InteractionFilter(GameConfig.cgSensor, filter));
+        var bodies = space.bodiesUnderPoint(p, new InteractionFilter(GameConfig.cgSensor, filter));
         var shared : Body = null;
         for (b in bodies) {
             if (b.shapes.at(0).filter.collisionGroup & (GameConfig.cgBeam | GameConfig.cgCable) != 0) {
@@ -386,9 +392,9 @@ class CmpBridgeBuild extends Cmp
                                     material.material, iFilter );
         body.shapes.add(beamshape);
         body.rotation = spawn2.sub(spawn1).angle;
-        body.space = level.space;
+        body.space = space;
         
-        var ent = EntFactory.inst.createBeamEnt(spawn1, spawn2, center, body, spawn1.sub(spawn2).length + 10, material, "bob");
+        var ent = EntFactory.inst.createBeamEnt(spawn1, spawn2, material, "bob");
         state.insertEnt(ent);
         
         body.userData.entity = ent;
@@ -398,8 +404,14 @@ class CmpBridgeBuild extends Cmp
         return { body : body, ent : ent };
     }
     
-    public function calculateBeamEnd(mousePos : Vec2) : Vec2
+    public function calculateBeamEnd(mousePos : Vec2=null) : Vec2
     {
+        if (material == null) {
+            return Vec2.get();
+        }
+        if (mousePos == null) {
+            mousePos = camera.screenToWorld(Vec2.get(stage.mouseX, stage.mouseY));
+        }
         var delta = mousePos.sub(spawn1);
         var maxlen = cmpGrid.lengthOfCells(material.maxLength-1);
         var cp : Vec2 = null;
@@ -432,7 +444,7 @@ class CmpBridgeBuild extends Cmp
         
         builtBeams = buildstate.ents;
         lineChecker = buildstate.lines;
-        //var anchors = level.space.bodies.filter(function(b) { return b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor; } );
+        //var anchors = space.bodies.filter(function(b) { return b.shapes.at(0).filter.collisionGroup == GameConfig.cgAnchor; } );
         //anchors.foreach(function(b) { builtBeams.push(b.userData.entity);  } );
         
         var costs : Array<{length : Int, cost : Int}> = new Array();
@@ -462,7 +474,13 @@ class CmpBridgeBuild extends Cmp
     {
         beamDeleteMode = false;
         material = m;
-        var enumName = m.ename;
+        if (m == null) {
+            beamDeleteMode = true;
+        } else {
+            beamDeleteMode = false;
+        }
+        //var enumName = m.ename;
+        
         //if (wcb != null) wcb.setMaterial(enumName);
         return m;
     }
